@@ -83,14 +83,14 @@ export default function Header() {
     return (
         <header className="text-ivory sticky top-0 z-50 shadow-md">
             {/* Announcement Bar */}
-            <div className="bg-black text-white text-sm text-center py-2 px-4">
+            <div className="bg-black text-white text-sm text-center py-2 px-4 fraunces">
                 Consult a Diamond Expert online or in-store for your Bespoke experience →
             </div>
 
             {/* Topbar */}
             <div className="flex items-center justify-between py-3 px-4 md:px-8 border-b border-gold">
                 {/* Logo */}
-                <div className="text-2xl font-bold text-gold">LGJ</div>
+                <div className="text-2xl font-bold fraunces">MIROSA</div>
 
                 {/* Search Bar (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 justify-center mx-4">
@@ -112,8 +112,8 @@ export default function Header() {
                         <FiUser className="text-gold w-5 h-5 cursor-pointer" />
                         {userOpen && (
                             <ul className="absolute -right-5 top-4 mt-2 w-40 bg-dark border border-gold rounded-md shadow-lg p-2 z-50">
-                                <li className="py-1 px-3 hover:text-gold cursor-pointer">Login/Signup</li>
-                                <li className="py-1 px-3 hover:text-gold cursor-pointer">Contact Us</li>
+                                <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces">Login/Signup</li>
+                                <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces">Contact Us</li>
                             </ul>
                         )}
                     </div>
@@ -142,7 +142,7 @@ export default function Header() {
                         onMouseEnter={() => setActiveDropdown(index)}
                         onMouseLeave={() => setActiveDropdown(null)}
                     >
-                        <a href="#" className="hover:text-gold transition">
+                        <a href="#" className="text-[16px] fraunces">
                             {cat.name}
                         </a>
                         <div
@@ -157,14 +157,14 @@ export default function Header() {
                                             alt={item.name}
                                             className="w-full h-28 object-cover rounded-md mb-2"
                                         />
-                                        <p className="text-sm text-platinum">{item.name}</p>
+                                        <p className="text-sm text-platinum fraunces">{item.name}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
                 ))}
-                <a href="#" className="hover:text-gold transition">About</a>
+                <a href="#" className="hover:text-gold transition text-[16px] fraunces">About</a>
             </nav>
 
 
@@ -185,13 +185,13 @@ export default function Header() {
                                 className="flex justify-between items-center w-full hover:text-gold text-left"
                                 onClick={() => toggleCategory(idx)}
                             >
-                                <span>{cat.name}</span>
+                                <span className='fraunces'>{cat.name}</span>
                                 <FiChevronDown className={`transform transition-transform ${expandedCategories[idx] ? 'rotate-180' : ''}`} />
                             </button>
                             {expandedCategories[idx] && (
                                 <div className="pl-4 mt-2 space-y-2">
                                     {cat.sub.map((subItem, subIdx) => (
-                                        <div key={subIdx} className="text-sm text-platinum">
+                                        <div key={subIdx} className="text-sm fraunces">
                                             {subItem.name}
                                         </div>
                                     ))}

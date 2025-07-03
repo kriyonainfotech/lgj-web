@@ -1,23 +1,20 @@
-.text-heading {
-    font-size: 1.875rem;
-    /* text-3xl */
-    font-weight: 700;
-    color: #D4AF37;
-    /* gold */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+
+html,
+body {
+    overflow-x: hidden;
 }
 
-.text-subheading {
-    font-size: 1.25rem;
-    /* text-xl */
-    font-weight: 500;
-    color: #B0B0B0;
-    /* platinum */
+.fraunces {
+    font-family: "Fraunces", serif;
 }
 
-.text-body {
-    font-size: 1rem;
-    color: #FAFAFA;
-    /* ivory */
+.nunito {
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.text-primary {
+    color: #56544e;
 }
 
 .bg-dark {
