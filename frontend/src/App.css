@@ -17,6 +17,22 @@ body {
     color: #56544e;
 }
 
+.bg-cream {
+    background-color: #d1c8bf;
+}
+
+.bg-maroon {
+    background-color: #4d2331;
+}
+
+.text-cream {
+    color: #d1c8bf;
+}
+
+.text-maroon {
+    color: #4d2331;
+}
+
 .bg-dark {
     background-color: #0F0F0F;
     /* midnight */

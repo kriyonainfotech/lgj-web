@@ -83,21 +83,23 @@ export default function Header() {
     return (
         <header className="text-ivory sticky top-0 z-50 shadow-md">
             {/* Announcement Bar */}
-            <div className="bg-black text-white text-sm text-center py-2 px-4 fraunces">
+            <div className="bg-maroon text-white text-sm text-center py-2 px-4 fraunces">
                 Consult a Diamond Expert online or in-store for your Bespoke experience →
             </div>
 
             {/* Topbar */}
             <div className="flex items-center justify-between py-3 px-4 md:px-8 border-b border-gold">
                 {/* Logo */}
-                <div className="text-2xl font-bold fraunces">MIROSA</div>
+                <div className="text-2xl font-bold fraunces">
+                    <img src="/logo/marron_icon.png" alt="logo" className='w-full h-20' />
+                </div>
 
                 {/* Search Bar (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 justify-center mx-4">
                     <input
                         type="text"
                         placeholder="Search jewelry..."
-                        className="w-full max-w-md px-4 py-2 rounded-3xl border border-gray-700 bg-gray-100 text-midnight placeholder:text-platinum outline-0"
+                        className="w-full max-w-2xl px-4 py-2 rounded-3xl border border-gray-700 bg-gray-100 text-midnight placeholder:text-platinum outline-0"
                     />
                 </div>
 
@@ -112,7 +114,7 @@ export default function Header() {
                         <FiUser className="text-gold w-5 h-5 cursor-pointer" />
                         {userOpen && (
                             <ul className="absolute -right-5 top-4 mt-2 w-40 bg-dark border border-gold rounded-md shadow-lg p-2 z-50">
-                                <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces">Login/Signup</li>
+                                <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces"><a href="/login">Login/Signup</a></li>
                                 <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces">Contact Us</li>
                             </ul>
                         )}
