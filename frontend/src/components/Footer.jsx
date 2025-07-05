@@ -4,7 +4,7 @@ import { IoDiamondOutline } from "react-icons/io5";
 
 export default function Footer() {
     return (
-        <footer className="bg-[#F9F9F9] text-[#2F2F2F] pt-12 px-6 md:px-12 lg:px-20 pb-6 border-t border-gray-200">
+        <footer className="max-w-8xl m-2 rounded-xl bg-maroon text-cream pt-12 px-6 md:px-12 lg:px-20 pb-6 border-t border-gray-200">
             {/* Top Section */}
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between gap-10">
 

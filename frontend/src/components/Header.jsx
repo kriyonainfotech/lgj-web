@@ -169,7 +169,6 @@ export default function Header() {
                 <a href="#" className="hover:text-gold transition text-[16px] fraunces">About</a>
             </nav>
 
-
             {/* Mobile Menu */}
             {menuOpen && (
                 <div className="md:hidden bg-gray-300 text-ivory p-4 space-y-4">

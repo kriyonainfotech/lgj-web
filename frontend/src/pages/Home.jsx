@@ -67,7 +67,6 @@ const Home = () => {
 
     return (
         <div>
-            <Header />
             <BannerSlider />
 
             <section className="py-12 px-4 bg-light text-midnight">
@@ -173,7 +172,6 @@ const Home = () => {
                 </div>
             </section>
 
-            <Footer />
         </div>
     )
 }
