@@ -1,11 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import ShopPage from './pages/ShopPage';
+import Signup from './pages/auth/Signup';
+import Login from './pages/auth/Login';
+import ShopPage from './pages/product/ShopPage';
 import Layout from './components/Layout';
 import './App.css'
-import ProductDetailPage from './pages/ProductDetailPage';
+import ProductDetailPage from './pages/product/ProductDetailPage';
+import ResetPassword from './pages/auth/ResetPassword';
 
 function App() {
   return (
@@ -38,6 +39,12 @@ function App() {
             <Layout>
               <ProductDetailPage />
             </Layout>
+          }
+        />
+        <Route
+          path="/reset-password/:resetToken"
+          element={
+            <ResetPassword />
           }
         />
       </Routes>

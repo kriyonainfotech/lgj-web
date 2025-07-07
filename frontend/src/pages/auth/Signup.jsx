@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../public/logo/marron_icon.png'; // update path if needed
+import logo from '../../../public/logo/marron_icon.png'; // update with your actual path
 import { Link } from 'react-router-dom';
 
 export default function Signup() {
