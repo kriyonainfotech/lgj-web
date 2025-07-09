@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -9,9 +8,19 @@ const app = express();
 dotenv.config();
 connectDB();
 
-// Middleware
-app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.json()); // to parse JSON
+
+const corsOptions = {
+    origin: [
+        "http://localhost:5173",
+        "https://mirosajewelry.vercel.app"
+    ],
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Root route
 app.get('/', (req, res) => {

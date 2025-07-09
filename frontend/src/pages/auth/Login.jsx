@@ -1,8 +1,45 @@
-import React from 'react';
+import React, { useState } from "react";
 import logo from '../../../public/logo/marron_icon.png'; // update with your actual path
 import { Link } from 'react-router-dom';
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { encryptData } from "../../utils/secureStorage";
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+import { toast } from 'react-toastify';
 
 export default function Login() {
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError("");
+
+        try {
+            const res = await axios.post(`${backdendUrl}/api/auth/login-user`, {
+                email,
+                password,
+            });
+
+            console.log("Login response:", res.data);
+            if (res.data.success) {
+                // Save encrypted user & token
+                localStorage.setItem("user", encryptData(res.data.userId));
+                // localStorage.setItem("token", encryptData(res.data.token));
+                console.log("User and token saved to localStorage");
+                toast.success("Login successful! Redirecting...");
+                navigate("/");
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "Login failed");
+            toast.error(err.response?.data?.message || "Login failed");
+            console.error("Login error:", err);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-cream flex items-center justify-center px-4">
             <div className="w-full max-w-6xl rounded-xl flex flex-col md:flex-row overflow-hidden">
@@ -24,21 +61,26 @@ export default function Login() {
                     <h2 className="text-2xl font-semibold text-maroon mb-2 fraunces">Login to Mirosa</h2>
                     <p className="text-sm text-gray-600 mb-6 nunito">Enter your credentials below.</p>
 
-                    <form className="space-y-4">
+                    <form className="space-y-4" onSubmit={handleLogin}>
                         <div>
                             <label className="block mb-1 text-sm text-maroon fraunces">Email</label>
                             <input
                                 type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="you@example.com"
-                                className="w-full border border-gray-400 rounded-md px-4 py-2 focus:outline-none "
+                                className="w-full border border-gray-400 rounded-md px-4 py-2 focus:outline-none"
                             />
                         </div>
+
                         <div>
                             <label className="block mb-1 text-sm text-maroon fraunces">Password</label>
                             <input
                                 type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 placeholder="********"
-                                className="w-full border border-gray-400 rounded-md px-4 py-2 focus:outline-none "
+                                className="w-full border border-gray-400 rounded-md px-4 py-2 focus:outline-none"
                             />
                             <div className="text-right mt-1">
                                 <a href="#" className="text-sm text-maroon hover:underline fraunces">
@@ -46,6 +88,8 @@ export default function Login() {
                                 </a>
                             </div>
                         </div>
+
+                        {error && <p className="text-red-600 text-sm">{error}</p>}
 
                         <button
                             type="submit"
@@ -60,6 +104,7 @@ export default function Login() {
                             Continue with Google
                         </button>
                     </form>
+
 
                     <p className="mt-6 text-sm text-center fraunces text-maroon">
                         New to Mirosa ?{' '} &nbsp;

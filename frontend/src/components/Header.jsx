@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FiUser, FiHeart, FiShoppingCart, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { decryptData } from '../utils/secureStorage'; // Assuming you have this utility for decryption
 
 const categories = [
     {
@@ -59,8 +60,31 @@ export default function Header() {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [expandedCategories, setExpandedCategories] = useState({});
     const [cartOpen, setCartOpen] = useState(false);
-    const [userOpen, setUserOpen] = useState(false);
+    const [userPanelOpen, setUserPanelOpen] = useState(false);
     const userTimeout = useRef(null);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        try {
+            const encryptedUser = localStorage.getItem("user");
+            if (!encryptedUser) return;
+
+            const decryptedUser = decryptData(encryptedUser);
+            if (decryptedUser) {
+                setUser(decryptedUser);
+            } else {
+                // Invalid or broken data, clean it up
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
+                setUser(null);
+            }
+        } catch (err) {
+            console.error("⚠️ User decryption error:", err);
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            setUser(null);
+        }
+    }, []);
 
     const toggleCategory = (idx) => {
         setExpandedCategories((prev) => ({
@@ -106,19 +130,13 @@ export default function Header() {
                 {/* Icons */}
                 <div className="flex items-center space-x-4">
 
-                    <div
-                        className="relative"
-                        onMouseEnter={() => setUserOpen(true)}
-                        onMouseLeave={() => setUserOpen(false)}
-                    >
-                        <FiUser className="text-gold w-5 h-5 cursor-pointer" />
-                        {userOpen && (
-                            <ul className="absolute -right-5 top-4 mt-2 w-40 bg-dark border border-gold rounded-md shadow-lg p-2 z-50">
-                                <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces"><a href="/login">Login/Signup</a></li>
-                                <li className="py-1 px-3 hover:text-gold cursor-pointer fraunces">Contact Us</li>
-                            </ul>
-                        )}
+                    <div className="relative">
+                        <FiUser
+                            className="text-gold w-5 h-5 cursor-pointer"
+                            onClick={() => setUserPanelOpen(true)}
+                        />
                     </div>
+
 
                     <FiShoppingCart
                         className="text-gold w-5 h-5 cursor-pointer"
@@ -232,6 +250,54 @@ export default function Header() {
                     </div>
                 </div>
             )}
+
+            {/* User Side Panel */}
+            {userPanelOpen && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="fixed inset-0  bg-opacity-40 z-40"
+                        onClick={() => setUserPanelOpen(false)}
+                    />
+
+                    {/* Sidebar */}
+                    <div className="fixed top-0 bottom-0 right-0 w-80 bg-gray-100 text-gray-900 z-50 shadow-lg p-6 flex flex-col">
+
+
+                        {user ? (
+                            <>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl fraunces">Welcome, {user.name?.split(" ")[0]}</h2>
+                                    <button onClick={() => setUserPanelOpen(false)} className="text-gold text-2xl cursor-pointer font-bold">&times;</button>
+                                </div>
+                                <ul className="space-y-4 text-md fraunces">
+                                    <li><a href="/profile" className="hover:text-gold">My Profile</a></li>
+                                    <li><a href="/cart" className="hover:text-gold">My Cart</a></li>
+                                    <li><a href="/wishlist" className="hover:text-gold">My Wishlist</a></li>
+                                    <li><a href="/orders" className="hover:text-gold">My Orders</a></li>
+                                    <li><a href="/settings" className="hover:text-gold">Settings</a></li>
+                                    <li><a href="/logout" className="hover:text-gold">Logout</a></li>
+                                </ul>
+                            </>
+                        ) : (
+                            <>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl fraunces">Hello, Guest</h2>
+                                    <button onClick={() => setUserPanelOpen(false)} className="text-gold text-2xl font-bold">&times;</button>
+                                </div>
+                                <ul className="space-y-4 text-md fraunces">
+                                    <li><a href="/login" className="hover:text-gold">Login / Signup</a></li>
+                                    <li><a href="/cart" className="hover:text-gold">My Cart</a></li>
+                                    <li><a href="/wishlist" className="hover:text-gold">My Wishlist</a></li>
+                                    <li><a href="/orders" className="hover:text-gold">My Orders</a></li>
+                                    <li><a href="/settings" className="hover:text-gold">Settings</a></li>
+                                </ul>
+                            </>
+                        )}
+                    </div>
+                </>
+            )}
+
 
 
         </header>
