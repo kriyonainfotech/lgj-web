@@ -58,8 +58,9 @@ export default function Signup() {
             toast.success("Account created successfully!");
             navigate("/login"); // or show modal, etc.
         } catch (err) {
-            toast.error("Something went wrong!");
-            setError(err.response?.data?.message || "Something went wrong");
+            // toast.error("Someth+ing went wrong!");
+            // setError(err.response?.data?.message || "Something went wrong");
+            console.error(err);
         }
     };
 
