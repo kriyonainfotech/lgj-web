@@ -1,16 +1,29 @@
-// models/Subcategory.js
 const mongoose = require("mongoose");
 
 const subcategorySchema = new mongoose.Schema(
     {
-        name: { type: String, required: true },
-        slug: { type: String, required: true },
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        slug: {
+            type: String,
+            unique: true,
+        },
         category: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
-            required: true
+            required: true,
         },
-        image: { type: String, default: "" } // optional image URL (Cloudinary, local, etc.)
+        image: {
+            public_id: String,
+            url: String,
+        },
+        isFeatured: {
+            type: Boolean,
+            default: false,
+        }
     },
     { timestamps: true }
 );

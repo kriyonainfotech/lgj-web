@@ -24,10 +24,10 @@ export default function BannerSlider() {
 
 
     return (
-        <section className="w-full h-[80vh] overflow-hidden relative">
+        <section className="w-full aspect-[13/6] overflow-hidden relative">
             {/* Slide */}
             <div
-                className="w-full h-full bg-cover bg-center bg-no-repeat transition-all duration-700"
+                className="w-full h-full bg-cover bg-[center_50%] transition-all duration-700"
                 style={{ backgroundImage: `url(${banners[current]})` }}
             />
 

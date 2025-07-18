@@ -2,6 +2,7 @@ const User = require('../models/User'); // Adjust the path as needed
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const jwt = require("jsonwebtoken");
 
 // Register User API
 exports.registerUser = async (req, res) => {
@@ -27,9 +28,21 @@ exports.registerUser = async (req, res) => {
         const user = new User({ name, email, password });
         await user.save();
 
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+
         console.log('✅ [RegisterUser] User registered successfully:', user._id);
 
-        res.status(201).json({ message: 'User registered successfully.', userId: user._id });
+        res.status(201).json({
+            message: 'User registered successfully.',
+            userId: user._id,
+            token
+        });
     } catch (error) {
         console.error('❌ [RegisterUser] Error during registration:', error);
         res.status(500).json({ message: 'Internal server error.' });
@@ -42,10 +55,10 @@ User.prototype.comparePassword = async function (candidatePassword) {
 };
 
 exports.loginUser = async (req, res) => {
-    console.log('🔑 [LoginUser] Received login request:', req.body);
 
     try {
         const { email, password } = req.body;
+        console.log('🔑 [LoginUser] Received login request:', req.body);
 
         // Input validation
         if (!email || !password) {
@@ -67,14 +80,32 @@ exports.loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password.' });
         }
 
+        console.log("🔐 JWT Payload:", { id: user._id, role: user.role });
+        console.log("🔐 JWT Secret:", process.env.JWT_SECRET, typeof process.env.JWT_SECRET);
+        console.log("🔐 Expires In:", "7d");
+
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
         console.log('✅ [LoginUser] User logged in successfully:', user._id);
 
-        res.status(200).json({ success: true, message: 'Login successful.', userId: user });
+        res.status(200).json({
+            success: true,
+            message: 'Login successful.',
+            user: user,
+            token,
+
+        });
     } catch (error) {
         console.error('❌ [LoginUser] Error during login:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
 
 exports.updateUserRole = async (req, res) => {
     console.log('🛠️ [UpdateUserRole] Received role update request:', req.body);

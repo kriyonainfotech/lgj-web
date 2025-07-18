@@ -10,52 +10,65 @@ import ProductDetailPage from './pages/product/ProductDetailPage';
 import ResetPassword from './pages/auth/ResetPassword';
 import AdminHome from './pages/AdminHome';
 import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './context/ProtectedRoute';
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          {/* Routes WITHOUT Header/Footer */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
 
-          {/* Routes WITH Header/Footer */}
-          <Route
-            path="/"
-            element={
-              <Layout>
-                <Home />
-              </Layout>
-            }
-          />
-          <Route
-            path="/shop"
-            element={
-              <Layout>
-                <ShopPage />
-              </Layout>
-            }
-          />
-          <Route
-            path='/product'
-            element={
-              <Layout>
-                <ProductDetailPage />
-              </Layout>
-            }
-          />
-          <Route
-            path="/reset-password/:resetToken"
-            element={
-              <ResetPassword />
-            }
-          />
+            {/* Routes WITHOUT Header/Footer */}
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
 
-          <Route path='/admin/*' element={<AdminHome />} />
-        </Routes>
-      </BrowserRouter>
-      <ToastContainer position="top-right" autoClose={3000} />
+            {/* Routes WITH Header/Footer */}
+            <Route
+              path="/"
+              element={
+                <Layout>
+                  <Home />
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/shop"
+              element={
+                <Layout>
+                  <ShopPage />
+                </Layout>
+              }
+            />
+
+            <Route
+              path='/product'
+              element={
+                <Layout>
+                  <ProductDetailPage />
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/reset-password/:resetToken"
+              element={
+                <ResetPassword />
+              }
+            />
+
+            <Route path='/admin/*' element={
+              <ProtectedRoute role="admin">
+                <AdminHome />
+              </ProtectedRoute>
+            } />
+
+          </Routes>
+        </BrowserRouter>
+        <ToastContainer position="top-right" autoClose={3000} />
+      </AuthProvider>
     </>
   );
 }

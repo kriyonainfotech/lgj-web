@@ -15,8 +15,14 @@ export const decryptData = (ciphertext) => {
         const decrypted = bytes.toString(CryptoJS.enc.Utf8);
         if (!decrypted) return null; // 🛑 decryption failed
         return JSON.parse(decrypted);
+
     } catch (err) {
         console.error("🧨 Decryption error:", err);
         return null; // gracefully handle broken JSON
     }
+};
+
+
+export const encryptString = (plainText) => {
+    return CryptoJS.AES.encrypt(plainText, SECRET_KEY).toString();
 };

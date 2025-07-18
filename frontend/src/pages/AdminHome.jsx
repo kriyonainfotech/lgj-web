@@ -10,6 +10,8 @@ import ViewUsers from '../adminpanel/ViewUsers'
 import AddCategory from '../adminpanel/AddCategory'
 import AddSubCategory from '../adminpanel/AddSubCategory'
 import AddProduct from '../adminpanel/AddProduct'
+import EditCategory from '../adminpanel/EditCategory'
+import EditSubCategory from '../adminpanel/EditSubCategory'
 
 const AdminHome = () => {
     return (
@@ -17,7 +19,7 @@ const AdminHome = () => {
             <div className="h-screen flex overflow-hidden bg-gray-200">
                 <Sidebar />
                 <div className="flex-1 overflow-auto">
-                    <Routes >
+                    <Routes>
                         <Route path='/' element={<Admindashboard />} />
                         <Route path="/categories" element={<ViewCategory />} />
                         <Route path="/categories/:categoryId" element={<ViewSubcategory />} />
@@ -25,8 +27,10 @@ const AdminHome = () => {
                         <Route path="/orders" element={<ViewOrders />} />
                         <Route path="/users" element={<ViewUsers />} />
                         <Route path="/categories/add" element={<AddCategory />} />
-                        <Route path="/:categoryId/add" element={<AddSubCategory />} />
+                        <Route path="/add-subcategory/:categoryId" element={<AddSubCategory />} />
                         <Route path="/products/add" element={<AddProduct />} />
+                        <Route path="/edit-category/:categoryId" element={<EditCategory />} />
+                        <Route path="/edit-subcategory/:id" element={<EditSubCategory />} />
                     </Routes>
                 </div>
 

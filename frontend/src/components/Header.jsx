@@ -1,49 +1,53 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiUser, FiHeart, FiShoppingCart, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { decryptData } from '../utils/secureStorage'; // Assuming you have this utility for decryption
-
-const categories = [
-    {
-        name: 'Engagement',
-        sub: [
-            { name: 'Solitaire Rings', image: '/images/engagement1.jpg' },
-            { name: 'Halo Rings', image: '/images/engagement2.jpg' },
-            { name: 'Three Stone', image: '/images/engagement3.jpg' }
-        ]
-    },
-    {
-        name: 'Wedding',
-        sub: [
-            { name: 'Wedding Bands', image: '/images/wedding1.jpg' },
-            { name: 'His & Hers Sets', image: '/images/wedding2.jpg' },
-            { name: 'Anniversary Rings', image: '/images/wedding3.jpg' }
-        ]
-    },
-    {
-        name: 'Diamonds',
-        sub: [
-            { name: 'Loose Diamonds', image: '/images/diamonds1.jpg' },
-            { name: 'Certified Stones', image: '/images/diamonds2.jpg' },
-            { name: 'Fancy Shapes', image: '/images/diamonds3.jpg' }
-        ]
-    },
-    {
-        name: 'Jewelry',
-        sub: [
-            { name: 'Necklaces', image: '/images/jewelry1.jpg' },
-            { name: 'Earrings', image: '/images/jewelry2.jpg' },
-            { name: 'Bracelets', image: '/images/jewelry3.jpg' }
-        ]
-    },
-    {
-        name: 'Custom Grown',
-        sub: [
-            { name: 'Lab-grown Rings', image: '/images/custom1.jpg' },
-            { name: 'Custom Designs', image: '/images/custom2.jpg' },
-            { name: '3D Previews', image: '/images/custom3.jpg' }
-        ]
-    }
-];
+import { jwtDecode } from "jwt-decode";
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Link } from 'react-router-dom';
+// const categories = [
+//     {
+//         name: 'Engagement',
+//         sub: [
+//             { name: 'Solitaire Rings', image: '/images/engagement1.jpg' },
+//             { name: 'Halo Rings', image: '/images/engagement2.jpg' },
+//             { name: 'Three Stone', image: '/images/engagement3.jpg' }
+//         ]
+//     },
+//     {
+//         name: 'Wedding',
+//         sub: [
+//             { name: 'Wedding Bands', image: '/images/wedding1.jpg' },
+//             { name: 'His & Hers Sets', image: '/images/wedding2.jpg' },
+//             { name: 'Anniversary Rings', image: '/images/wedding3.jpg' }
+//         ]
+//     },
+//     {
+//         name: 'Diamonds',
+//         sub: [
+//             { name: 'Loose Diamonds', image: '/images/diamonds1.jpg' },
+//             { name: 'Certified Stones', image: '/images/diamonds2.jpg' },
+//             { name: 'Fancy Shapes', image: '/images/diamonds3.jpg' }
+//         ]
+//     },
+//     {
+//         name: 'Jewelry',
+//         sub: [
+//             { name: 'Necklaces', image: '/images/jewelry1.jpg' },
+//             { name: 'Earrings', image: '/images/jewelry2.jpg' },
+//             { name: 'Bracelets', image: '/images/jewelry3.jpg' }
+//         ]
+//     },
+//     {
+//         name: 'Custom Grown',
+//         sub: [
+//             { name: 'Lab-grown Rings', image: '/images/custom1.jpg' },
+//             { name: 'Custom Designs', image: '/images/custom2.jpg' },
+//             { name: '3D Previews', image: '/images/custom3.jpg' }
+//         ]
+//     }
+// ];
 
 const dummyCart = [
     {
@@ -63,23 +67,53 @@ export default function Header() {
     const [userPanelOpen, setUserPanelOpen] = useState(false);
     const userTimeout = useRef(null);
     const [user, setUser] = useState(null);
+    const [categories, setCategories] = useState([]);
+
+    // useEffect(() => {
+    //     try {
+    //         const encryptedUser = localStorage.getItem("user");
+    //         if (!encryptedUser) return;
+
+    //         const decryptedUser = decryptData(encryptedUser);
+    //         if (decryptedUser) {
+    //             setUser(decryptedUser);
+    //         } else {
+    //             // Invalid or broken data, clean it up
+    //             localStorage.removeItem("user");
+    //             localStorage.removeItem("token");
+    //             setUser(null);
+    //         }
+    //     } catch (err) {
+    //         console.error("⚠️ User decryption error:", err);
+    //         localStorage.removeItem("user");
+    //         localStorage.removeItem("token");
+    //         setUser(null);
+    //     }
+    // }, []);
 
     useEffect(() => {
         try {
+            const token = localStorage.getItem("token");
+            let role = null;
+
+            if (token) {
+                const decoded = jwtDecode(token);
+                role = decoded.role;
+            }
+
             const encryptedUser = localStorage.getItem("user");
             if (!encryptedUser) return;
 
             const decryptedUser = decryptData(encryptedUser);
             if (decryptedUser) {
-                setUser(decryptedUser);
+                setUser({ ...decryptedUser, role }); // attach role too
             } else {
-                // Invalid or broken data, clean it up
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
                 setUser(null);
             }
         } catch (err) {
-            console.error("⚠️ User decryption error:", err);
+            console.error("⚠️ Decryption or decoding failed:", err);
             localStorage.removeItem("user");
             localStorage.removeItem("token");
             setUser(null);
@@ -95,14 +129,34 @@ export default function Header() {
 
     const total = dummyCart.reduce((acc, item) => acc + item.price, 0);
 
-    const handleUserEnter = () => {
-        clearTimeout(userTimeout.current);
-        setUserOpen(true);
-    };
+    // const handleUserEnter = () => {
+    //     clearTimeout(userTimeout.current);
+    //     setUserOpen(true);
+    // };
 
-    const handleUserLeave = () => {
-        userTimeout.current = setTimeout(() => setUserOpen(false), 500);
-    };
+    // const handleUserLeave = () => {
+    //     userTimeout.current = setTimeout(() => setUserOpen(false), 500);
+    // };
+
+    useEffect(() => {
+
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${backdendUrl}/api/category/featured-categories`);
+
+                console.log("Fetched categories:", response.data);
+
+                if (response.data.success) {
+                    setCategories(response.data.categories);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+    // console.log("Categories:", categories);
+
 
     return (
         <header className="text-ivory sticky top-0 z-50 shadow-md">
@@ -137,7 +191,6 @@ export default function Header() {
                         />
                     </div>
 
-
                     <FiShoppingCart
                         className="text-gold w-5 h-5 cursor-pointer"
                         onClick={() => setCartOpen(true)}
@@ -155,29 +208,31 @@ export default function Header() {
 
             {/* Bottom Nav - Desktop */}
             <nav className="hidden md:flex justify-center space-x-6 py-3 text-sm font-medium border-b border-gold relative">
-                {categories.map((cat, index) => (
+                {categories?.map((cat, index) => (
                     <div
                         key={index}
                         className="relative"
                         onMouseEnter={() => setActiveDropdown(index)}
                         onMouseLeave={() => setActiveDropdown(null)}
                     >
-                        <a href="#" className="text-[16px] fraunces">
+                        <a href={cat.slug} className="text-[16px] fraunces">
                             {cat.name}
                         </a>
                         <div
-                            className={`fixed left-0 right-0 bg-gray-300 shadow-xl overflow-hidden transition-all duration-300 ease-in-out z-40 ${activeDropdown === index ? 'max-h-96 opacity-100 py-6 mt-3' : 'max-h-0 opacity-0 py-0'
+                            className={`fixed left-0 right-0 bg-gray-100/30 shadow-xl overflow-hidden transition-all duration-300 ease-in-out z-40 ${activeDropdown === index ? 'max-h-96 opacity-100 py-6 mt-3' : 'max-h-0 opacity-0 py-0'
                                 }`}
                         >
-                            <div className="max-w-6xl mx-auto flex justify-start space-x-8 px-8">
-                                {cat.sub.map((item, idx) => (
-                                    <div key={idx} className="w-40 text-center">
-                                        <img
-                                            src={item.image}
-                                            alt={item.name}
-                                            className="w-full h-28 object-cover rounded-md mb-2"
-                                        />
-                                        <p className="text-sm text-platinum fraunces">{item.name}</p>
+                            <div className="max-w-6xl mx-auto flex justify-start space-x-4 px-8">
+                                {cat.subcategories.map((item, idx) => (
+                                    <div key={idx} className="w-48 text-center">
+                                        <Link className="flex flex-col items-center" to={`/${item.slug}`}>
+                                            <img
+                                                src={item.image.url}
+                                                alt={item.name}
+                                                className="w-full h-40 object-cover rounded-md mb-2"
+                                            />
+                                            <p className="text-md text-platinum fraunces px-5 py-2 bg-white rounded-full">{item.name}</p>
+                                        </Link>
                                     </div>
                                 ))}
                             </div>
@@ -263,7 +318,6 @@ export default function Header() {
                     {/* Sidebar */}
                     <div className="fixed top-0 bottom-0 right-0 w-80 bg-gray-100 text-gray-900 z-50 shadow-lg p-6 flex flex-col">
 
-
                         {user ? (
                             <>
                                 <div className="flex justify-between items-center mb-6">
@@ -271,6 +325,9 @@ export default function Header() {
                                     <button onClick={() => setUserPanelOpen(false)} className="text-gold text-2xl cursor-pointer font-bold">&times;</button>
                                 </div>
                                 <ul className="space-y-4 text-md fraunces">
+                                    {user.role === "admin" && (
+                                        <li><a href="/admin/" className="hover:text-gold font-bold">Admin Panel</a></li>
+                                    )}
                                     <li><a href="/profile" className="hover:text-gold">My Profile</a></li>
                                     <li><a href="/cart" className="hover:text-gold">My Cart</a></li>
                                     <li><a href="/wishlist" className="hover:text-gold">My Wishlist</a></li>
@@ -294,6 +351,7 @@ export default function Header() {
                                 </ul>
                             </>
                         )}
+
                     </div>
                 </>
             )}

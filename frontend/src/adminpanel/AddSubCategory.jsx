@@ -2,21 +2,46 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-const apiurl = import.meta.env.VITE_API_URL;
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+;
 // console.log(apiurl);
 import { useLocation, useParams } from "react-router-dom";
 
 const AddSubCategory = () => {
     const navigate = useNavigate();
     const { categoryId } = useParams(); // Optional, auto-select
-    const [categories, setCategories] = useState([]);
+    // const [categories, setCategories] = useState([]);
+    const token = localStorage.getItem("token");
     const [subCategoryName, setSubCategoryName] = useState("");
-    const [category, setCategory] = useState(categoryId || ""); // Auto-select if param exists
+    const [categoryName, setCategoryName] = useState("");
     const [subCategoryImage, setSubCategoryImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const location = useLocation();
-    console.log(location.state, "location state");
-    const categoryName = location.state?.categoryName || "";
+    const [loading, setLoading] = useState(false);
+
+    console.log("Category ID from URL:", categoryId);
+
+    useEffect(() => {
+        const fetchCategory = async () => {
+            if (!categoryId) return;
+            try {
+                const res = await axios.get(`${backdendUrl}/api/category/get-category/${categoryId}`, {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+
+                console.log("Fetched category:", res.data);
+                if (res.data && res.data.category) {
+                    setCategoryName(res.data.category.name);
+                }
+            } catch (err) {
+                console.error("Failed to fetch category:", err);
+            }
+        };
+        fetchCategory();
+    }, [categoryId]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -28,16 +53,17 @@ const AddSubCategory = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        console.log(category, subCategoryName, "category id");
-        if (!category || !subCategoryName || !subCategoryImage) {
+        console.log(categoryId, subCategoryName, "category id");
+        if (!categoryId || !subCategoryName || !subCategoryImage) {
             alert("Please fill all fields.");
             return;
         }
 
         const formData = new FormData();
         formData.append("name", subCategoryName);
-        formData.append("categoryId", category);
+        formData.append("category", categoryId);
         formData.append("image", subCategoryImage);
         // 🔍 Just to debug FormData entries
         for (const [key, value] of formData.entries()) {
@@ -46,12 +72,13 @@ const AddSubCategory = () => {
 
         try {
             const res = await axios.post(
-                `${apiurl}/subcategory/add-subcategory`,
+                `${backdendUrl}/api/subcategory/add-subcategory`,
                 formData,
                 {
                     withCredentials: true,
                     headers: {
                         "Content-Type": "multipart/form-data",
+                        "Authorization": `Bearer ${token}`
                     },
                 }
             );
@@ -59,15 +86,16 @@ const AddSubCategory = () => {
             if (res.data.success) {
                 toast.success("✅ Subcategory added successfully!");
                 setSubCategoryName("");
-                setCategory(categoryId || "");
                 setSubCategoryImage(null);
                 setImagePreview(null);
-            } else {
-                toast("Failed to add subcategory.");
+                // navigate(`/admin/view-subcategory/${categoryId}`);
             }
+
         } catch (err) {
             console.error("❌ Error:", err);
             alert("Something went wrong.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -157,7 +185,7 @@ const AddSubCategory = () => {
                         type="submit"
                         className="w-full py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition"
                     >
-                        Add Subcategory
+                        {loading ? "Adding..." : "Add Subcategory"}
                     </button>
                 </form>
             </div>

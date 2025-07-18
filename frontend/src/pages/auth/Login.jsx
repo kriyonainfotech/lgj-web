@@ -14,6 +14,8 @@ export default function Login() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("");
@@ -27,10 +29,11 @@ export default function Login() {
             console.log("Login response:", res.data);
             if (res.data.success) {
                 // Save encrypted user & token
-                localStorage.setItem("user", encryptData(res.data.userId));
-                // localStorage.setItem("token", encryptData(res.data.token));
+                localStorage.setItem("token", res.data.token);
+                const encrypted = encryptData(res.data.user); // ✅ assign result
+                localStorage.setItem("user", encrypted); // ✅ store encrypted user
                 console.log("User and token saved to localStorage");
-                toast.success("Login successful! Redirecting...");
+                toast.success("Login successful...");
                 navigate("/");
             }
         } catch (err) {
@@ -38,6 +41,7 @@ export default function Login() {
             toast.error(err.response?.data?.message || "Login failed");
             console.error("Login error:", err);
         }
+
     };
 
     return (

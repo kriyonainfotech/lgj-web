@@ -1,36 +1,24 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('./config/db');
 const app = express();
-
-// Load env variables
+const dotenv = require("dotenv");
 dotenv.config();
-connectDB();
 
-app.use(express.urlencoded({ extended: true }));
+// Connect DB
+require('./config/db')();
 
-app.use(express.json()); // to parse JSON
+app.use(express.json()); // for JSON body
+app.use(express.urlencoded({ extended: true })); // for form-urlencoded
 
-const corsOptions = {
-    origin: [
-        "http://localhost:5173",
-        "https://mirosajewelry.vercel.app"
-    ],
+// CORS
+app.use(cors({
+    origin: ["http://localhost:5173", "https://mirosajewelry.vercel.app"],
     credentials: true,
-};
+}));
 
-app.use(cors(corsOptions));
+// Routes
+app.get('/', (req, res) => res.send('API Running'));
+app.use("/api", require('./routes/indexRoute'));
 
-// Root route
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
-
-app.use("/api", require('./routes/indexRoute'))
-
-// Start server
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

@@ -1,45 +1,16 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import BannerSlider from '../components/BannerSlider'
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { FaLock, FaMoneyBillWave, FaShippingFast, FaUndoAlt } from "react-icons/fa";
+
 
 const Home = () => {
-    const categories = [
-        {
-            name: 'Rings',
-            image: '/images/categories/rings.jpg',
-        },
-        {
-            name: 'Necklaces',
-            image: '/images/categories/necklaces.jpg',
-        },
-        {
-            name: 'Earrings',
-            image: '/images/categories/earrings.jpg',
-        },
-        {
-            name: 'Bracelets',
-            image: '/images/categories/bracelets.jpg',
-        },
-        {
-            name: 'Bangles',
-            image: '/images/categories/bangles.jpg',
-        },
-        {
-            name: 'Chains',
-            image: '/images/categories/chains.jpg',
-        },
-        {
-            name: 'Mangalsutras',
-            image: '/images/categories/mangalsutra.jpg',
-        },
-        {
-            name: 'More Categories',
-            image: null, // intentionally empty, no image
-            isMoreCard: true, // special flag for custom styling
-        },
-    ];
+    const [categories, setCategories] = useState([]);
 
     const products = [
         {
@@ -64,47 +35,104 @@ const Home = () => {
         }
     ];
 
+    const features = [
+        {
+            title: "100% Secure Payment",
+            icon: <FaLock className="text-blue-600 text-3xl" />,
+        },
+        {
+            title: "100% Money Back Guarantee",
+            icon: <FaMoneyBillWave className="text-green-600 text-3xl" />,
+        },
+        {
+            title: "Free Fedex 2 Day Shipping",
+            icon: <FaShippingFast className="text-purple-600 text-3xl" />,
+        },
+        {
+            title: "Easy 30 Days Returns",
+            icon: <FaUndoAlt className="text-yellow-600 text-3xl" />,
+        },
+    ];
+
+    useEffect(() => {
+        console.log("Fetching featured categories...");
+        const fetchCategories = async () => {
+            try {
+                // console.log("Fetching categories from:", `${backdendUrl}/api/subcategory/featured-subcategories`);
+                const response = await axios.get(`${backdendUrl}/api/subcategory/featured-subcategories`);
+
+                // console.log("Featured categories:", response);
+
+                if (response.data.success) {
+                    setCategories(response.data.subcategories);
+                }
+
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // console.log("Categories:", categories);
+
+    // useEffect(() => {
+    //     const fetchCategories = async () => {
+    //         try {
+    //             const response = await axios.get(`${backdendUrl}/api/category/getCatWithSubCats`);
+
+    //             console.log("Fetched categories:", response.data);
+
+    //             if (response.data.success) {
+    //                 setCategories(response.data.categories);
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching categories:', error);
+    //         }
+    //     };
+    //     fetchCategories();
+    // }, []);
+    // console.log("Categories:", categories);
 
     return (
         <div>
             <BannerSlider />
 
+            <section className="py-10 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    {features.map((feature, index) => (
+                        <div key={index} className="flex flex-col items-center space-y-3">
+                            <div className="bg-gray-100 p-4 rounded-full shadow-sm">
+                                {feature.icon}
+                            </div>
+                            <h4 className="text-sm font-semibold text-gray-800">{feature.title}</h4>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             <section className="py-12 px-4 bg-light text-midnight">
                 <div className="text-center mb-10">
-                    <h2 className="text-[40px] text-black fraunces">Find Your Perfect Match</h2>
+                    {/* <h2 className="text-[40px] text-black fraunces">Find Your Perfect Match</h2> */}
                     <p className="text-2xl text-primary mt-1 fraunces">Shop by Category</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                    {/* Category Cards (7) */}
-                    {categories.map((cat, index) => (
-                        <div key={index} className="flex flex-col items-center text-center ">
-                            {cat.isMoreCard ? (
-                                <>
-                                    <Link to={'/'}>
-                                        <div className="flex items-center justify-center w-[276px] h-[350px] border border-gray-300 rounded-xl">
-                                            <p className="text-lg font-semibold text-primary nunito"><span className='fraunces text-5xl text-black'> 10+ </span><br />Categories to choose from</p>
-                                        </div>
-                                        <button className="mt-2 text-black fraunces text-xl">
-                                            View All
-                                        </button>
-                                    </Link>
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-8">
+                        {categories.map((cat, index) => (
+                            <div key={index} className="flex flex-col items-center text-center w-28">
+                                <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300">
+                                    <img
+                                        src={cat.image.url}
+                                        alt={cat.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <h3 className="mt-2 text-sm font-medium text-gray-800">{cat.name}</h3>
+                            </div>
+                        ))}
+                    </div>
 
-                                </>
-                            ) : (
-                                <>
-                                    <div className='border border-gray-300 rounded-xl'>
-                                        <img
-                                            src={cat.image}
-                                            alt={cat.name}
-                                            className="w-[276px] h-[350px] object-cover"
-                                        />
-                                    </div>
-                                    <h3 className="mt-3 font-medium text-xl fraunces uppercas">{cat.name}</h3>
-                                </>
-                            )}
-                        </div>
-                    ))}
                 </div>
             </section>
 
