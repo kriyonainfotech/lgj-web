@@ -12,6 +12,8 @@ import AdminHome from './pages/AdminHome';
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './context/ProtectedRoute';
+import AboutPage from './pages/AboutPage';
+import ProfilePage from './pages/auth/ProfilePage';
 
 function App() {
   return (
@@ -34,6 +36,14 @@ function App() {
               }
             />
 
+            <Route path='/about'
+              element={
+                <Layout>
+                  <AboutPage />
+                </Layout>
+              }
+            />
+
             <Route
               path="/shop"
               element={
@@ -51,6 +61,14 @@ function App() {
                 </Layout>
               }
             />
+
+            <Route
+              path='/profile'
+              element={
+                <Layout>
+                  <ProfilePage />
+                </Layout>
+              } />
 
             <Route
               path="/reset-password/:resetToken"

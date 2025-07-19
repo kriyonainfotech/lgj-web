@@ -239,7 +239,7 @@ export default function Header() {
                         </div>
                     </div>
                 ))}
-                <a href="#" className="hover:text-gold transition text-[16px] fraunces">About</a>
+                <a href="/about" className="hover:text-gold transition text-[16px] fraunces">About</a>
             </nav>
 
             {/* Mobile Menu */}
