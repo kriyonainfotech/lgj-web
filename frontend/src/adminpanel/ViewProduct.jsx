@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-const apiurl = import.meta.env.VITE_API_URL;
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const VariantModal = ({ product, onClose }) => {
+
     return (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+
+        <div className="fixed inset-0 z-50 bg-black/40 bg-opacity-40 flex items-center justify-center">
             <div className="bg-white max-w-4xl w-full rounded-lg p-6 shadow-lg relative">
                 <h2 className="text-xl font-semibold mb-4">
                     Variants of {product.title}
@@ -17,32 +19,49 @@ const VariantModal = ({ product, onClose }) => {
                     ✕
                 </button>
 
-                {product.variants?.map((variant, idx) => (
-                    <div key={idx} className="border rounded-md p-4 mb-4">
-                        <p className="mb-2">
-                            <strong>Color:</strong> {variant.metalColor} |{" "}
-                            <strong>Carat:</strong> {variant.carat} | <strong>Size:</strong>{" "}
-                            {variant.size}
-                        </p>
-                        <p>
-                            <strong>Price:</strong> ₹{variant.totalPrice}
-                        </p>
-                        <div className="flex gap-3 mt-2 flex-wrap">
-                            {variant.images?.length ? (
-                                variant.images.map((img, i) => (
-                                    <img
-                                        key={i}
-                                        src={img}
-                                        alt={`Variant-${idx}-Image-${i}`}
-                                        className="w-20 h-20 object-cover rounded"
-                                    />
-                                ))
-                            ) : (
-                                <p className="text-gray-400">No Images</p>
-                            )}
+                {product.variants?.length > 0 ? ( // Added check for variants existence
+                    product.variants.map((variant, idx) => (
+                        <div key={idx} className="border rounded-md p-4 mb-4">
+                            {/* Row 1: Material, Purity, Size */}
+                            <p className="mb-2 text-gray-700">
+                                <strong>Material:</strong> {variant.material} |{" "}
+                                <strong>Purity:</strong> {variant.purity} |{" "}
+                                <strong>Size:</strong> {variant.size || 'N/A'} {/* Added N/A for clarity if size can be empty */}
+                            </p>
+                            {/* Row 2: Price, SKU, Weight */}
+                            <p className="mb-2 text-gray-700">
+                                <strong>Price:</strong> ₹{variant.price} |{" "}
+                                <strong>SKU:</strong> {variant.sku} |{" "}
+                                <strong>Weight:</strong> {variant.weight ? `${variant.weight}g` : 'N/A'} {/* Show grams */}
+                            </p>
+                            {/* Row 3: Stock Status */}
+                            <p className="mb-2 text-gray-700">
+                                <strong>Stock:</strong>{" "}
+                                <span className={variant.inStock ? "text-green-600" : "text-red-600"}>
+                                    {variant.inStock ? "In Stock" : "Out of Stock"}
+                                </span>
+                            </p>
+
+                            {/* Images Section */}
+                            <div className="flex gap-3 mt-2 flex-wrap">
+                                {variant.images?.length > 0 ? ( // Check if images array has items
+                                    variant.images.map((img, i) => (
+                                        <img
+                                            key={i}
+                                            src={img}
+                                            alt={`Variant-${idx}-Image-${i}`}
+                                            className="w-20 h-20 object-cover rounded border border-gray-200"
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="text-gray-400">No Images Available for this Variant</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p className="text-gray-600 text-center py-4">No variants available for this product.</p>
+                )}
             </div>
         </div>
     );
@@ -61,16 +80,13 @@ const ViewProduct = () => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/product/all`
+                    `${backdendUrl}/api/product/getproducts`
                 );
 
-                console.log(response.data.data, "all products");
+                console.log(response.data, "all products");
                 if (response.data.success === true) {
-                    setProducts(response.data.data);
-                    localStorage.setItem(
-                        "allProducts",
-                        JSON.stringify(response.data.data)
-                    );
+                    setProducts(response.data.products);
+                    localStorage.setItem("allProducts", JSON.stringify(response.data.products)); // Use response.data.products
                 }
             } catch (err) {
                 console.error("Error fetching products:", err);
@@ -86,19 +102,20 @@ const ViewProduct = () => {
         let filtered = allProducts;
 
         if (categoryId) {
-            filtered = filtered.filter((p) => p.categoryId?._id === categoryId);
+            filtered = filtered.filter((p) => p.category?._id === categoryId);
         }
 
         if (subCategoryId) {
-            filtered = filtered.filter((p) => p.subCategoryId?._id === subCategoryId);
+            filtered = filtered.filter((p) => p.subcategory?._id === subCategoryId);
         }
 
+        console.log(filtered, "filtered products")
         setProducts(filtered);
     };
 
-    // useEffect(() => {
-    //   handleFilter();
-    // }, [categoryId, subCategoryId]);
+    useEffect(() => {
+        handleFilter();
+    }, [categoryId, subCategoryId]);
 
     useEffect(() => {
         const storedCategories = JSON.parse(
@@ -125,7 +142,7 @@ const ViewProduct = () => {
             return;
 
         try {
-            const res = await axios.delete(`${apiurl}/product/delete/${productId}`);
+            const res = await axios.delete(`${backdendUrl}/api/product/delete-product/${productId}`);
 
             console.log(res.data, "product delete");
             if (res.status === 200) {
@@ -229,6 +246,7 @@ const ViewProduct = () => {
                             <th className="px-3 py-3 border-b">Thumbnail</th>
                             <th className="px-3 py-3 border-b">Product Title</th>
                             <th className="px-3 py-3 border-b">Category</th>
+                            <th className="px-3 py-3 border-b">Subcategory</th>
                             {/* <th className="px-3 py-3 border-b">Description</th> */}
                             <th className="px-3 py-3 border-b">Tags</th>
                             <th className="px-3 py-3 border-b text-center">Variants</th>
@@ -238,26 +256,32 @@ const ViewProduct = () => {
                     </thead>
 
                     {products.length === 0 ? (
-                        <div className="text-center py-12 w-full flex flex-col justify-center rounded-lg">
-                            <div className="text-gray-500 text-xl mb-4">
-                                <svg
-                                    className="w-16 h-16 mx-auto text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <p className="text-gray-600 text-lg font-medium">
-                                No products available at the moment
-                            </p>
-                        </div>
+                        <tbody>
+                            <tr>
+                                <td colSpan="6" className="text-center py-12"> {/* colSpan should match number of columns */}
+                                    <div className="flex flex-col justify-center rounded-lg">
+                                        <div className="text-gray-500 text-xl mb-4">
+                                            <svg
+                                                className="w-16 h-16 mx-auto text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <p className="text-gray-600 text-lg font-medium">
+                                            No products available at the moment
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
                     ) : (
                         <>
                             <tbody>
@@ -265,18 +289,19 @@ const ViewProduct = () => {
                                     <tr key={product._id} className="text-sm">
                                         <td className="px-6 py-4 border-b">
                                             <img
-                                                src={product.thumbnail || "/no-image.png"}
+                                                src={product.mainImage || "/no-image.png"}
                                                 className="w-14 h-14 object-cover rounded"
                                                 alt={product.title}
                                             />
                                         </td>
                                         <td className="px-3 py-2 border-b">{product.title}</td>
                                         <td className="px-3 py-2 border-b">
-                                            {product.categoryId?.name}
+                                            {product.category?.name}
                                         </td>
-                                        {/* <td className="px-3 py-2 border-b">
-                      {product.description}
-                    </td> */}
+                                        <td className="px-3 py-2 border-b">
+                                            {product.subcategory?.name || "N/A"}
+                                        </td>
+
                                         <td className="px-3 py-2 border-b">
                                             {product?.tags?.join(", ") || "-"}
                                         </td>

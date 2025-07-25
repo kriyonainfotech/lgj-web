@@ -93,7 +93,10 @@ const AddSubCategory = () => {
 
         } catch (err) {
             console.error("❌ Error:", err);
-            alert("Something went wrong.");
+            if (err.status === 401) {
+                toast.error("❌ Unauthorized! Please log in again.");
+                navigate("/login");
+            }
         } finally {
             setLoading(false);
         }

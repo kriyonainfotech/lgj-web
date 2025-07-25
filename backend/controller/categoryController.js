@@ -3,6 +3,7 @@ const Subcategory = require("../models/Subcategory");
 const slugify = require("slugify");
 const cloudinary = require("../config/cloudinary");
 const { Readable } = require("stream");
+const uploadToCloudinary = require("../config/cloudinary");
 
 exports.createCategory = async (req, res) => {
     try {
@@ -13,34 +14,45 @@ exports.createCategory = async (req, res) => {
 
         let imageData = null;
 
+        // if (file) {
+        //     const bufferStream = new Readable();
+        //     bufferStream.push(file.buffer);
+        //     bufferStream.push(null); // End the stream
+
+        //     const streamUpload = (buffer) => {
+        //         return new Promise((resolve, reject) => {
+        //             const stream = cloudinary.uploader.upload_stream(
+        //                 { folder: "categories" },
+        //                 (error, result) => {
+        //                     if (result) {
+        //                         console.log("✅ Image uploaded to Cloudinary successfully");
+        //                         resolve(result);
+        //                     } else {
+        //                         console.error("❌ Cloudinary upload failed:", error);
+        //                         reject(error);
+        //                     }
+        //                 }
+        //             );
+        //             buffer.pipe(stream);
+        //         });
+        //     };
+
+        //     const result = await streamUpload(bufferStream);
+        //     imageData = {
+        //         public_id: result.public_id,
+        //         url: result.secure_url,
+        //     };
+        // } else {
+        //     console.warn("⚠️ No image file received. Proceeding without image.");
+        // }
         if (file) {
-            const bufferStream = new Readable();
-            bufferStream.push(file.buffer);
-            bufferStream.push(null); // End the stream
-
-            const streamUpload = (buffer) => {
-                return new Promise((resolve, reject) => {
-                    const stream = cloudinary.uploader.upload_stream(
-                        { folder: "categories" },
-                        (error, result) => {
-                            if (result) {
-                                console.log("✅ Image uploaded to Cloudinary successfully");
-                                resolve(result);
-                            } else {
-                                console.error("❌ Cloudinary upload failed:", error);
-                                reject(error);
-                            }
-                        }
-                    );
-                    buffer.pipe(stream);
-                });
-            };
-
-            const result = await streamUpload(bufferStream);
+            // Use the centralized uploadToCloudinary function
+            const result = await uploadToCloudinary(file.buffer, "categories");
             imageData = {
                 public_id: result.public_id,
                 url: result.secure_url,
             };
+            console.log("✅ Image uploaded to Cloudinary successfully");
         } else {
             console.warn("⚠️ No image file received. Proceeding without image.");
         }
@@ -73,8 +85,6 @@ exports.getAllCategories = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-
-
 
 exports.updateCategory = async (req, res) => {
     try {
@@ -178,6 +188,7 @@ exports.getCategoryById = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // exports.getCategoriesWithSubcategories = async (req, res) => {
 

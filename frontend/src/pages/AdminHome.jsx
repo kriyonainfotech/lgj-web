@@ -12,6 +12,7 @@ import AddSubCategory from '../adminpanel/AddSubCategory'
 import AddProduct from '../adminpanel/AddProduct'
 import EditCategory from '../adminpanel/EditCategory'
 import EditSubCategory from '../adminpanel/EditSubCategory'
+import EditProduct from '../adminpanel/EditProduct'
 
 const AdminHome = () => {
     return (
@@ -31,6 +32,7 @@ const AdminHome = () => {
                         <Route path="/products/add" element={<AddProduct />} />
                         <Route path="/edit-category/:categoryId" element={<EditCategory />} />
                         <Route path="/edit-subcategory/:id" element={<EditSubCategory />} />
+                        <Route path="/edit-product/:productId" element={<EditProduct />} />
                     </Routes>
                 </div>
 

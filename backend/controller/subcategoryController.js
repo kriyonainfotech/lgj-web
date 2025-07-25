@@ -1,6 +1,8 @@
 const Subcategory = require("../models/Subcategory");
 const slugify = require("slugify");
-const cloudinary = require("../config/cloudinary");
+const cloudinary = require("cloudinary").v2;
+const cloudinaryConfig = require("../config/cloudinary0");
+cloudinary.config(cloudinaryConfig);
 const { Readable } = require("stream");
 const Category = require("../models/Category");
 const SubCategory = require("../models/Subcategory");
@@ -57,6 +59,19 @@ exports.createSubcategory = async (req, res) => {
 
             image = { public_id: result.public_id, url: result.secure_url };
         }
+
+        // if (file) {
+        //     // Use the centralized uploadToCloudinary function
+        //     const result = await uploadToCloudinary(file.buffer, "categories");
+        //     imageData = {
+        //         public_id: result.public_id,
+        //         url: result.secure_url,
+        //     };
+        //     console.log("✅ Image uploaded to Cloudinary successfully");
+        // } else {
+        //     console.warn("⚠️ No image file received. Proceeding without image.");
+        // }
+
 
         const subcategory = new Subcategory({
             name,

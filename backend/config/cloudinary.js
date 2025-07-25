@@ -1,9 +1,36 @@
-const cloudinary = require("cloudinary").v2;
 
+
+// config/cloudinary.js
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
+
+// Configure Cloudinary with your credentials (ensure these are in your .env file)
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-module.exports = cloudinary;
+/**
+ * Uploads a buffer to Cloudinary.
+ * @param {Buffer} buffer The image buffer to upload.
+ * @param {string} folder The folder name in Cloudinary to upload to.
+ * @returns {Promise<Object>} A promise that resolves with the full Cloudinary upload result object.
+ */
+const uploadToCloudinary = (buffer, folder) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: folder },
+            (error, result) => {
+                if (result) {
+                    resolve(result); // Resolve with the full result object (contains secure_url, public_id, etc.)
+                } else {
+                    reject(error);
+                }
+            }
+        );
+        streamifier.createReadStream(buffer).pipe(stream);
+    });
+};
+
+module.exports = uploadToCloudinary; // Export this reusable function
