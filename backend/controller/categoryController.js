@@ -1,9 +1,8 @@
 const Category = require("../models/Category");
 const Subcategory = require("../models/Subcategory");
 const slugify = require("slugify");
-const cloudinary = require("../config/cloudinary");
+const { uploadToCloudinary, cloudinarySDK } = require("../config/cloudinary");
 const { Readable } = require("stream");
-const uploadToCloudinary = require("../config/cloudinary");
 
 exports.createCategory = async (req, res) => {
     try {
@@ -59,7 +58,7 @@ exports.createCategory = async (req, res) => {
 
         const category = new Category({
             name,
-            slug: slugify(name, { lower: true }),
+            slug: slugify(name, { lower: true, strict: true }),
             image: imageData,
         });
 
@@ -162,7 +161,7 @@ exports.deleteCategory = async (req, res) => {
 
         // Delete image from Cloudinary
         if (category.image && category.image.public_id) {
-            await cloudinary.uploader.destroy(category.image.public_id);
+            await cloudinarySDK.uploader.destroy(category.image.public_id);
         }
 
         await Category.findByIdAndDelete(id);

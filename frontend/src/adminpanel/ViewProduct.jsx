@@ -248,7 +248,7 @@ const ViewProduct = () => {
                             <th className="px-3 py-3 border-b">Category</th>
                             <th className="px-3 py-3 border-b">Subcategory</th>
                             {/* <th className="px-3 py-3 border-b">Description</th> */}
-                            <th className="px-3 py-3 border-b">Tags</th>
+                            {/* <th className="px-3 py-3 border-b">Tags</th> */}
                             <th className="px-3 py-3 border-b text-center">Variants</th>
                             {/* <th className="px-3 py-3 border-b text-center">Status</th> */}
                             <th className="px-3 py-3 border-b text-center">Actions</th>
@@ -301,10 +301,10 @@ const ViewProduct = () => {
                                         <td className="px-3 py-2 border-b">
                                             {product.subcategory?.name || "N/A"}
                                         </td>
-
+                                        {/* 
                                         <td className="px-3 py-2 border-b">
                                             {product?.tags?.join(", ") || "-"}
-                                        </td>
+                                        </td> */}
                                         <td className="px-3 py-2 border-b text-center">
                                             <button
                                                 className="text-indigo-600 bg-indigo-100 px-3 py-2 rounded-lg hover:underline"
@@ -319,13 +319,13 @@ const ViewProduct = () => {
                     </td> */}
                                         <td className="px-3 py-2 border-b text-center">
                                             <button
-                                                className="text-blue-500 hover:text-blue-700 mx-2"
+                                                className="bg-blue-500 text-white px-3 py-2 rounded-md mx-2"
                                                 onClick={() => navigate(`/admin/edit-product/${product._id}`, { state: { product } })}
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                className="text-white px-3 py-2 rounded-lg bg-red-500 hover:text-red-700 mx-2"
+                                                className="text-white px-3 py-2 rounded-md bg-red-500 hover:text-red-700 mx-2"
                                                 onClick={() => handleDeleteProduct(product._id)}
                                             >
                                                 Delete

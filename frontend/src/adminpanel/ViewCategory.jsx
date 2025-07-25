@@ -143,6 +143,7 @@ const ViewCategory = () => {
                             <tr className="bg-rose-900 text-white text-sm uppercase tracking-wide">
                                 <th className="px-6 py-4 text-left">Image</th>
                                 <th className="px-6 py-4 text-left">Category Name</th>
+                                <th className="px-6 py-4 text-left">Slug</th>
                                 <th className="px-6 py-4 text-left">Featured</th>
                                 <th className="px-6 py-4 text-center">Actions</th>
                             </tr>
@@ -168,6 +169,9 @@ const ViewCategory = () => {
                                     <td className="px-6 py-4 font-medium text-gray-800">
                                         {category.name}
                                     </td>
+                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                        {category.slug}
+                                    </td>
                                     <td key={category._id} className="px-5 py-3 border-b ">
                                         <button
                                             onClick={() => handleToggleFeature(category._id, !category.isFeatured)}
@@ -187,13 +191,13 @@ const ViewCategory = () => {
                                     <td className="px-6 py-4 text-center space-x-3">
                                         <button
                                             onClick={() => navigate(`/admin/edit-category/${category._id}`)}
-                                            className="bg-orange-500 text-white py-3 px-5  rounded-full text-sm hover:bg-orange-600 transition"
+                                            className="bg-blue-500 text-white py-3 px-4 rounded-md text-sm "
                                         >
                                             Edit
                                         </button>
                                         <button
                                             onClick={() => handleDelete(category._id)}
-                                            className="bg-red-500 text-white py-3 px-5  rounded-full text-sm hover:bg-red-600 transition"
+                                            className="bg-red-600 text-white py-3 px-4 rounded-md text-sm"
                                         >
                                             Delete
                                         </button>
@@ -201,7 +205,7 @@ const ViewCategory = () => {
                                         <button>
                                             <Link
                                                 to={`/admin/categories/${category._id}`}
-                                                className="bg-green-500 text-white py-3 px-5  rounded-full text-sm hover:bg-green-600 transition no-underline"
+                                                className="bg-yellow-500 text-white py-3 px-4  rounded-md text-sm no-underline"
                                             >
                                                 Manage Subcategories
                                             </Link>

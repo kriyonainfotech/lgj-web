@@ -45,7 +45,7 @@ const EditCategory = () => {
                 console.log("📦 Fetched category data:", response.data);
                 const categoryData = response.data.category; // Adjust based on your API response structure
                 setCategoryName(categoryData.name || categoryData.categoryName); // Use 'name' or 'categoryName'
-                setCurrentImageUrl(categoryData.image.url || categoryData.image); // Use 'imageUrl' or 'image'
+                setCurrentImageUrl(categoryData.image?.url || categoryData.image); // Use 'imageUrl' or 'image'
                 setLoading(false);
             } catch (err) {
                 console.log("❌ Error fetching category:", err || err.message);

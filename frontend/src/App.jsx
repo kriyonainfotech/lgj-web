@@ -53,8 +53,10 @@ function App() {
               }
             />
 
+            <Route path='/collections/:slug' element={<Layout><ShopPage /></Layout>} />
+
             <Route
-              path='/product'
+              path='/products'
               element={
                 <Layout>
                   <ProductDetailPage />

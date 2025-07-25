@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/multer");
-const { addProduct, getAllProducts, updateProduct, getProductById, deleteProduct } = require('../controller/productController.js');
+const { addProduct, getAllProducts, updateProduct, getProductById, deleteProduct, getProductsByCategorySlugs, getProductsFiltered } = require('../controller/productController.js');
 
 
 let productUploadFields = [
@@ -21,5 +21,7 @@ router.get("/getproducts", getAllProducts)
 router.get("/getproduct/:id", getProductById); // Assuming you want to fetch by slug as well
 router.put("/update-product/:id", upload.fields(productUploadFields), updateProduct); // Use PUT for updates
 router.delete("/delete-product/:id", deleteProduct);
+router.post("/get-products-by-category-slugs", getProductsByCategorySlugs); // Use POST for body data
+router.get("/get-products-filtered", getProductsFiltered);
 
 module.exports = router;

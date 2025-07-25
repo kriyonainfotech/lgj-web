@@ -75,7 +75,7 @@ exports.createSubcategory = async (req, res) => {
 
         const subcategory = new Subcategory({
             name,
-            slug: slugify(name, { lower: true }),
+            slug: slugify(name, { lower: true, strict: true }),
             category,
             image,
         });
@@ -303,6 +303,64 @@ exports.getFeaturedSubcategories = async (req, res) => {
         console.log("📦 All subcategories fetched:", subcategories.length);
         res.status(200).json({ success: true, subcategories });
     } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+exports.getSubcategoriesBySlugs = async (req, res) => {
+    try {
+        const { slugs } = req.body;
+        console.log("🔎 [Fetch] Subcategories by slugs:", slugs);
+
+        if (!Array.isArray(slugs) || slugs.length === 0) {
+            console.warn("⚠️ Slugs array is missing or empty in request body");
+            return res.status(400).json({ message: "Slugs array is required in body" });
+        }
+
+        // 1. Find the Category documents based on the provided slugs
+        const foundCategories = await Category.find({ slug: { $in: slugs } });
+
+        if (!foundCategories || foundCategories.length === 0) {
+            console.warn("⚠️ No categories found for the provided slugs:", slugs);
+            return res.status(404).json({ message: "No categories found for provided slugs" });
+        }
+
+        // 2. Extract the _ids of the found categories
+        const categoryIds = foundCategories.map(cat => cat._id);
+        console.log("Found category IDs:", categoryIds);
+
+        // 2. Prepare an array to hold promises for fetching subcategories
+        const categoryPromises = foundCategories.map(async (cat) => {
+            // Find all subcategories associated with the current category's _id
+            const subcategories = await Subcategory.find({ category: cat._id })
+                .select("name slug image _id") // Select necessary fields for subcategory
+                .sort({ name: 1 }); // Optional: sort subcategories by name
+
+            // Return the category object with its fetched subcategories
+            return {
+                _id: cat._id,
+                name: cat.name,
+                slug: cat.slug,
+                image: cat.image,
+                subcategories: subcategories // Attach the subcategories
+            };
+        });
+
+        // 3. Wait for all subcategory fetches to complete
+        const categoriesWithSubcategories = await Promise.all(categoryPromises);
+
+
+        // 4. Format the output as requested: { "0_": {...}, "1_": {...}, ... }
+        const formattedOutput = {};
+        categoriesWithSubcategories.forEach((catData, index) => {
+            formattedOutput[`${index}_`] = catData;
+        });
+
+        console.log(`✅ [Success] Found ${categoriesWithSubcategories.length} categories with subcategories`);
+        res.status(200).json({ success: true, categories: formattedOutput });
+    } catch (err) {
+        console.error("❌ Error fetching subcategories by slugs:", err);
         res.status(500).json({ message: "Server error" });
     }
 };

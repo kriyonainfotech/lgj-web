@@ -2,7 +2,7 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const Subcategory = require("../models/Subcategory");
-const uploadToCloudinary = require("../config/cloudinary");
+const { uploadToCloudinary, cloudinarySDK } = require("../config/cloudinary");
 const slugify = require("slugify");
 
 const getPublicIdFromCloudinaryUrl = (url) => {
@@ -223,7 +223,7 @@ exports.addProduct = async (req, res) => {
             console.log("Cleanup: Deleting uploaded images from Cloudinary due to error...");
             try {
                 // Ensure cloudinary is imported as v2 at the top of this file
-                await Promise.all(uploadedPublicIds.map(publicId => cloudinary.uploader.destroy(publicId)));
+                await Promise.all(uploadedPublicIds.map(publicId => cloudinarySDK.uploader.destroy(publicId)));
                 console.log("✅ Successfully deleted temporary images from Cloudinary.");
             } catch (cleanupError) {
                 console.error("❌ Error during Cloudinary cleanup:", cleanupError);
@@ -456,5 +456,93 @@ exports.deleteProduct = async (req, res) => {
         console.error("💥 Product deletion error:", err);
         // Log Mongoose/server errors
         res.status(500).json({ success: false, message: "Server error during product deletion." });
+    }
+};
+
+exports.getProductsByCategorySlugs = async (req, res) => {
+    try {
+        const { slugs } = req.body; // Expecting an array of category slugs
+        console.log("🔎 [Fetch] Products by category slugs:", slugs);
+
+        if (!Array.isArray(slugs) || slugs.length === 0) {
+            console.warn("⚠️ Slugs array is missing or empty in request body");
+            return res.status(400).json({ message: "Subcategory slugs array is required in body" });
+        }
+
+        // 1. Find the Subcategory documents based on the provided slugs
+        const foundSubcategories = await Subcategory.find({ slug: { $in: slugs } })
+            .populate("category", "name slug image"); // Populate parent category details
+
+        if (!foundSubcategories || foundSubcategories.length === 0) {
+            console.warn("⚠️ No subcategories found for the provided slugs:", slugs);
+            return res.status(404).json({ message: "No subcategories found for provided slugs" });
+        }
+
+        // 2. Prepare an array of promises to fetch products for each subcategory
+        const subcategoryProductPromises = foundSubcategories.map(async (sub) => {
+            // Find products associated with the current subcategory's _id
+            const products = await Product.find({ subcategory: sub._id })
+                .populate("category", "name slug") // Populate category name and slug
+                .populate("subcategory", "name slug") // Populate subcategory name and slug
+                // You might want to select specific fields for products
+                .lean(); // Use .lean() for faster query
+
+            return {
+                details: sub, // Include the full subcategory object here
+                products: products // The array of products for this subcategory
+            };
+        });
+
+        // 3. Wait for all product fetches for each subcategory to complete
+        const subcategoriesWithProducts = await Promise.all(subcategoryProductPromises);
+
+        // 4. Format the output as requested: { "0_": { details: {}, products: [] }, "1_": {...}, ... }
+        const formattedOutput = {};
+        subcategoriesWithProducts.forEach((data, index) => {
+            formattedOutput[`${index}_`] = data;
+        });
+
+        console.log(`✅ [Success] Found data for ${subcategoriesWithProducts.length} subcategories`);
+        res.status(200).json({ success: true, data: formattedOutput });
+    } catch (err) {
+        console.error("❌ Error fetching products by category slugs:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.getProductsFiltered = async (req, res) => {
+    try {
+        const { categoryId, subcategoryId, sortBy = 'createdAt', order = -1, limit = 20 } = req.query; // Accept ID and optional sorting/limit
+        console.log(`🔎 [Fetch] Products filtered by Category ID: ${categoryId}, Subcategory ID: ${subcategoryId}`);
+
+        let filter = {};
+        if (categoryId) {
+            filter.category = categoryId;
+        }
+        if (subcategoryId) {
+            filter.subcategory = subcategoryId;
+        }
+
+        // Default to fetching all products if no specific ID is provided, or handle as per your site's logic
+        // If you want to show nothing by default, you might add: if (!categoryId && !subcategoryId) return res.status(200).json({ success: true, products: [] });
+
+        const products = await Product.find(filter)
+            .populate('category', 'name slug')
+            .populate('subcategory', 'name slug')
+            .sort({ [sortBy]: order }) // Apply sorting
+            .limit(parseInt(limit)) // Apply limit
+            .lean(); // Use .lean() for faster query
+
+        if (!products || products.length === 0) {
+            console.warn("⚠️ No products found matching the provided criteria.");
+            return res.status(404).json({ success: false, message: "No products found matching criteria." });
+        }
+
+        console.log(`✅ [Success] Found ${products.length} filtered products`);
+        res.status(200).json({ success: true, products });
+
+    } catch (err) {
+        console.error("❌ Error fetching filtered products:", err);
+        res.status(500).json({ success: false, message: "Server error fetching filtered products." });
     }
 };

@@ -12,5 +12,6 @@ router.put("/update-subcategory/:id", isAdmin, upload.single("image"), subcatego
 router.delete("/delete-subcategory/:id", isAdmin, subcategoryCtrl.deleteSubcategory);
 router.get("/by-category/:categoryId", subcategoryCtrl.getSubcategoriesByCategory);
 router.put("/isfeatured/:id", isAdmin, subcategoryCtrl.isFeatured);
+router.post("/getsubs-by-slugs", subcategoryCtrl.getSubcategoriesBySlugs);
 
 module.exports = router;

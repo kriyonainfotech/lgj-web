@@ -11,12 +11,6 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-/**
- * Uploads a buffer to Cloudinary.
- * @param {Buffer} buffer The image buffer to upload.
- * @param {string} folder The folder name in Cloudinary to upload to.
- * @returns {Promise<Object>} A promise that resolves with the full Cloudinary upload result object.
- */
 const uploadToCloudinary = (buffer, folder) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -33,4 +27,4 @@ const uploadToCloudinary = (buffer, folder) => {
     });
 };
 
-module.exports = uploadToCloudinary; // Export this reusable function
+module.exports = { uploadToCloudinary, cloudinarySDK: cloudinary }; // Export this reusable function
