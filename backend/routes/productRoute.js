@@ -23,5 +23,6 @@ router.put("/update-product/:id", upload.fields(productUploadFields), updateProd
 router.delete("/delete-product/:id", deleteProduct);
 router.post("/get-products-by-category-slugs", getProductsByCategorySlugs); // Use POST for body data
 router.get("/get-products-filtered", getProductsFiltered);
+router.get("/get-product/:id", getProductById);
 
 module.exports = router;

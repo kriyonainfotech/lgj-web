@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const subcategoryCtrl = require("../controller/subcategoryController");
-const isAdmin = require("../middlewares/authmiddleware");
+const { isAdmin } = require("../middlewares/authmiddleware");
 const upload = require("../middlewares/multer");
 
 router.post("/add-subcategory", isAdmin, upload.single("image"), subcategoryCtrl.createSubcategory);

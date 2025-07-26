@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/multer");
 const categoryCtrl = require("../controller/categoryController");
-const isAdmin = require("../middlewares/authmiddleware");
+const { isAdmin } = require("../middlewares/authmiddleware");
 
 // Create Category
 router.post("/add-category", isAdmin, upload.single("image"), categoryCtrl.createCategory);

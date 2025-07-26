@@ -533,10 +533,10 @@ exports.getProductsFiltered = async (req, res) => {
             .limit(parseInt(limit)) // Apply limit
             .lean(); // Use .lean() for faster query
 
-        if (!products || products.length === 0) {
-            console.warn("⚠️ No products found matching the provided criteria.");
-            return res.status(404).json({ success: false, message: "No products found matching criteria." });
-        }
+        // if (!products || products.length === 0) {
+        //     console.warn("⚠️ No products found matching the provided criteria.");
+        //     return res.status(404).json({ success: false, message: "No products found matching criteria.", products: products });
+        // }
 
         console.log(`✅ [Success] Found ${products.length} filtered products`);
         res.status(200).json({ success: true, products });
@@ -544,5 +544,33 @@ exports.getProductsFiltered = async (req, res) => {
     } catch (err) {
         console.error("❌ Error fetching filtered products:", err);
         res.status(500).json({ success: false, message: "Server error fetching filtered products." });
+    }
+};
+
+exports.getProductById = async (req, res) => {
+    try {
+        const productId = req.params.id; // Get product ID from URL parameter
+
+        // Find the product by ID and populate its category and subcategory details
+        const product = await Product.findById(productId)
+            .populate('category', 'name slug')    // Populate category name and slug
+            .populate('subcategory', 'name slug') // Populate subcategory name and slug
+            .lean(); // Use .lean() for faster query
+
+        if (!product) {
+            console.warn(`⚠️ Product with ID ${productId} not found.`);
+            return res.status(404).json({ success: false, message: "Product not found." });
+        }
+
+        console.log(`✅ [Success] Fetched product: ${product.title}`);
+        res.status(200).json({ success: true, product });
+
+    } catch (err) {
+        console.error("❌ Error fetching product by ID:", err);
+        // Handle CastError for invalid IDs (e.g., non-MongoDB ObjectId format)
+        if (err.name === 'CastError') {
+            return res.status(400).json({ success: false, message: "Invalid Product ID format." });
+        }
+        res.status(500).json({ success: false, message: "Server error fetching product." });
     }
 };

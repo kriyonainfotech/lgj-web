@@ -1,63 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiUser, FiHeart, FiShoppingCart, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { FiUser, FiShoppingCart, FiX, FiMenu, FiChevronDown } from 'react-icons/fi'; // Ensure FiShoppingCart is imported
+import { FiMinus, FiPlus } from 'react-icons/fi'; // For quantity buttons
+import { FaTrash } from 'react-icons/fa'; // For the delete icon
 import { decryptData } from '../utils/secureStorage'; // Assuming you have this utility for decryption
 import { jwtDecode } from "jwt-decode";
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from 'react-router-dom';
-// const categories = [
-//     {
-//         name: 'Engagement',
-//         sub: [
-//             { name: 'Solitaire Rings', image: '/images/engagement1.jpg' },
-//             { name: 'Halo Rings', image: '/images/engagement2.jpg' },
-//             { name: 'Three Stone', image: '/images/engagement3.jpg' }
-//         ]
-//     },
-//     {
-//         name: 'Wedding',
-//         sub: [
-//             { name: 'Wedding Bands', image: '/images/wedding1.jpg' },
-//             { name: 'His & Hers Sets', image: '/images/wedding2.jpg' },
-//             { name: 'Anniversary Rings', image: '/images/wedding3.jpg' }
-//         ]
-//     },
-//     {
-//         name: 'Diamonds',
-//         sub: [
-//             { name: 'Loose Diamonds', image: '/images/diamonds1.jpg' },
-//             { name: 'Certified Stones', image: '/images/diamonds2.jpg' },
-//             { name: 'Fancy Shapes', image: '/images/diamonds3.jpg' }
-//         ]
-//     },
-//     {
-//         name: 'Jewelry',
-//         sub: [
-//             { name: 'Necklaces', image: '/images/jewelry1.jpg' },
-//             { name: 'Earrings', image: '/images/jewelry2.jpg' },
-//             { name: 'Bracelets', image: '/images/jewelry3.jpg' }
-//         ]
-//     },
-//     {
-//         name: 'Custom Grown',
-//         sub: [
-//             { name: 'Lab-grown Rings', image: '/images/custom1.jpg' },
-//             { name: 'Custom Designs', image: '/images/custom2.jpg' },
-//             { name: '3D Previews', image: '/images/custom3.jpg' }
-//         ]
-//     }
-// ];
-
-const dummyCart = [
-    {
-        id: 1,
-        title: 'Elegant Diamond Ring',
-        image: '/images/engagement1.jpg',
-        description: 'This stunning diamond ring is crafted with precision and elegance...',
-        price: 5999
-    }
-];
+import { useCart } from '../context/CartContext';
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -68,28 +19,7 @@ export default function Header() {
     const userTimeout = useRef(null);
     const [user, setUser] = useState(null);
     const [categories, setCategories] = useState([]);
-
-    // useEffect(() => {
-    //     try {
-    //         const encryptedUser = localStorage.getItem("user");
-    //         if (!encryptedUser) return;
-
-    //         const decryptedUser = decryptData(encryptedUser);
-    //         if (decryptedUser) {
-    //             setUser(decryptedUser);
-    //         } else {
-    //             // Invalid or broken data, clean it up
-    //             localStorage.removeItem("user");
-    //             localStorage.removeItem("token");
-    //             setUser(null);
-    //         }
-    //     } catch (err) {
-    //         console.error("⚠️ User decryption error:", err);
-    //         localStorage.removeItem("user");
-    //         localStorage.removeItem("token");
-    //         setUser(null);
-    //     }
-    // }, []);
+    const { cartItems, cartTotal, cartItemCount, cartLoading, cartError, updateCartItemQuantity, removeFromCart } = useCart();
 
     useEffect(() => {
         try {
@@ -127,17 +57,6 @@ export default function Header() {
         }));
     };
 
-    const total = dummyCart.reduce((acc, item) => acc + item.price, 0);
-
-    // const handleUserEnter = () => {
-    //     clearTimeout(userTimeout.current);
-    //     setUserOpen(true);
-    // };
-
-    // const handleUserLeave = () => {
-    //     userTimeout.current = setTimeout(() => setUserOpen(false), 500);
-    // };
-
     useEffect(() => {
 
         const fetchCategories = async () => {
@@ -157,6 +76,19 @@ export default function Header() {
     }, []);
     // console.log("Categories:", categories);
 
+    const handleCartModalQuantityChange = (itemId, currentQuantity, change, stock) => {
+        const newQuantity = currentQuantity + change;
+        if (newQuantity < 1) {
+            if (window.confirm("Are you sure you want to remove this item from your cart?")) {
+                removeFromCart(itemId);
+            }
+        } else if (newQuantity > stock) {
+            toast.error(`Only ${stock} items are available in stock.`);
+        } else {
+            updateCartItemQuantity(itemId, newQuantity);
+        }
+    };
+
 
     return (
         <header className="text-ivory sticky top-0 z-50 shadow-md">
@@ -169,7 +101,7 @@ export default function Header() {
             <div className="flex items-center justify-between py-3 px-4 md:px-8 border-b border-gold">
                 {/* Logo */}
                 <div className="text-2xl font-bold fraunces">
-                    <img src="/logo/marron_icon.png" alt="logo" className='w-full h-20' />
+                    <Link to={'/'}><img src="/logo/marron_icon.png" alt="logo" className='w-full h-20' /></Link>
                 </div>
 
                 {/* Search Bar (hidden on mobile) */}
@@ -208,6 +140,7 @@ export default function Header() {
 
             {/* Bottom Nav - Desktop */}
             <nav className="hidden md:flex justify-center space-x-6 py-3 text-sm font-medium border-b border-gold relative">
+
                 {categories?.map((cat, index) => (
                     <div
                         key={index}
@@ -225,7 +158,7 @@ export default function Header() {
                             <div className="max-w-6xl mx-auto flex justify-start space-x-4 px-8">
                                 {cat.subcategories.map((item, idx) => (
                                     <div key={idx} className="w-48 text-center">
-                                        <Link className="flex flex-col items-center" to={`/${item.slug}`}>
+                                        <Link className="flex flex-col items-center" to={`/collections/${item.slug}`} state={{ subcategoryId: item._id }}>
                                             <img
                                                 src={item.image.url}
                                                 alt={item.name}
@@ -279,32 +212,114 @@ export default function Header() {
 
             {/* Cart Modal */}
             {cartOpen && (
-                <div className="fixed top-0 bottom-0 right-0 left-0 z-50 bg-gray-100/40 bg-opacity-50 flex justify-end">
-                    <div className="bg-gray-200 text-ivory w-full md:w-[40%] h-full p-6 relative overflow-y-auto">
+                <div className="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-sm transition-all duration-300">
+                    {/* Slide-in Drawer */}
+                    <div className="bg-white shadow-xl w-full md:w-[420px] h-full p-6 relative overflow-y-auto animate-slideInRight">
+
+                        {/* Close Button */}
                         <button
-                            className="absolute top-4 right-4 text-gold text-xl"
+                            className="absolute top-7 right-6 text-gray-600 hover:text-red-500 text-2xl"
                             onClick={() => setCartOpen(false)}
                         >
-                            <FiX />
+                            <FiX className='' />
                         </button>
-                        <h2 className="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Your Cart</h2>
-                        {dummyCart.map((item) => (
-                            <div key={item.id} className="flex space-x-4 mb-4 border-b border-gray-300 pb-4">
-                                <img src={item.image} alt={item.title} className="w-20 h-20 object-cover rounded-md" />
-                                <div>
-                                    <h3 className="text-lg font-medium">{item.title}</h3>
-                                    <p className="text-sm text-platinum">{item.description.slice(0, 50)}...</p>
-                                    <p className="text-sm text-gold mt-1">₹{item.price}</p>
+
+                        {/* Title */}
+                        <h2 className="text-lg font-semibold text-gray-900 mb-6 border-b pb-4 nunito uppercase">Shopping Cart</h2>
+
+                        {/* States */}
+                        {cartLoading ? (
+                            <div className="text-center text-gray-500 py-8">Loading cart...</div>
+                        ) : cartError ? (
+                            <div className="text-center text-red-600 py-8">Error: {cartError}</div>
+                        ) : cartItems.length === 0 ? (
+                            <div className="text-center text-gray-600 py-8">Your cart is empty.</div>
+                        ) : (
+                            <>
+                                {/* Cart Items */}
+                                <div className="space-y-6">
+                                    {cartItems.map((item) => (
+                                        <div
+                                            key={item._id}
+                                            className="flex gap-4 border border-gray-200 p-4 rounded-lg shadow-sm"
+                                        >
+                                            <img
+                                                src={item.mainImage || 'https://placehold.co/80x80/E0E0E0/6C6C6C?text=Img'}
+                                                alt={item.name}
+                                                className="w-20 h-20 object-cover rounded-md"
+                                            />
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-semibold text-gray-800">
+                                                    {item.name}
+                                                </h3>
+                                                <p className="text-sm text-gray-500">
+                                                    {item.variantDetails?.material} {item.variantDetails?.purity}
+                                                    {item.variantDetails?.size && ` | Size: ${item.variantDetails.size}`}
+                                                </p>
+                                                <p className="text-sm text-violet-800 font-medium mt-1">
+                                                    ${(item.variantDetails?.price || 0).toFixed(2)}
+                                                </p>
+
+                                                {/* Quantity Controls */}
+                                                <div className="flex items-center mt-2 gap-2">
+                                                    <button
+                                                        onClick={() =>
+                                                            handleCartModalQuantityChange(item._id, item.quantity, -1, item.variantDetails?.stock)
+                                                        }
+                                                        className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-sm disabled:opacity-40"
+                                                        disabled={item.quantity <= 1 || cartLoading}
+                                                    >
+                                                        <FiMinus />
+                                                    </button>
+                                                    <span className="px-3 text-base font-medium">{item.quantity}</span>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleCartModalQuantityChange(item._id, item.quantity, 1, item.variantDetails?.stock)
+                                                        }
+                                                        className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-sm disabled:opacity-40"
+                                                        disabled={item.quantity >= (item.variantDetails?.stock || Infinity) || cartLoading}
+                                                    >
+                                                        <FiPlus />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => removeFromCart(item._id)}
+                                                        className="ml-auto text-red-500 text-sm hover:text-red-700 flex items-center gap-1"
+                                                    >
+                                                        <FaTrash /> Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
-                        ))}
-                        <div className="text-right mt-6">
-                            <div className="text-md font-semibold flex justify-between"><p>Subtotal:</p> <p>₹{total}</p></div>
-                            <p className="text-xl font-bold mt-2 flex justify-between"><p>Total:</p> <p>₹{total}</p></p>
-                        </div>
+
+                                {/* Summary */}
+                                <div className="mt-8 border-t pt-4 space-y-2 text-gray-800 text-sm">
+                                    <div className="flex justify-between font-medium">
+                                        <span>Subtotal</span>
+                                        <span>${cartTotal.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-lg font-bold">
+                                        <span>Total</span>
+                                        <span>${cartTotal.toFixed(2)}</span>
+                                    </div>
+                                </div>
+
+                                {/* CTA */}
+                                <Link
+                                    to="/cart"
+                                    onClick={() => setCartOpen(false)}
+                                    className="mt-6 block w-full text-center bg-violet-800 text-white py-3 rounded-lg font-medium hover:bg-violet-700 transition"
+                                >
+                                    View Full Cart
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
+
+
 
             {/* User Side Panel */}
             {userPanelOpen && (

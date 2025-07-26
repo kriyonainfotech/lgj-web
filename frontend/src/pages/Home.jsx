@@ -221,7 +221,7 @@ const Home = () => {
                                 className="flex-shrink-0 flex flex-col items-center text-center w-28"
                             >
                                 <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300">
-                                    <Link to={`/shop/${cat.slug}`} state={{ categoryId: cat._id }} >
+                                    <Link to={`/collections/${cat.slug}`} state={{ categoryId: cat._id }} >
                                         <img
                                             src={cat.image.url}
                                             alt={cat.name}
