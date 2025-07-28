@@ -1,5 +1,6 @@
 // src/components/Layout.jsx
 
+import ScrollToTopButton from "../utils/ScrollToTopButton";
 import Footer from "./Footer";
 import Header from "./Header";
 
@@ -9,6 +10,7 @@ const Layout = ({ children }) => {
             <Header />
             <main>{children}</main>
             <Footer />
+            <ScrollToTopButton />
         </>
     );
 };

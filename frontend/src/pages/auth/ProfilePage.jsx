@@ -1,454 +1,385 @@
-// src/pages/ProfilePage.jsx
-import React, { useState } from 'react';
-import { FaUser, FaShoppingBag, FaHeart, FaMapMarkerAlt, FaCog, FaSignOutAlt } from 'react-icons/fa';
-import { IoDiamondOutline } from 'react-icons/io5';
+// // src/pages/ProfilePage.jsx
+// import React, { useState, useEffect } from 'react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { toast } from 'react-toastify';
+// import { FiEdit3, FiMail, FiPhone, FiLock, FiLogOut, FiShoppingCart, FiHeart, FiList, FiPlus, FiXCircle } from 'react-icons/fi'; // Import all necessary icons
+// import { useAuth } from '../../context/AuthContext';
+
+// export default function ProfilePage() {
+//     // const { user, isAuthenticated, loadingAuth, login, logout, revalidateAuth } = useAuth(); // Get user and auth state from AuthContext
+//     const navigate = useNavigate();
+//     const auth = useAuth();
+//     console.log(auth, 'auth use')
+
+//     const [profileFormData, setProfileFormData] = useState({
+//         name: '',
+//         email: '',
+//         mobile: '',
+//     });
+//     const [passwordFormData, setPasswordFormData] = useState({
+//         currentPassword: '',
+//         newPassword: '',
+//         confirmNewPassword: '',
+//     });
+
+//     const [profileSubmitting, setProfileSubmitting] = useState(false);
+//     const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+
+//     const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+
+
+
+
+//     // Handle input changes for profile form
+//     const handleProfileChange = (e) => {
+//         const { name, value } = e.target;
+//         setProfileFormData(prev => ({ ...prev, [name]: value }));
+//     };
+
+//     // Handle input changes for password form
+//     const handlePasswordChange = (e) => {
+//         const { name, value } = e.target;
+//         setPasswordFormData(prev => ({ ...prev, [name]: value }));
+//     };
+
+//     // Handle profile update submission
+//     const handleProfileUpdate = async (e) => {
+//         e.preventDefault();
+//         setProfileSubmitting(true);
+//         try {
+//             const token = localStorage.getItem('token');
+//             if (!token) {
+//                 toast.error("Not authenticated. Please log in.");
+//                 navigate('/login');
+//                 return;
+//             }
+//             const config = {
+//                 headers: { Authorization: `Bearer ${token}` }
+//             };
+//             // API endpoint for updating user profile
+//             const response = await axios.put(`${backdendUrl}/api/user/profile`, profileFormData, config);
+
+//             if (response.data.success) {
+//                 toast.success(response.data.message);
+//                 // Update AuthContext user data immediately
+//                 login(response.data.user, token); // Pass updated user and existing token to AuthContext's login function
+//             } else {
+//                 toast.error(response.data.message || "Profile update failed.");
+//             }
+//         } catch (error) {
+//             console.error("Profile update error:", error);
+//             if (error.response?.status === 401) {
+//                 toast.error("Your session has expired. Please log in again.");
+//                 // logout();
+//                 navigate('/login');
+//             } else {
+//                 toast.error(error.response?.data?.message || "An error occurred during profile update.");
+//             }
+//         } finally {
+//             setProfileSubmitting(false);
+//         }
+//     };
+
+//     // Handle password change submission (when logged in)
+//     const handleChangePassword = async (e) => {
+//         e.preventDefault();
+//         setPasswordSubmitting(true);
+//         if (passwordFormData.newPassword !== passwordFormData.confirmNewPassword) {
+//             toast.error("New passwords do not match.");
+//             setPasswordSubmitting(false);
+//             return;
+//         }
+//         if (passwordFormData.newPassword.length < 6) { // Basic password length check
+//             toast.error("New password must be at least 6 characters long.");
+//             setPasswordSubmitting(false);
+//             return;
+//         }
+//         try {
+//             const token = localStorage.getItem('token');
+//             if (!token) {
+//                 toast.error("Not authenticated. Please log in.");
+//                 navigate('/login');
+//                 return;
+//             }
+//             const config = {
+//                 headers: { Authorization: `Bearer ${token}` }
+//             };
+//             // API endpoint for changing password
+//             const response = await axios.put(`${backdendUrl}/api/user/change-password`, passwordFormData, config);
+
+//             if (response.data.success) {
+//                 toast.success(response.data.message);
+//                 setPasswordFormData({ currentPassword: '', newPassword: '', confirmNewPassword: '' }); // Clear form
+//                 // For security, it's good practice to log out user after password change
+//                 // logout();
+//                 navigate('/login'); // Redirect to login
+//             } else {
+//                 toast.error(response.data.message || "Password change failed.");
+//             }
+//         } catch (error) {
+//             console.error("Password change error:", error);
+//             if (error.response?.status === 401) {
+//                 toast.error("Your session has expired. Please log in again.");
+//                 // logout();
+//                 navigate('/login');
+//             } else {
+//                 toast.error(error.response?.data?.message || "An error occurred during password change.");
+//             }
+//         } finally {
+//             setPasswordSubmitting(false);
+//         }
+//     };
+
+//     // Handle Forgot Password link click (triggers email reset on backend)
+//     const handleForgotPassword = async () => {
+//         if (!user?.email) {
+//             toast.error("Your email is not available. Please contact support.");
+//             return;
+//         }
+//         if (!window.confirm("A password reset link will be sent to your registered email address. Continue?")) {
+//             return;
+//         }
+//         try {
+//             // API endpoint for sending reset password email
+//             const response = await axios.post(`${backdendUrl}/api/auth/reset-password`, { email: user.email });
+//             if (response.data.success) {
+//                 toast.success("Password reset link sent to your email!");
+//             } else {
+//                 toast.error(response.data.message || "Failed to send reset email.");
+//             }
+//         } catch (error) {
+//             console.error("Forgot password error:", error);
+//             toast.error(error.response?.data?.message || "An error occurred while sending reset email.");
+//         }
+//     };
+
+
+//     // if (loadingAuth) {
+//     //     return (
+//     //         <div className="flex justify-center items-center h-screen bg-gray-50">
+//     //             <p className="text-xl text-gray-700">Loading user profile...</p>
+//     //         </div>
+//     //     );
+//     // }
+
+//     // This case should ideally be caught by ProtectedRoute, but as a fallback/redundancy
+//     // if (!isAuthenticated || !user) {
+//     //     return null; // The useEffect will handle the redirect
+//     // }
+
+//     return (
+//         <div className="px-4 py-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
+//             <h1 className="text-4xl font-bold text-center text-gray-800 mb-10 fraunces">My Profile</h1>
+
+//             <div className="flex flex-col lg:flex-row gap-8">
+//                 {/* Left Section: User Info & Forms */}
+//                 <div className="lg:w-2/3 space-y-8">
+
+//                     {/* Basic User Information Display */}
+//                     <div className="bg-white shadow-md rounded-lg p-6">
+//                         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Account Information</h2>
+//                         <div className="space-y-3 text-gray-800">
+//                             <p className="flex items-center gap-2"><FiMail className="text-violet-600" /> <strong>Name:</strong> {user.name}</p>
+//                             <p className="flex items-center gap-2"><FiMail className="text-violet-600" /> <strong>Email:</strong> {user.email}</p>
+//                             <p className="flex items-center gap-2"><FiPhone className="text-violet-600" /> <strong>Mobile:</strong> {user.mobile || 'N/A'}</p>
+//                             <p><strong>Role:</strong> <span className="capitalize">{user.role}</span></p>
+//                             <p className="text-sm text-gray-500">Member since: {new Date(user.createdAt).toLocaleDateString()}</p>
+//                         </div>
+//                     </div>
+
+//                     {/* Update Profile Form */}
+//                     <div className="bg-white shadow-md rounded-lg p-6">
+//                         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Update Profile</h2>
+//                         <form onSubmit={handleProfileUpdate} className="space-y-4">
+//                             <div>
+//                                 <label htmlFor="profileName" className="block text-sm font-medium text-gray-700">Name</label>
+//                                 <input type="text" id="profileName" name="name" value={profileFormData.name} onChange={handleProfileChange} className="mt-1 block w-full p-2 border rounded-md" required />
+//                             </div>
+//                             <div>
+//                                 <label htmlFor="profileEmail" className="block text-sm font-medium text-gray-700">Email</label>
+//                                 <input type="email" id="profileEmail" name="email" value={profileFormData.email} onChange={handleProfileChange} className="mt-1 block w-full p-2 border rounded-md" required />
+//                             </div>
+//                             <div>
+//                                 <label htmlFor="profileMobile" className="block text-sm font-medium text-gray-700">Mobile</label>
+//                                 <input type="tel" id="profileMobile" name="mobile" value={profileFormData.mobile} onChange={handleProfileChange} className="mt-1 block w-full p-2 border rounded-md" />
+//                             </div>
+//                             <button
+//                                 type="submit"
+//                                 disabled={profileSubmitting}
+//                                 className="w-full bg-violet-800 text-white py-2 rounded-md hover:bg-violet-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+//                             >
+//                                 {profileSubmitting ? 'Updating...' : 'Save Changes'}
+//                             </button>
+//                         </form>
+//                     </div>
+
+//                     {/* Change Password Form */}
+//                     <div className="bg-white shadow-md rounded-lg p-6">
+//                         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Change Password</h2>
+//                         <form onSubmit={handleChangePassword} className="space-y-4">
+//                             <div>
+//                                 <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">Current Password</label>
+//                                 <input type="password" id="currentPassword" name="currentPassword" value={passwordFormData.currentPassword} onChange={handlePasswordChange} className="mt-1 block w-full p-2 border rounded-md" required />
+//                             </div>
+//                             <div>
+//                                 <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">New Password</label>
+//                                 <input type="password" id="newPassword" name="newPassword" value={passwordFormData.newPassword} onChange={handlePasswordChange} className="mt-1 block w-full p-2 border rounded-md" required />
+//                             </div>
+//                             <div>
+//                                 <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+//                                 <input type="password" id="confirmNewPassword" name="confirmNewPassword" value={passwordFormData.confirmNewPassword} onChange={handlePasswordChange} className="mt-1 block w-full p-2 border rounded-md" required />
+//                             </div>
+//                             <button
+//                                 type="submit"
+//                                 disabled={passwordSubmitting}
+//                                 className="w-full bg-violet-800 text-white py-2 rounded-md hover:bg-violet-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+//                             >
+//                                 {passwordSubmitting ? 'Changing...' : 'Update Password'}
+//                             </button>
+//                         </form>
+//                         <div className="mt-4 text-center">
+//                             <button onClick={handleForgotPassword} className="text-blue-600 hover:underline text-sm">Forgot Password?</button>
+//                         </div>
+//                     </div>
+
+//                     {/* Static Section: Shipping Address (Placeholder) */}
+//                     <div className="bg-white shadow-md rounded-lg p-6">
+//                         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Shipping Addresses</h2>
+//                         <div className="text-gray-700 text-center py-4">
+//                             <p className="mb-2">No saved addresses yet.</p>
+//                             <button className="text-violet-600 hover:underline">Add New Address</button>
+//                         </div>
+//                         {/* In a real app, this would be a dynamic list of addresses with Add/Edit/Delete options */}
+//                     </div>
+
+//                     {/* Static Section: Settings (Placeholder) */}
+//                     <div className="bg-white shadow-md rounded-lg p-6">
+//                         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Account Settings</h2>
+//                         <div className="text-gray-700 text-center py-4">
+//                             <p>Manage your notification preferences, privacy settings, etc.</p>
+//                             <Link to="/settings" className="text-blue-600 hover:underline text-sm flex items-center gap-1">
+//                                 Go to Settings Page <FiChevronRight />
+//                             </Link>
+//                         </div>
+//                     </div>
+
+//                 </div>
+
+//                 {/* Right Section: Navigation Links */}
+//                 <div className="lg:w-1/3 space-y-4">
+//                     <div className="bg-white shadow-md rounded-lg p-6 text-gray-700">
+//                         <h2 className="text-2xl font-semibold mb-4 border-b pb-3">My Account</h2>
+//                         <ul className="space-y-3 font-medium">
+//                             <li>
+//                                 <Link to="/cart" className="flex items-center gap-2 hover:text-violet-600 transition">
+//                                     <FiShoppingCart /> My Cart
+//                                 </Link>
+//                             </li>
+//                             <li>
+//                                 <Link to="/orders" className="flex items-center gap-2 hover:text-violet-600 transition">
+//                                     <FiList /> My Orders
+//                                 </Link>
+//                             </li>
+//                             <li>
+//                                 <Link to="/wishlist" className="flex items-center gap-2 hover:text-violet-600 transition">
+//                                     <FiHeart /> My Wishlist
+//                                 </Link>
+//                             </li>
+//                             {/* Add more links as needed */}
+//                             <li className="border-t pt-4 mt-4">
+//                                 <button onClick={logout} className="flex items-center gap-2 text-red-600 hover:text-red-800 transition w-full text-left">
+//                                     <FiLogOut /> Logout
+//                                 </button>
+//                             </li>
+//                         </ul>
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
+
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
+
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
+const TABS = [
+    { id: "overview", label: "Profile" },
+    { id: "orders", label: "Orders" },
+    { id: "settings", label: "Settings" },
+];
 
 const ProfilePage = () => {
-    const [activeTab, setActiveTab] = useState('profile');
-    const [editMode, setEditMode] = useState(false);
-    const [userData, setUserData] = useState({
-        name: 'Sofia Rossi',
-        email: 'sofia@mirosa.com',
-        phone: '+1 (555) 123-4567',
-        joinDate: 'January 15, 2022',
-        orders: 12,
-        wishlist: 8
-    });
+    const { user, logout } = useAuth();
+    const query = useQuery();
+    const [activeTab, setActiveTab] = useState("overview");
 
-    const [formData, setFormData] = useState({ ...userData });
 
-    const orders = [
-        { id: '#MIROSA-1289', date: 'Oct 12, 2023', items: 2, total: '$2,450', status: 'Delivered' },
-        { id: '#MIROSA-1123', date: 'Sep 3, 2023', items: 1, total: '$1,850', status: 'Delivered' },
-        { id: '#MIROSA-0987', date: 'Jul 22, 2023', items: 3, total: '$5,200', status: 'Delivered' },
-        { id: '#MIROSA-0765', date: 'Jun 14, 2023', items: 1, total: '$3,200', status: 'Delivered' }
-    ];
-
-    const wishlist = [
-        { id: 1, name: 'Eternity Diamond Band', price: '$1,850', image: 'band' },
-        { id: 2, name: 'Sapphire & Diamond Pendant', price: '$2,450', image: 'pendant' },
-        { id: 3, name: 'Pearl Drop Earrings', price: '$1,200', image: 'earrings' },
-        { id: 4, name: 'Emerald Cut Solitaire', price: '$3,800', image: 'solitaire' }
-    ];
-
-    const addresses = [
-        { id: 1, name: 'Home', address: '123 Luxury Lane, Beverly Hills, CA 90210', isDefault: true },
-        { id: 2, name: 'Office', address: '456 Diamond Street, Suite 1200, Los Angeles, CA 90067', isDefault: false }
-    ];
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSave = () => {
-        setUserData(formData);
-        setEditMode(false);
-    };
-
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'orders':
-                return (
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <FaShoppingBag className="text-gold-500" /> Order History
-                        </h2>
-
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr className="bg-gray-50">
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {orders.map((order) => (
-                                        <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap font-medium">{order.id}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">{order.date}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">{order.items}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap font-semibold">{order.total}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">{order.status}</span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <button className="text-gold-500 hover:text-gold-700 font-medium">View Details</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="mt-8 flex justify-between items-center">
-                            <p className="text-gray-600">Showing 4 of {userData.orders} orders</p>
-                            <button className="bg-gold-500 hover:bg-gold-600 text-white px-4 py-2 rounded-lg transition-colors">
-                                View All Orders
-                            </button>
-                        </div>
-                    </div>
-                );
-
-            case 'wishlist':
-                return (
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <FaHeart className="text-gold-500" /> Your Wishlist
-                        </h2>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {wishlist.map((item) => (
-                                <div key={item.id} className="flex gap-4 border-b pb-6 last:border-0 last:pb-0">
-                                    <div className="bg-gray-100 border border-gray-200 rounded-xl w-24 h-24 flex items-center justify-center">
-                                        <IoDiamondOutline className="text-4xl text-gold-500" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-lg">{item.name}</h3>
-                                        <p className="text-gold-500 font-bold my-1">{item.price}</p>
-                                        <div className="flex gap-3 mt-3">
-                                            <button className="bg-gold-500 hover:bg-gold-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                                                Add to Cart
-                                            </button>
-                                            <button className="border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition-colors">
-                                                Remove
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="mt-8 text-center">
-                            <button className="border-2 border-gold-500 text-gold-500 hover:bg-gold-50 px-6 py-3 rounded-lg transition-colors font-medium">
-                                Continue Shopping
-                            </button>
-                        </div>
-                    </div>
-                );
-
-            case 'addresses':
-                return (
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <FaMapMarkerAlt className="text-gold-500" /> Saved Addresses
-                        </h2>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            {addresses.map((address) => (
-                                <div key={address.id} className={`border rounded-xl p-5 relative ${address.isDefault ? 'border-gold-500 bg-gold-50' : 'border-gray-200'}`}>
-                                    {address.isDefault && (
-                                        <span className="absolute top-3 right-3 bg-gold-500 text-white text-xs px-2 py-1 rounded-full">Default</span>
-                                    )}
-                                    <h3 className="font-bold text-lg mb-2">{address.name}</h3>
-                                    <p className="text-gray-600 mb-4">{address.address}</p>
-                                    <div className="flex gap-3">
-                                        <button className="text-gold-500 hover:text-gold-700 text-sm font-medium">Edit</button>
-                                        {!address.isDefault && (
-                                            <button className="text-gray-500 hover:text-gray-700 text-sm font-medium">Set as Default</button>
-                                        )}
-                                        <button className="text-red-500 hover:text-red-700 text-sm font-medium ml-auto">Remove</button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="border-t pt-6">
-                            <h3 className="text-xl font-bold mb-4">Add New Address</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" placeholder="Full Name" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                <input type="text" placeholder="Phone Number" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                <input type="text" placeholder="Address Line 1" className="border border-gray-300 rounded-lg px-4 py-3 md:col-span-2" />
-                                <input type="text" placeholder="City" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                <input type="text" placeholder="State" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                <input type="text" placeholder="Postal Code" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                <select className="border border-gray-300 rounded-lg px-4 py-3 md:col-span-2">
-                                    <option>Select Country</option>
-                                    <option>United States</option>
-                                    <option>United Kingdom</option>
-                                    <option>Canada</option>
-                                    <option>Australia</option>
-                                </select>
-                            </div>
-                            <div className="mt-6 flex gap-3">
-                                <button className="bg-gold-500 hover:bg-gold-600 text-white px-6 py-3 rounded-lg transition-colors">
-                                    Save Address
-                                </button>
-                                <button className="border border-gray-300 hover:bg-gray-100 px-6 py-3 rounded-lg transition-colors">
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 'settings':
-                return (
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <FaCog className="text-gold-500" /> Account Settings
-                        </h2>
-
-                        <div className="space-y-8">
-                            <div>
-                                <h3 className="text-lg font-bold mb-3">Password</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                                    <input type="password" placeholder="Current Password" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                    <input type="password" placeholder="New Password" className="border border-gray-300 rounded-lg px-4 py-3" />
-                                    <input type="password" placeholder="Confirm New Password" className="border border-gray-300 rounded-lg px-4 py-3 md:col-span-2" />
-                                </div>
-                                <button className="mt-4 bg-gold-500 hover:bg-gold-600 text-white px-6 py-3 rounded-lg transition-colors">
-                                    Change Password
-                                </button>
-                            </div>
-
-                            <div className="border-t pt-6">
-                                <h3 className="text-lg font-bold mb-3">Notification Preferences</h3>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h4 className="font-medium">Email Notifications</h4>
-                                            <p className="text-gray-600 text-sm">Receive updates about orders and promotions</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" defaultChecked />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
-                                        </label>
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h4 className="font-medium">SMS Notifications</h4>
-                                            <p className="text-gray-600 text-sm">Get order updates via text message</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
-                                        </label>
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h4 className="font-medium">Promotional Emails</h4>
-                                            <p className="text-gray-600 text-sm">Receive exclusive offers and updates</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" defaultChecked />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 'profile':
-            default:
-                return (
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <div className="flex justify-between items-start mb-6">
-                            <h2 className="text-2xl font-bold flex items-center gap-2">
-                                <FaUser className="text-gold-500" /> Profile Information
-                            </h2>
-                            {!editMode ? (
-                                <button
-                                    onClick={() => setEditMode(true)}
-                                    className="text-gold-500 hover:text-gold-700 font-medium flex items-center gap-1"
-                                >
-                                    Edit Profile
-                                </button>
-                            ) : (
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setEditMode(false)}
-                                        className="border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={handleSave}
-                                        className="bg-gold-500 hover:bg-gold-600 text-white px-4 py-2 rounded-lg transition-colors"
-                                    >
-                                        Save Changes
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex flex-col md:flex-row gap-8">
-                            <div className="md:w-1/3">
-                                <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4">
-                                    <FaUser className="text-4xl text-gray-400" />
-                                </div>
-                                <button className="w-full border border-gold-500 text-gold-500 hover:bg-gold-50 py-2 rounded-lg transition-colors mb-6">
-                                    Change Photo
-                                </button>
-
-                                <div className="bg-gold-50 border border-gold-200 rounded-xl p-4">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <IoDiamondOutline className="text-xl text-gold-500" />
-                                        <h3 className="font-semibold">Mirosa Rewards</h3>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mb-4">
-                                        You have 1,250 points. Redeem for exclusive discounts and early access to new collections.
-                                    </p>
-                                    <button className="bg-gold-500 hover:bg-gold-600 text-white w-full py-2 rounded-lg text-sm transition-colors">
-                                        View Rewards
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="md:w-2/3">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                    <div>
-                                        <label className="block text-gray-600 mb-2">Full Name</label>
-                                        {editMode ? (
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full"
-                                            />
-                                        ) : (
-                                            <p className="font-medium">{userData.name}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-gray-600 mb-2">Email Address</label>
-                                        {editMode ? (
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full"
-                                            />
-                                        ) : (
-                                            <p className="font-medium">{userData.email}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-gray-600 mb-2">Phone Number</label>
-                                        {editMode ? (
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full"
-                                            />
-                                        ) : (
-                                            <p className="font-medium">{userData.phone}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-gray-600 mb-2">Member Since</label>
-                                        <p className="font-medium">{userData.joinDate}</p>
-                                    </div>
-                                </div>
-
-                                <div className="border-t pt-6">
-                                    <h3 className="text-lg font-bold mb-4">Account Overview</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-gray-50 rounded-lg p-4 text-center">
-                                            <p className="text-2xl font-bold text-gold-500">{userData.orders}</p>
-                                            <p className="text-gray-600">Total Orders</p>
-                                        </div>
-                                        <div className="bg-gray-50 rounded-lg p-4 text-center">
-                                            <p className="text-2xl font-bold text-gold-500">{userData.wishlist}</p>
-                                            <p className="text-gray-600">Wishlist Items</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
+    // Set activeTab from query param on mount/query change
+    useEffect(() => {
+        const tabFromQuery = query.get("tab");
+        if (tabFromQuery && TABS.some(t => t.id === tabFromQuery)) {
+            setActiveTab(tabFromQuery);
         }
-    };
+    }, [query]);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
-                    <h1 className="text-3xl md:text-4xl font-bold">Your Account</h1>
-                    <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
-                        Manage your profile, orders, wishlist and account settings
-                    </p>
+        <div className="max-w-7xl mx-auto bg-white rounded p-6 mt-8">
+            {/* Profile Header */}
+            <div className="flex items-center mb-6">
+                <div className="rounded-full bg-gray-200 w-16 h-16 flex items-center justify-center text-2xl font-bold mr-4">
+                    {user?.name?.charAt(0).toUpperCase()}
                 </div>
-
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar Navigation */}
-                    <div className="lg:w-1/4">
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-full w-16 h-16 flex items-center justify-center">
-                                    <FaUser className="text-xl text-gray-400" />
-                                </div>
-                                <div>
-                                    <h2 className="font-bold">{userData.name}</h2>
-                                    <p className="text-gray-600 text-sm">{userData.email}</p>
-                                </div>
-                            </div>
-
-                            <nav className="space-y-2">
-                                {[
-                                    { id: 'profile', icon: <FaUser />, label: 'My Profile' },
-                                    { id: 'orders', icon: <FaShoppingBag />, label: 'My Orders' },
-                                    { id: 'wishlist', icon: <FaHeart />, label: 'Wishlist' },
-                                    { id: 'addresses', icon: <FaMapMarkerAlt />, label: 'Addresses' },
-                                    { id: 'settings', icon: <FaCog />, label: 'Settings' }
-                                ].map((item) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => setActiveTab(item.id)}
-                                        className={`w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors ${activeTab === item.id
-                                            ? 'bg-gold-500 text-white'
-                                            : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        <span className="text-lg">{item.icon}</span>
-                                        <span>{item.label}</span>
-                                    </button>
-                                ))}
-
-                                <button className="w-full text-left flex items-center gap-3 p-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
-                                    <span className="text-lg"><FaSignOutAlt /></span>
-                                    <span>Logout</span>
-                                </button>
-                            </nav>
-                        </div>
-
-                        <div className="bg-gradient-to-r from-gold-500 to-gold-700 rounded-xl shadow-sm p-6 mt-6 text-white">
-                            <div className="flex items-center gap-3 mb-4">
-                                <IoDiamondOutline className="text-2xl" />
-                                <h3 className="font-bold text-lg">Premium Membership</h3>
-                            </div>
-                            <p className="text-gold-100 mb-4">
-                                Upgrade to enjoy exclusive benefits, early access to new collections, and personal shopping services.
-                            </p>
-                            <button className="bg-white text-gold-700 hover:bg-gray-100 w-full py-2 rounded-lg font-medium transition-colors">
-                                Upgrade Now
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Main Content */}
-                    <div className="lg:w-3/4">
-                        {renderContent()}
-                    </div>
+                <div>
+                    <div className="text-xl font-semibold">{user?.name}</div>
+                    <div className="text-gray-500">{user?.email}</div>
                 </div>
             </div>
+
+            {/* Tab Buttons */}
+            <div className="flex space-x-4 mb-6 border-b">
+                {TABS.map(tab => (
+                    <button
+                        key={tab.id}
+                        className={`pb-2 px-4 border-b-2 ${activeTab === tab.id ? 'border-primary text-primary' : 'border-transparent text-gray-500'} font-semibold transition`}
+                        onClick={() => setActiveTab(tab.id)}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Tab Content */}
+            {activeTab === "overview" && (
+                <div>
+                    <div className="font-medium mb-2">Account Details</div>
+                    <div>Name: {user?.name}</div>
+                    <div>Email: {user?.email}</div>
+                    {/* Add more fields as needed */}
+                    <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded" onClick={logout}>Log Out</button>
+                </div>
+            )}
+
+            {activeTab === "orders" && (
+                <div>
+                    <div className="font-medium mb-2">Order History</div>
+                    {/* Map orders here, stub for now */}
+                    <div className="text-gray-500">No orders yet.</div>
+                </div>
+            )}
+
+            {activeTab === "settings" && (
+                <div>
+                    <div className="font-medium mb-2">Settings</div>
+                    {/* Settings form or info here */}
+                    <div className="text-gray-500">Settings tab coming soon.</div>
+                </div>
+            )}
         </div>
     );
 };

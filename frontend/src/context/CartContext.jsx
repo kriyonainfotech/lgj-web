@@ -260,3 +260,349 @@ export const CartProvider = ({ children }) => {
         </CartContext.Provider>
     );
 };
+
+// src/contexts/CartContext.jsx
+// import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+// import axios from 'axios';
+// import { toast } from 'react-toastify';
+// import { AuthContext } from './AuthContext'; // ✅ Import AuthContext
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// export const CartProvider = ({ children }) => {
+//     // ✅ Get isAuthenticated, token, and loadingAuth from AuthContext
+//     const { isAuthenticated, token, loadingAuth } = useContext(AuthContext);
+
+//     const [cartItems, setCartItems] = useState([]);
+//     const [cartLoading, setCartLoading] = useState(true); // Initial state set to true as cart loads immediately
+//     const [cartError, setCartError] = useState(null);
+
+//     const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+
+//     // Helper to get auth headers (now depends on context's token)
+//     const getAuthHeaders = useCallback(() => {
+//         return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+//     }, [token]); // Dependency on the 'token' from AuthContext
+
+
+//     // --- Core Fetch Cart Function ---
+//     const fetchUserCart = useCallback(async () => {
+//         // ✅ IMPORTANT: Wait until AuthContext has finished loading the user status
+//         if (loadingAuth) {
+//             console.log("CartContext: Waiting for AuthContext to load user status...");
+//             return;
+//         }
+
+//         setCartLoading(true);
+//         setCartError(null);
+
+//         if (!isAuthenticated) { // ✅ Use isAuthenticated from AuthContext
+//             console.log("CartContext: User is guest or session expired, loading guest cart.");
+//             const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//             setCartItems(guestCart);
+//             setCartLoading(false);
+//             return;
+//         }
+
+//         // --- Only attempt to fetch from backend if isAuthenticated is true ---
+//         console.log("CartContext: User is authenticated, fetching cart from server.");
+//         try {
+//             // Your backend route name was /api/cart/getUserCart, changed to /api/cart based on your routes/cartRoutes.js
+//             // If your backend route is still /api/cart/getUserCart, please change it back.
+//             const response = await axios.get(`${backdendUrl}/api/cart`, getAuthHeaders());
+//             if (response.data.success) {
+//                 setCartItems(response.data.cart.items || []);
+//             } else {
+//                 setCartError(response.data.message || 'Failed to fetch cart.');
+//                 toast.error(response.data.message || 'Failed to fetch cart.');
+//                 setCartItems([]);
+//             }
+//         } catch (error) {
+//             console.error('Error fetching user cart:', error);
+//             // ✅ Handle 401 (Unauthorized) specifically: means token was invalid/expired
+//             if (error.response?.status === 401) {
+//                 // AuthContext should have ideally already cleared the token.
+//                 // Here, we ensure the cart reverts to guest mode.
+//                 toast.info("Your session expired. Please log in again to access your saved cart. Displaying guest cart.");
+//                 setCartItems(JSON.parse(localStorage.getItem('guestCart') || '[]')); // Load guest cart
+//                 // AuthContext's loadUserFromStorage should handle clearing local storage
+//             } else {
+//                 setCartError(error.response?.data?.message || 'Server error fetching cart.');
+//                 toast.error(error.response?.data?.message || 'Server error fetching cart.');
+//                 setCartItems([]);
+//             }
+//         } finally {
+//             setCartLoading(false);
+//         }
+//     }, [isAuthenticated, loadingAuth, backdendUrl, getAuthHeaders]); // ✅ Dependencies updated
+
+//     // --- Add to Cart ---
+//     const addToCart = useCallback(async (productData, variantData, quantity) => {
+//         if (!productData || !variantData || !quantity || quantity < 1) {
+//             toast.error("Invalid product or variant data to add to cart.");
+//             return;
+//         }
+//         if (!variantData.stock || variantData.stock < quantity) { // Check stock before even trying to add
+//             toast.error(`Only ${variantData.stock} items available in stock.`);
+//             return;
+//         }
+
+
+//         const itemToAdd = {
+//             productId: productData._id,
+//             variantId: variantData._id,
+//             quantity: quantity,
+//             name: `${productData.title} - ${variantData.material} ${variantData.purity}`,
+//             mainImage: productData.mainImage || variantData.images?.[0],
+//             variantDetails: {
+//                 material: variantData.material,
+//                 purity: variantData.purity,
+//                 size: variantData.size,
+//                 sku: variantData.sku,
+//                 price: variantData.price,
+//                 stock: variantData.stock, // Include stock in snapshot for guest cart stock check
+//             }
+//         };
+
+//         if (isAuthenticated) { // ✅ Use isAuthenticated from AuthContext
+//             setCartLoading(true);
+//             try {
+//                 // Ensure your backend endpoint is correct here (e.g., /api/cart/add or /api/cart)
+//                 const response = await axios.post(`${backdendUrl}/api/cart/add`, itemToAdd, getAuthHeaders());
+//                 if (response.data.success) {
+//                     setCartItems(response.data.cart.items);
+//                     toast.success('Item added to cart!');
+//                 } else {
+//                     toast.error(response.data.message || 'Failed to add item to cart.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error adding to server cart:', error);
+//                 // ✅ Handle 401 specifically: token expired during add to cart operation
+//                 if (error.response?.status === 401) {
+//                     toast.info("Your session expired. Item added to guest cart locally.");
+//                     // Revert to guest cart logic for this item
+//                     let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//                     const existingItemIndex = guestCart.findIndex(item => item.productId === itemToAdd.productId && item.variantId === itemToAdd.variantId);
+//                     if (existingItemIndex > -1) { guestCart[existingItemIndex].quantity += quantity; } else { guestCart.push(itemToAdd); }
+//                     localStorage.setItem('guestCart', JSON.stringify(guestCart));
+//                     setCartItems(guestCart); // Update cartItems state with guest cart
+//                 } else {
+//                     toast.error(error.response?.data?.message || 'Server error adding item to cart.');
+//                 }
+//             } finally {
+//                 setCartLoading(false);
+//             }
+//         } else { // Guest user: Add to localStorage cart
+//             let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//             const existingItemIndex = guestCart.findIndex(item => item.productId === itemToAdd.productId && item.variantId === itemToAdd.variantId);
+
+//             if (existingItemIndex > -1) {
+//                 // Update quantity of existing item, check stock for guest cart
+//                 if (guestCart[existingItemIndex].quantity + quantity > itemToAdd.variantDetails.stock) {
+//                     toast.error(`Adding ${quantity} exceeds available stock (${itemToAdd.variantDetails.stock}).`);
+//                     return;
+//                 }
+//                 guestCart[existingItemIndex].quantity += quantity;
+//             } else {
+//                 guestCart.push(itemToAdd);
+//             }
+
+//             localStorage.setItem('guestCart', JSON.stringify(guestCart));
+//             setCartItems(guestCart);
+//             toast.success('Item added to cart (guest mode)!');
+//         }
+//     }, [isAuthenticated, backdendUrl, getAuthHeaders]); // ✅ Dependencies updated
+
+
+//     // --- Remove From Cart ---
+//     const removeFromCart = useCallback(async (itemIdToRemove) => {
+//         if (isAuthenticated) { // ✅ Use isAuthenticated from AuthContext
+//             setCartLoading(true);
+//             try {
+//                 // Backend endpoint is /api/cart/remove/:itemId
+//                 const response = await axios.delete(`${backdendUrl}/api/cart/remove/${itemIdToRemove}`, getAuthHeaders());
+//                 if (response.data.success) {
+//                     setCartItems(response.data.cart.items);
+//                     toast.warn("Item removed from cart.");
+//                 } else {
+//                     toast.error(response.data.message || 'Failed to remove item.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error removing from server cart:', error);
+//                 // ✅ Handle 401 specifically
+//                 if (error.response?.status === 401) {
+//                     toast.info("Your session expired. Item removed from guest cart locally.");
+//                     let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//                     // Find by variantId for guest cart removal
+//                     guestCart = guestCart.filter(item => item.variantId !== itemIdToRemove);
+//                     localStorage.setItem('guestCart', JSON.stringify(guestCart));
+//                     setCartItems(guestCart); // Update cartItems state with guest cart
+//                 } else {
+//                     toast.error(error.response?.data?.message || 'Failed to remove item.');
+//                 }
+//             } finally {
+//                 setCartLoading(false);
+//             }
+//         } else { // Guest user (not authenticated)
+//             let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//             // For guest cart, itemIdToRemove is variantId (since _id is not available)
+//             guestCart = guestCart.filter(item => item.variantId !== itemIdToRemove);
+//             localStorage.setItem('guestCart', JSON.stringify(guestCart));
+//             setCartItems(guestCart);
+//             toast.warn("Item removed from guest cart.");
+//         }
+//     }, [isAuthenticated, backdendUrl, getAuthHeaders]); // ✅ Dependencies updated
+
+
+//     // --- Update Cart Item Quantity ---
+//     const updateCartItemQuantity = useCallback(async (itemId, newQuantity) => {
+//         if (newQuantity < 1) { // If quantity drops to 0, remove the item
+//             await removeFromCart(itemId);
+//             return;
+//         }
+
+//         // Get the item's stock for guest cart stock check
+//         const currentItemInCart = cartItems.find(item => (isAuthenticated ? item._id === itemId : item.variantId === itemId));
+//         if (currentItemInCart && newQuantity > (currentItemInCart.variantDetails?.stock || Infinity)) {
+//             toast.error(`Quantity exceeds available stock (${currentItemInCart.variantDetails?.stock}).`);
+//             return;
+//         }
+
+//         if (isAuthenticated) { // ✅ Use isAuthenticated from AuthContext
+//             setCartLoading(true);
+//             try {
+//                 // Backend endpoint is /api/cart/update/:itemId
+//                 const response = await axios.put(`${backdendUrl}/api/cart/update/${itemId}`, { quantity: newQuantity }, getAuthHeaders());
+//                 if (response.data.success) {
+//                     setCartItems(response.data.cart.items);
+//                     toast.success('Cart updated!');
+//                 } else {
+//                     toast.error(response.data.message || 'Failed to update cart.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error updating server cart:', error);
+//                 // ✅ Handle 401 specifically
+//                 if (error.response?.status === 401) {
+//                     toast.info("Your session expired. Item quantity updated in guest cart locally.");
+//                     let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//                     const itemIndex = guestCart.findIndex(item => item.variantId === itemId);
+//                     if (itemIndex > -1) {
+//                         guestCart[itemIndex].quantity = newQuantity;
+//                     }
+//                     localStorage.setItem('guestCart', JSON.stringify(guestCart));
+//                     setCartItems(guestCart); // Update cartItems state with guest cart
+//                 } else {
+//                     toast.error(error.response?.data?.message || 'Server error updating cart.');
+//                 }
+//             } finally {
+//                 setCartLoading(false);
+//             }
+//         } else { // Guest user (not authenticated)
+//             let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//             const itemIndex = guestCart.findIndex(item => item.variantId === itemId); // Find by variantId for guest cart
+//             if (itemIndex > -1) {
+//                 guestCart[itemIndex].quantity = newQuantity;
+//                 localStorage.setItem('guestCart', JSON.stringify(guestCart));
+//                 setCartItems(guestCart);
+//                 toast.success('Cart updated!');
+//             }
+//         }
+//     }, [isAuthenticated, backdendUrl, getAuthHeaders, removeFromCart, cartItems]); // ✅ Dependencies updated
+
+
+//     // --- Clear Cart ---
+//     const clearCart = useCallback(async () => {
+//         if (isAuthenticated) { // ✅ Use isAuthenticated from AuthContext
+//             setCartLoading(true);
+//             try {
+//                 // You'll need to create this backend API endpoint to clear the user's cart in DB
+//                 const response = await axios.post(`${backdendUrl}/api/cart/clear`, {}, getAuthHeaders());
+//                 if (response.data.success) {
+//                     localStorage.removeItem('guestCart'); // Clear guest cart too just in case
+//                     setCartItems([]);
+//                     toast.info("Your cart has been cleared!");
+//                 } else {
+//                     toast.error(response.data.message || "Failed to clear cart.");
+//                 }
+//             } catch (error) {
+//                 console.error("Error clearing server cart:", error);
+//                 if (error.response?.status === 401) {
+//                     toast.info("Your session expired. Clearing guest cart locally.");
+//                     localStorage.removeItem('guestCart');
+//                     setCartItems([]);
+//                 } else {
+//                     toast.error(error.response?.data?.message || "Server error clearing cart.");
+//                 }
+//             } finally {
+//                 setCartLoading(false);
+//             }
+//         } else { // Guest user (not authenticated)
+//             localStorage.removeItem('guestCart');
+//             setCartItems([]);
+//             toast.info("Cart cleared!");
+//         }
+//     }, [isAuthenticated, backdendUrl, getAuthHeaders]); // Dependencies
+
+
+//     // --- Cart Merging Logic (on successful login/register) ---
+//     const mergeGuestCartWithUserCart = useCallback(async () => {
+//         const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+//         // Only merge if authenticated AND guest cart has items
+//         if (isAuthenticated && guestCart.length > 0) {
+//             setCartLoading(true);
+//             try {
+//                 // Backend endpoint is /api/cart/merge
+//                 const response = await axios.post(`${backdendUrl}/api/cart/merge`, { guestCartItems: guestCart }, getAuthHeaders());
+//                 if (response.data.success) {
+//                     localStorage.removeItem('guestCart'); // Clear guest cart after successful merge
+//                     setCartItems(response.data.cart.items);
+//                     toast.success('Your guest cart has been merged!');
+//                 } else {
+//                     toast.warn(response.data.message || 'Failed to merge guest cart.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error merging guest cart:', error);
+//                 toast.error(error.response?.data?.message || 'Server error merging guest cart.');
+//             } finally {
+//                 setCartLoading(false);
+//             }
+//         }
+//     }, [isAuthenticated, backdendUrl, getAuthHeaders]);
+
+
+//     // --- Primary Effect for Cart Loading/Merging ---
+//     useEffect(() => {
+//         // This effect will run on initial mount and whenever isAuthenticated or loadingAuth changes
+//         // It's crucial that we wait for loadingAuth to be false before fetching
+//         if (!loadingAuth) { // Only proceed once AuthContext has loaded user status
+//             fetchUserCart(); // Loads user cart or guest cart based on isAuthenticated
+//             // If user just became authenticated AND auth loading is done, trigger merge
+//             if (isAuthenticated) { // mergeGuestCartWithUserCart already checks for guestCart.length > 0
+//                 mergeGuestCartWithUserCart();
+//             }
+//         }
+//     }, [isAuthenticated, loadingAuth, fetchUserCart, mergeGuestCartWithUserCart]); // Dependencies
+
+//     // Context value
+//     const cartContextValue = {
+//         cartItems,
+//         cartLoading,
+//         cartError,
+//         addToCart,
+//         removeFromCart,
+//         updateCartItemQuantity,
+//         clearCart,
+//         fetchUserCart,
+//         mergeGuestCart: mergeGuestCartWithUserCart,
+//         cartTotal: cartItems.reduce((acc, item) => acc + (item.quantity * (item.variantDetails?.price || 0)), 0),
+//         cartItemCount: cartItems.reduce((acc, item) => acc + item.quantity, 0),
+//     };
+
+//     return (
+//         <CartContext.Provider value={cartContextValue}>
+//             {children}
+//         </CartContext.Provider>
+//     );
+// };

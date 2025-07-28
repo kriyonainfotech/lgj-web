@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiUser, FiShoppingCart, FiX, FiMenu, FiChevronDown } from 'react-icons/fi'; // Ensure FiShoppingCart is imported
-import { FiMinus, FiPlus } from 'react-icons/fi'; // For quantity buttons
-import { FaTrash } from 'react-icons/fa'; // For the delete icon
-import { decryptData } from '../utils/secureStorage'; // Assuming you have this utility for decryption
+import { FiUser, FiShoppingCart, FiX, FiMenu, FiChevronDown } from 'react-icons/fi';
+import { FiMinus, FiPlus } from 'react-icons/fi';
+import { FaTrash } from 'react-icons/fa';
+import { decryptData } from '../utils/secureStorage';
 import { jwtDecode } from "jwt-decode";
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 import axios from "axios";
@@ -88,7 +88,6 @@ export default function Header() {
             updateCartItemQuantity(itemId, newQuantity);
         }
     };
-
 
     return (
         <header className="text-ivory sticky top-0 z-50 shadow-md">
