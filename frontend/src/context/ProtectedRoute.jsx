@@ -1,66 +1,38 @@
-// components/ProtectedRoute.jsx
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children, role }) => {
-    const { user, loading } = useAuth(); // Now `loading` will be correctly received
+    const { user, loadingAuth } = useAuth();
+    const location = useLocation();
 
-    // console.log("ProtectedRoute: loading", loading); //
-    // console.log("ProtectedRoute: user", user); //
-    // console.log("ProtectedRoute: expected role", role); //
-
-    if (loading) { // This condition will now correctly be true initially
-        // console.log("ProtectedRoute: Still loading, showing placeholder."); //
-        return <div>🔒 Checking auth...</div>; //
+    // 1. Show a loading indicator while authentication status is being checked.
+    // This is the most important check and must come first.
+    if (loadingAuth) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p>🔒 Verifying access...</p>
+            </div>
+        );
     }
 
-    if (!user) { //
-        // console.log("ProtectedRoute: No user found, redirecting to /login."); //
-        return <Navigate to="/login" />; //
-    }
-    if (role && user.role !== role) { //
-        // console.log(`ProtectedRoute: User role (${user.role}) does not match required role (${role}), redirecting to /unauthorized.`); //
-        return <Navigate to="/unauthorized" />; //
+    // 2. After loading is complete, check if a user exists.
+    // If not, redirect to the login page.
+    if (!user) {
+        console.warn("⛔ No user found — redirecting to /login");
+        // We pass the original location in state so we can redirect back after login.
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    console.log("ProtectedRoute: User is authorized, rendering children."); //
-    return children; //
+    // 3. If a user exists, check if their role matches the required role.
+    if (role && user.role !== role) {
+        console.warn(`🔐 Authorization failed. Required role: '${role}', User role: '${user.role}'`);
+        // Redirect to a dedicated "unauthorized" page for a better user experience.
+        return <Navigate to="/unauthorized" replace />;
+    }
+
+    // 4. If all checks pass, render the protected component.
+    console.log("✅ User is authorized");
+    return children;
 };
 
 export default ProtectedRoute;
-
-// components/ProtectedRoute.jsx
-// import { Navigate } from "react-router-dom";
-// import { useAuth } from "../context/AuthContext"; // ✅ Ensure path is correct
-
-// const ProtectedRoute = ({ children, role }) => {
-//     // ✅ Destructure loadingAuth and isAuthenticated from useAuth
-//     const { user, loadingAuth, isAuthenticated } = useAuth();
-
-//     // console.log("ProtectedRoute: loadingAuth", loadingAuth);
-//     // console.log("ProtectedRoute: isAuthenticated", isAuthenticated);
-//     // console.log("ProtectedRoute: user", user);
-//     // console.log("ProtectedRoute: expected role", role);
-
-//     if (loadingAuth) { // ✅ Use loadingAuth
-//         console.log("ProtectedRoute: Still loading auth status, showing placeholder.");
-//         return <div>🔒 Checking authentication...</div>;
-//     }
-
-//     // ✅ Primary check: If not authenticated, redirect to login
-//     if (!isAuthenticated) {
-//         console.log("ProtectedRoute: Not authenticated, redirecting to /login.");
-//         return <Navigate to="/login" />;
-//     }
-
-//     // Check role if required (only if authenticated)
-//     if (role && user.role !== role) {
-//         console.log(`ProtectedRoute: User role (${user.role}) does not match required role (${role}), redirecting to /unauthorized.`);
-//         return <Navigate to="/unauthorized" />;
-//     }
-
-//     console.log("ProtectedRoute: User is authorized, rendering children.");
-//     return children;
-// };
-
-// export default ProtectedRoute;

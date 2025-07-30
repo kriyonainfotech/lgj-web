@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/multer");
-const { addProduct, getAllProducts, updateProduct, getProductById, deleteProduct, getProductsByCategorySlugs, getProductsFiltered } = require('../controller/productController.js');
+const { addProduct, getAllProducts, updateProduct, getProductById, deleteProduct, getProductsByCategorySlugs, getProductsFiltered, searchProducts } = require('../controller/productController.js');
 
 
 let productUploadFields = [
@@ -24,5 +24,6 @@ router.delete("/delete-product/:id", deleteProduct);
 router.post("/get-products-by-category-slugs", getProductsByCategorySlugs); // Use POST for body data
 router.get("/get-products-filtered", getProductsFiltered);
 router.get("/get-product/:id", getProductById);
+router.get("/search", searchProducts)
 
 module.exports = router;

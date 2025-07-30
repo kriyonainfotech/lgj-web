@@ -170,31 +170,31 @@ export default function CheckoutPage() {
         // For now, it's simulated.
         try {
             // Replace this with your actual order creation API call
-            // const token = localStorage.getItem('token');
-            // const config = { headers: { Authorization: `Bearer ${token}` } };
-            // const orderData = {
-            //     cartItems: cartItems.map(item => ({
-            //         productId: item.productId,
-            //         variantId: item.variantId,
-            //         quantity: item.quantity,
-            //         priceAtPurchase: item.variantDetails.price,
-            //         nameAtPurchase: item.name,
-            //         mainImageAtPurchase: item.mainImage
-            //     })),
-            //     shippingAddress: shippingAddress,
-            //     totalAmount: cartTotal,
-            //     paymentMethod: 'Card', // Hardcoded for mock, would come from selection
-            //     paymentStatus: 'Paid', // Assuming payment success for mock
-            // };
-            // const response = await axios.post(`${backdendUrl}/api/orders/create`, orderData, config);
+            const token = localStorage.getItem('token');
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const orderData = {
+                cartItems: cartItems.map(item => ({
+                    productId: item.productId,
+                    variantId: item.variantId,
+                    quantity: item.quantity,
+                    priceAtPurchase: item.variantDetails.price,
+                    nameAtPurchase: item.name,
+                    mainImageAtPurchase: item.mainImage
+                })),
+                shippingAddress: shippingAddress,
+                totalAmount: cartTotal,
+                paymentMethod: 'Card', // Hardcoded for mock, would come from selection
+                paymentStatus: 'Paid', // Assuming payment success for mock
+            };
+            const response = await axios.post(`${backdendUrl}/api/order/createOrder`, orderData, config);
 
-            // if (response.data.success) {
-            //     toast.success("Order placed successfully!");
-            //     clearCart(); // Clear cart after successful order
-            //     navigate(`/order-confirmation/${response.data.orderId}`);
-            // } else {
-            //     toast.error(response.data.message || "Failed to place order.");
-            // }
+            if (response.data.success) {
+                toast.success("Order placed successfully!");
+                clearCart(); // Clear cart after successful order
+                // navigate(`/order-confirmation/${response.data.orderId}`);
+            } else {
+                toast.error(response.data.message || "Failed to place order.");
+            }
 
             // Simulation of order placement
             setTimeout(() => {

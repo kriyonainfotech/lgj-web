@@ -1,26 +1,69 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-const apiurl = import.meta.env.VITE_API_URL;
+import OrderDetail from "./OrderDetail";
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+
+const dummyOrder = {
+    _id: "ORD123456",
+    status: "processing",
+    createdAt: "2025-07-29T10:07:35.663Z",
+    totalAmount: 3948,
+    paymentMethod: "Card",
+    paymentStatus: "Paid",
+    user: {
+        name: "Aarav Sharma",
+        email: "aarav.sharma@example.com"
+    },
+    shippingAddress: {
+        fullName: "Aarav Sharma",
+        city: "Surat",
+        state: "Gujarat",
+        country: "India"
+    },
+    cartItems: [
+        {
+            _id: "item1",
+            mainImageAtPurchase: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+            nameAtPurchase: "Hexa Halo Diamond 925 Sterling Silver Studs - 14KT",
+            priceAtPurchase: 3149,
+            quantity: 1,
+            variantId: "VAR123"
+        },
+        {
+            _id: "item2",
+            mainImageAtPurchase: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+            nameAtPurchase: "Classic Gold Solitaire Ring - 18KT",
+            priceAtPurchase: 799,
+            quantity: 1,
+            variantId: "VAR456"
+        }
+    ]
+};
+
 
 const ViewOrders = () => {
     const [orders, setOrders] = useState([]);
-    const [selectedOrder, setSelectedOrder] = useState(null); // For showing the modal
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const token = localStorage.getItem("token"); // This gets the JWT stored during login
 
     const fetchOrders = async () => {
         try {
-            const res = await axios.get(`${apiurl}/order/getallorders`, {
+            const res = await axios.get(`${backdendUrl}/api/order/getallorders`, {
                 withCredentials: true,
-            }); // Update this path if needed
-            console.log(res.data.orders, "orders");
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+            console.log(res, "orders");
             setOrders(res.data.orders);
         } catch (error) {
             console.error("❌ Failed to fetch orders:", error.message);
         }
     };
 
-    const handleViewOrder = (orderId) => {
-        const order = orders.find((order) => order._id === orderId);
-        setSelectedOrder(order);
+    const handleViewOrder = (order) => {
+        setSelectedOrder(order); // <-- NOT just order._id
     };
 
     const handleCloseModal = () => {
@@ -62,22 +105,16 @@ const ViewOrders = () => {
                     <tbody>
                         {orders?.map((order, index) => (
                             <tr key={order._id} className="text-sm">
-                                <td className="px-5 py-3 border-b">{++index}</td>
+                                <td className="px-5 py-3 border-b">{index + 1}</td>
                                 <td className="px-5 py-3 border-b">{order._id}</td>
-                                <td className="px-5 py-3 border-b">
-                                    {order.userId?.name || "N/A"}
-                                </td>
-                                <td className="px-5 py-3 border-b">
-                                    {new Date(order.createdAt).toLocaleDateString()}
-                                </td>
-                                <td className="px-5 py-3 border-b capitalize">
-                                    {order.status}
-                                </td>
+                                <td className="px-5 py-3 border-b">{order.user?.name || "N/A"}</td>
+                                <td className="px-5 py-3 border-b">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                <td className="px-5 py-3 border-b capitalize">{order.status}</td>
                                 <td className="px-5 py-3 border-b">₹{order.totalAmount}</td>
                                 <td className="px-5 py-3 border-b text-center">
                                     <button
                                         className="text-white border border-blue-700 hover:text-blue-700 mx-2 px-3 py-2 bg-blue-700 rounded-lg"
-                                        onClick={() => handleViewOrder(order._id)}
+                                        onClick={() => handleViewOrder(order)}
                                     >
                                         View
                                     </button>
@@ -85,11 +122,10 @@ const ViewOrders = () => {
                                 <td className="px-5 py-3 border-b">
                                     <select
                                         value={order.status}
-                                        onChange={(e) =>
-                                            handleStatusChange(order._id, e.target.value)
-                                        }
+                                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                         className="bg-gray-100 text-sm p-2 rounded-md border border-gray-300"
                                     >
+                                        <option value="Placed">Placed</option>
                                         <option value="processing">Processing</option>
                                         <option value="shipped">Shipped</option>
                                         <option value="delivered">Delivered</option>
@@ -99,71 +135,42 @@ const ViewOrders = () => {
                             </tr>
                         ))}
                     </tbody>
+
                 </table>
             </div>
 
             {/* View Order Modal */}
             {selectedOrder && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-lg">
-                        <h2 className="text-3xl font-bold text-gray-800 mb-6">
-                            Order Details
-                        </h2>
+                <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-lg h-[80vh] overflow-y-auto">
+                        <h2 className="text-3xl font-bold text-gray-800 mb-6">Order Details</h2>
 
                         {/* Customer Info */}
                         <div className="mb-6">
-                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                                Customer Info:
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-1">
-                                <strong>Name:</strong> {selectedOrder.userId.name}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>Email:</strong> {selectedOrder.userId.email}
-                            </p>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">Customer Info:</h3>
+                            <p className="text-sm text-gray-600 mb-1"><strong>Name:</strong> {selectedOrder.user?.name}</p>
+                            <p className="text-sm text-gray-600"><strong>Email:</strong> {selectedOrder.user?.email}</p>
                         </div>
 
                         {/* Shipping Info */}
                         <div className="mb-6">
-                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                                Shipping Info:
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-1">
-                                <strong>Address:</strong>{" "}
-                                {selectedOrder.shippingInfo[0]?.address}
-                            </p>
-                            <p className="text-sm text-gray-600 mb-1">
-                                <strong>City:</strong> {selectedOrder.shippingInfo[0]?.city}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>Pincode:</strong>{" "}
-                                {selectedOrder.shippingInfo[0]?.pincode}
-                            </p>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">Shipping Info:</h3>
+                            <p className="text-sm text-gray-600 mb-1"><strong>City:</strong> {selectedOrder.shippingAddress?.city}</p>
+                            <p className="text-sm text-gray-600 mb-1"><strong>State:</strong> {selectedOrder.shippingAddress?.state}</p>
+                            <p className="text-sm text-gray-600 mb-1"><strong>Country:</strong> {selectedOrder.shippingAddress?.country}</p>
                         </div>
 
-                        {/* Order Items */}
+                        {/* Cart Items */}
                         <div className="mb-6">
-                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                                Order Items:
-                            </h3>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">Items:</h3>
                             <ul className="space-y-4 ps-1">
-                                {selectedOrder.orderItems.map((item) => (
+                                {selectedOrder.cartItems?.map((item) => (
                                     <li key={item._id} className="flex items-center space-x-4">
-                                        <img
-                                            src={item.productId.thumbnail}
-                                            alt={item.productId.title}
-                                            className="w-20 h-20 object-cover rounded-md"
-                                        />
+                                        <img src={item.mainImageAtPurchase} alt={item.nameAtPurchase} className="w-20 h-20 object-cover rounded-md" />
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-800">
-                                                {item.productId.title}
-                                            </p>
-                                            <p className="mb-1 text-sm text-gray-600">
-                                                Quantity: {item.quantity}
-                                            </p>
-                                            <p className="mb-1 text-sm text-gray-600">
-                                                Price: ₹{item.price}
-                                            </p>
+                                            <p className="text-sm font-semibold text-gray-800">{item.nameAtPurchase}</p>
+                                            <p className="mb-1 text-sm text-gray-600">Quantity: {item.quantity}</p>
+                                            <p className="mb-1 text-sm text-gray-600">Price: ₹{item.priceAtPurchase}</p>
                                         </div>
                                     </li>
                                 ))}
@@ -172,21 +179,13 @@ const ViewOrders = () => {
 
                         {/* Payment Info */}
                         <div className="mb-6">
-                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                                Payment Method:
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                {selectedOrder.paymentMethod}
-                            </p>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">Payment Method:</h3>
+                            <p className="text-sm text-gray-600">{selectedOrder.paymentMethod}</p>
                         </div>
 
                         <div className="mb-6">
-                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                                Payment Status:
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                {selectedOrder.paymentStatus}
-                            </p>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">Payment Status:</h3>
+                            <p className="text-sm text-gray-600">{selectedOrder.paymentStatus}</p>
                         </div>
 
                         {/* Close Button */}
@@ -201,6 +200,10 @@ const ViewOrders = () => {
                     </div>
                 </div>
             )}
+
+            {/* <OrderDetail order={dummyOrder} onClose={() => console.log("Closed")} /> */}
+
+
         </div>
     );
 };

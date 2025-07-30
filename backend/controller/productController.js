@@ -574,3 +574,53 @@ exports.getProductById = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error fetching product." });
     }
 };
+
+exports.searchProducts = async (req, res) => {
+    const query = req.query.q;
+    console.log(`🔍  Live searching for: "${query}"`);
+
+    if (!query || query.trim().length < 2) { // Only search if query is at least 2 characters
+        return res.status(400).json({ success: false, message: "Search query must be at least 2 characters long." });
+    }
+
+    try {
+        // This creates a regex for each word in the search query
+        const searchWords = query.split(' ').map(word => new RegExp(word, 'i'));
+
+        // We run queries in parallel for better performance
+        const [products, categories] = await Promise.all([
+            Product.find({ title: { $all: searchWords } }) // Use $all to match all words
+                .select('title slug mainImage variants') // Select only needed fields
+                .populate({ path: 'variants', select: 'price' }) // Get price from the first variant
+                .limit(5), // Limit to 5 product results for a clean dropdown
+
+            Category.find({
+                $or: [
+                    { name: { $all: searchWords } },
+                    { 'subcategories.name': { $all: searchWords } }
+                ]
+            }).select('name slug subcategories.name subcategories.slug').limit(4) // Limit to 4 category results
+        ]);
+
+        // Filter subcategories that match the search from the found categories
+        const matchingSubcategories = categories.flatMap(cat =>
+            cat.subcategories.filter(sub => sub.name.match(new RegExp(query, 'i')))
+        );
+
+        // Filter categories themselves that match
+        const matchingCategories = categories.filter(cat => cat.name.match(new RegExp(query, 'i')));
+
+        const results = {
+            products,
+            categories: matchingCategories,
+            subcategories: matchingSubcategories
+        };
+
+        console.log(`✅  Found ${products.length} products, ${matchingCategories.length} categories, ${matchingSubcategories.length} subcategories.`);
+        res.status(200).json({ success: true, results });
+
+    } catch (error) {
+        console.error("❌  Error during live product search:", error);
+        res.status(500).json({ success: false, message: "Server error during search." });
+    }
+};

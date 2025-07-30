@@ -24,19 +24,19 @@ const Home = () => {
     const features = [
         {
             title: "100% Secure Payment",
-            icon: <FaLock className="text-blue-600 text-3xl" />,
+            icon: <FaLock className="text-maroon text-3xl" />,
         },
         {
             title: "100% Money Back Guarantee",
-            icon: <FaMoneyBillWave className="text-green-600 text-3xl" />,
+            icon: <FaMoneyBillWave className="text-maroon text-3xl" />,
         },
         {
             title: "Free Fedex 2 Day Shipping",
-            icon: <FaShippingFast className="text-purple-600 text-3xl" />,
+            icon: <FaShippingFast className="text-maroon text-3xl" />,
         },
         {
             title: "Easy 30 Days Returns",
-            icon: <FaUndoAlt className="text-yellow-600 text-3xl" />,
+            icon: <FaUndoAlt className="text-maroon text-3xl" />,
         },
     ];
 
@@ -241,8 +241,8 @@ const Home = () => {
 
             <section className="py-16 px-4 bg-light text-midnight">
                 <div className="text-center mb-10">
-                    <h2 className="text-[40px] fraunces text-black">MIROSA's Collection</h2>
-                    <p className="text-2xl text-primary fraunces mt-2">A companion for every occasion</p>
+                    <h2 className="text-3xl md:text-[40px] fraunces text-black">MIROSA's Collection</h2>
+                    <p className="text-lg md:text-2xl text-primary fraunces mt-2">A companion for every occasion</p>
                 </div>
 
                 {mirosasCollection && (
@@ -252,24 +252,20 @@ const Home = () => {
                             <p className="text-2xl text-primary fraunces mt-2">{mirosasCollection.description}</p>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-4 max-w-7xl mx-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 max-w-7xl mx-auto">
                             {mirosasCollection.subcategories?.slice(0, 4).map((sub, index) => (
-                                <div
-                                    key={sub._id}
-                                    className="h-[150px] md:h-[350px]"
-                                >
-                                    <Link to={`/mirosas-collection/${sub.slug}`} state={{ subcategoryId: sub._id }} className="relative block h-full">
-                                        <img
-                                            src={sub.image?.url || "/images/placeholder.jpg"}
-                                            alt={sub.name}
-                                            className="w-full h-full object-cover object-center rounded-lg"
-                                        />
+                                <div key={sub._id}>
+                                    <Link to={`/mirosas-collection/${sub.slug}`} state={{ subcategoryId: sub._id }} className="block">
+                                        {/* This div creates a consistent container shape */}
+                                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                            <img
+                                                src={sub.image?.url || "/images/placeholder.jpg"}
+                                                alt={sub.name}
+                                                className="w-full h-full object-cover object-center"
+                                            />
+                                        </div>
                                     </Link>
-                                    {/* <div className="absolute bottom-0 w-full h-[40px] md:h-[120px] rounded-lg bg-gradient-to-t from-[#832729] via-[#832729f2] to-transparent" /> */}
-                                    {/* <h3 className="absolute bottom-[5px] md:bottom-[30px] w-full text-white text-md md:text-2xl fraunces font-medium text-center">
-                                        {sub.name}
-                                    </h3> */}
-                                    <h3 className="w-full text-gray-700 text-md md:text-2xl fraunces font-medium text-center">
+                                    <h3 className="w-full text-gray-700 text-md md:text-xl lg:text-2xl fraunces font-medium text-center mt-2">
                                         {sub.name}
                                     </h3>
                                 </div>
@@ -281,51 +277,57 @@ const Home = () => {
 
             </section>
 
-            <section className="py-16 px-4 bg-light text-midnight">
-                <div className="text-center mb-10">
-                    <h2 className="text-[40px] fraunces text-black">New Arrivals</h2>
-                    <p className="text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
+            <section class="py-16 px-4 bg-light text-midnight">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl md:text-[40px] fraunces text-black">New Arrivals</h2>
+                    <p class="text-lg md:text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-7xl mx-auto">
                     {newArrivals.map((product, index) => (
-                        <div key={index} className="flex flex-col items-center text-center ">
-                            <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <img
+                        <div key={index}>
+                            <Link to={`/products/${product.slug}`} state={{ productId: product._id }} className="block group">
+                                {/* Aspect ratio container for consistent image shape */}
+                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">                                    <img
                                     src={product.mainImage}
-                                    alt={product.name}
-                                    className="w-full h-[350px] object-cover border border-gray-300 rounded-md"
+                                    alt={product.title}
+                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                                 />
+                                </div>
                             </Link>
-                            <h3 className="mt-4 text-lg font-medium text-black fraunces">{product.title}</h3>
-                            <p className="text-black text-md mt-1 font-semibold fraunces">₹{product.variants[0].price}</p>
+                            <div className="text-center">
+                                <h3 className="mt-4 text-sm md:text-lg font-medium text-black nunito">{product.title}</h3>
+                                <p className="text-black text-md mt-1 font-semibold fraunces">₹{product.variants[0].price}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
-                <div className="flex justify-center mt-10">
+                <div class="flex justify-center mt-10">
                     <Link to={`/collections/new-arrivals`} className="px-20 fraunces py-3 rounded-md bg-maroon text-white text-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
                         View All
                     </Link>
                 </div>
             </section>
 
+
             <TrustSection />
 
-            <section className="py-16 px-4 bg-light text-midnight">
+            <section className="py-8 md:py-16 px-4 bg-light text-midnight">
                 <div className="text-center mb-10">
-                    <h2 className="text-[40px] fraunces text-black">Trending Now</h2>
-                    <p className="text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
+                    <h2 className="text-3xl md:text-[40px] fraunces text-black">Trending Now</h2>
+                    <p className="text-lg md:text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-7xl mx-auto">
                     {trendingNow.map((product, index) => (
                         <div key={index} className="flex flex-col items-center text-center ">
                             <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <img
+                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">                                    <img
                                     src={product.mainImage}
-                                    alt={product.name}
-                                    className="w-full h-[350px] object-cover border border-gray-300 rounded-md"
+                                    alt={product.title}
+                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                                 />
+                                </div>
                             </Link>
                             <h3 className="mt-4 text-lg font-medium text-black fraunces">{product.title}</h3>
                             <p className="text-black text-md mt-1 font-semibold fraunces">₹{product.variants[0].price}</p>
@@ -363,19 +365,20 @@ const Home = () => {
 
             <section className="py-16 px-4 bg-light text-midnight">
                 <div className="text-center mb-10">
-                    <h2 className="text-[40px] fraunces text-black">Best Sellers</h2>
-                    <p className="text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
+                    <h2 className="text-3xl md:text-[40px] fraunces text-black">Best Sellers</h2>
+                    <p className="text-lg md:text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-7xl mx-auto">
                     {bestSeller.map((product, index) => (
                         <div key={index} className="flex flex-col items-center text-center ">
                             <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <img
+                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">                                    <img
                                     src={product.mainImage}
-                                    alt={product.name}
-                                    className="w-full h-[350px] object-cover border border-gray-300 rounded-md"
+                                    alt={product.title}
+                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                                 />
+                                </div>
                             </Link>
 
                             <h3 className="mt-4 text-lg font-medium text-black fraunces">{product.title}</h3>

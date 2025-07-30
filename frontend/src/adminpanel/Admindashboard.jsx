@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaUsers, FaShoppingCart, FaTags, FaList, FaBox } from "react-icons/fa";
 import { toast } from "react-toastify";
-const apiurl = import.meta.env.VITE_API_URL;
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const Admindashboard = () => {
     const [counts, setCounts] = useState(null);
@@ -11,7 +11,7 @@ const Admindashboard = () => {
     useEffect(() => {
         const fetchCounts = async () => {
             try {
-                const res = await axios.get(`${apiurl}/auth/getcounts`, {
+                const res = await axios.get(`${backdendUrl}/auth/getcounts`, {
                     withCredentials: true,
                 });
                 console.log(res.data, "res");

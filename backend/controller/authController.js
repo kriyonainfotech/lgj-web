@@ -279,3 +279,18 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        console.log("📥 Fetching all users...");
+
+        const users = await User.find().sort({ createdAt: -1 });
+
+        console.log(`✅ Found ${users.length} users.`);
+        res.status(200).json({ success: true, count: users.length, users });
+
+    } catch (error) {
+        console.error("❌ Error fetching users:", error.message);
+        res.status(500).json({ success: false, message: "Server error while fetching users." });
+    }
+};

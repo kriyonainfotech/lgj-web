@@ -50,11 +50,13 @@ export default function Login() {
 
                 {/* Left Side Banner / Image */}
                 <div className="md:w-1/2 hidden md:flex items-center justify-center bg-wine text-white p-8">
-                    <div className="text-center space-y-4">
-                        <Link to={'/'}><img src={logo} alt="Mirosa Logo" className="w-84 mx-auto" /></Link>
-                        <h2 className="text-2xl fraunces">Welcome Back</h2>
-                        <p className="text-md nunito">Sign in to access our stunning collections</p>
-                    </div>
+                    <Link to={'/'}>
+                        <div className="text-center space-y-4">
+                            <img src={logo} alt="Mirosa Logo" className="w-84 mx-auto" />
+                            <h2 className="text-2xl fraunces">Welcome Back</h2>
+                            <p className="text-md nunito">Sign in to access our stunning collections</p>
+                        </div>
+                    </Link>
                 </div>
 
                 {/* Right Side Login Form */}

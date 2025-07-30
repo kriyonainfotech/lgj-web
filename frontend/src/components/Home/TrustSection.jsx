@@ -28,44 +28,46 @@ const TrustSection = () => {
     ];
 
     return (
-        <section className=" py-16 px-4">
-            <div className="max-w-7xl mx-auto">
+        <section class="py-12 sm:py-16 lg:py-20 px-4 bg-stone-50">
+            <div class="max-w-7xl mx-auto">
                 {/* Main Slogan / Title */}
-                <div className="text-center mb-16 relative">
-                    {/* Decorative elements (adjust SVG/image paths as needed) */}
-                    {/* These are placeholders; you'd typically use SVG for the exact swirls */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1/4 h-px bg-gray-300 md:w-1/5 lg:w-1/6 hidden md:block"></div>
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/4 h-px bg-gray-300 md:w-1/5 lg:w-1/6 hidden md:block"></div>
+                <div class="text-center mb-12 lg:mb-16 relative">
+                    {/* Decorative lines that are more subtle */}
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1/6 h-px bg-gray-200 hidden lg:block"></div>
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1/6 h-px bg-gray-200 hidden lg:block"></div>
 
-                    <p className="text-2xl md:text-3xl lg:text-4xl italic text-gray-700 font-serif max-w-4xl mx-auto leading-relaxed px-4">
+                    <p class="text-2xl sm:text-3xl lg:text-4xl italic text-gray-700 font-serif max-w-4xl mx-auto leading-relaxed sm:leading-loose">
                         Trust us to be part of your precious moments and to deliver jewellery that you'll cherish forever.
                     </p>
                 </div>
 
                 {/* Four Value Proposition Columns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mt-8">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-center">
                     {trustPoints.map((point, index) => (
-                        <div key={index} className="flex flex-col items-center p-4">
+                        <div key={index} class="flex flex-col items-center p-4 group">
                             {/* Icon */}
-                            <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center mb-4">
+                            <div class="w-24 h-24 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
                                 <img
                                     src={point.iconPath}
                                     alt={point.alt}
                                     className="w-full h-full object-contain filter drop-shadow-md"
-                                // You might need to adjust styling for specific gold effect, e.g., using SVG and CSS filters
                                 />
                             </div>
                             {/* Title */}
-                            <h3 className="text-xl sm:text-xl font-semibold text-maroon fraunces mb-2 leading-tight">
+                            <h3 class="text-xl font-semibold text-maroon fraunces mb-2 leading-tight">
                                 {point.title}
                             </h3>
-                            {/* Short Description (optional, if you want more text) */}
-                            {/* <p className="text-gray-600 text-sm">A brief description of this value.</p> */}
+                            {/* Optional Description */}
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                {point.description} {/* Assuming you add a description to your trustPoints array */}
+                            </p>
                         </div>
                     ))}
                 </div>
             </div>
         </section>
+
+
     );
 };
 

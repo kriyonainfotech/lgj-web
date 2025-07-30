@@ -42,10 +42,10 @@
 //     );
 // };
 
-// export const useAuth = () => { //
-//     const context = useContext(AuthContext); //
-//     if (!context) console.warn("⚠️ useAuth called outside of AuthProvider!"); //
-//     return context; //
+// export const useAuth = () => {
+//     const context = useContext(AuthContext);
+//     if (!context) console.warn("⚠️ useAuth called outside of AuthProvider!");
+//     return context;
 // };
 
 
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     // --- Helper to clear all authentication related data ---
     const clearAuthData = useCallback(() => {
-        console.log("DEBUG: clearAuthData called. Clearing token and user from localStorage.");
+        // console.log("DEBUG: clearAuthData called. Clearing token and user from localStorage.");
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setUser(null);
@@ -83,9 +83,9 @@ export const AuthProvider = ({ children }) => {
             const storedToken = localStorage.getItem('token');
             const storedUserEncrypted = localStorage.getItem('user'); // This is the encrypted string
 
-            console.log("DEBUG: loadUserFromStorage called.");
-            console.log("DEBUG: Stored Token:", storedToken ? storedToken.substring(0, 30) + '...' : 'None');
-            console.log("DEBUG: Stored User (Encrypted String):", storedUserEncrypted ? storedUserEncrypted.substring(0, 30) + '...' : 'None');
+            // console.log("DEBUG: loadUserFromStorage called.");
+            // console.log("DEBUG: Stored Token:", storedToken ? storedToken.substring(0, 30) + '...' : 'None');
+            // console.log("DEBUG: Stored User (Encrypted String):", storedUserEncrypted ? storedUserEncrypted.substring(0, 30) + '...' : 'None');
 
             if (storedToken && storedUserEncrypted) {
                 const decodedToken = jwtDecode(storedToken);
@@ -93,15 +93,15 @@ export const AuthProvider = ({ children }) => {
 
                 const expiryDate = new Date(decodedToken.exp * 1000).toLocaleString();
                 const currentClientTime = new Date().toLocaleString();
-                console.log(`DEBUG: Token EXP: ${expiryDate}, Current Time: ${currentClientTime}`);
-                console.log("DEBUG: Is token expired?", isExpired);
+                // console.log(`DEBUG: Token EXP: ${expiryDate}, Current Time: ${currentClientTime}`);
+                // console.log("DEBUG: Is token expired?", isExpired);
 
                 if (isExpired) {
-                    console.warn("DEBUG: Token EXPIRED. Calling clearAuthData.");
+                    // console.warn("DEBUG: Token EXPIRED. Calling clearAuthData.");
                     toast.info("Your session has expired. Please log in again.");
                     clearAuthData();
                 } else {
-                    console.log("DEBUG: Token VALID. Attempting to decrypt user data.");
+                    // console.log("DEBUG: Token VALID. Attempting to decrypt user data.");
 
                     // ✅ CRUCIAL FIX: Assume decryptData directly returns the PARSED JAVASCRIPT OBJECT.
                     //    No JSON.parse() needed here because decryptData does it internally.

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify"; // Optional for better alerts
-const apiurl = import.meta.env.VITE_API_URL;
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const ViewUsers = () => {
     const [users, setUsers] = useState([]);
@@ -44,7 +44,7 @@ const ViewUsers = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await axios.get(`${apiurl}/auth/allusers`, {
+                const res = await axios.get(`${backdendUrl}/api/auth/allusers`, {
                     withCredentials: true,
                 });
                 console.log(res.data, "res");
@@ -79,55 +79,34 @@ const ViewUsers = () => {
                                     <th className="px-5 py-3 border-b">ID</th>
                                     <th className="px-5 py-3 border-b">Name</th>
                                     <th className="px-5 py-3 border-b">Email</th>
-                                    <th className="px-5 py-3 border-b">Phone</th>
-                                    {/* <th className="px-5 py-3 border-b">Address</th> */}
-                                    {/* <th className="px-5 py-3 border-b">Status</th> */}
+                                    <th className="px-5 py-3 border-b">Role</th>
+                                    <th className="px-5 py-3 border-b">Created At</th>
                                     <th className="px-5 py-3 border-b text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {users?.map((user, index) => (
-                                    <tr key={user.id} className="text-sm">
+                                    <tr key={user._id} className="text-sm">
                                         <td className="px-6 py-4 border-b">{++index}</td>
                                         <td className="px-5 py-3 border-b">{user.name}</td>
                                         <td className="px-5 py-3 border-b">{user.email}</td>
-                                        <td className="px-5 py-3 border-b">{user.phone}</td>
-                                        {/* <td className="px-5 py-3 border-b">{user.address}</td> */}
-                                        {/* <td className="px-5 py-3 border-b">
-                      <span
-                        className={`px-2 py-1 rounded-full text-white ${
-                          user.status === "Active"
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
-                      >
-                        {user.status}
-                      </span>
-                    </td> */}
+                                        <td className="px-5 py-3 border-b capitalize">{user.role}</td>
+                                        <td className="px-5 py-3 border-b">
+                                            {new Date(user.createdAt).toLocaleDateString()} {/* Or .toLocaleString() */}
+                                        </td>
                                         <td className="px-5 py-3 border-b text-center">
-                                            {/* <button
-                        className="text-blue-500 hover:text-blue-700 mx-2"
-                        onClick={() => handleEditUser(user.id)}
-                      >
-                        Edit
-                      </button> */}
                                             <button
-                                                className="text-white bg-red-500 py-2 px-3 rounded-lg hover:text-red-700 mx-2"
+                                                className="text-white bg-red-500 py-2 px-3 rounded-lg hover:bg-red-600"
                                                 onClick={() => handleDeleteUser(user._id)}
                                             >
                                                 Delete
                                             </button>
-                                            {/* <button
-                        className="text-yellow-500 hover:text-yellow-700 mx-2"
-                        onClick={() => handleToggleStatus(user.id)}
-                      >
-                        Toggle Status
-                      </button> */}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+
                     </div>
                 </>
             )}
