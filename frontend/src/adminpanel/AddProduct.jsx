@@ -879,9 +879,20 @@ const AddProduct = () => {
     };
 
     const handleVariantChange = (index, field, value) => {
-        setVariants(prev => prev.map((v, i) =>
-            i === index ? { ...v, [field]: value } : v
-        ));
+        setVariants(prev => prev.map((v, i) => {
+            if (i === index) {
+                // If the field being changed is 'size', process it into an array
+                if (field === "size") {
+                    const sizeArray = value.split(',') // Split the string by commas
+                        .map(s => s.trim()) // Trim whitespace from each size
+                        .filter(s => s); // Remove any empty strings
+                    return { ...v, size: sizeArray };
+                }
+                // For all other fields, handle as before
+                return { ...v, [field]: value };
+            }
+            return v;
+        }));
     };
 
     const handleVariantImageChange = (index, files) => {
@@ -904,7 +915,7 @@ const AddProduct = () => {
 
         // Validate variants
         const invalidVariant = variants.some(v =>
-            !v.metalColor || !v.purity || !v.sku || !v.totalPrice
+            !v.metalColor || !v.purity || !v.sku || !v.totalPrice || !v.material
         );
 
         if (invalidVariant) {
@@ -1186,15 +1197,21 @@ const AddProduct = () => {
 
                                 {/* Size */}
                                 <div>
-                                    <label className="block mb-1">Size</label>
+                                    <label className="block mb-1 text-sm font-medium text-gray-700">
+                                        Sizes (comma-separated)
+                                    </label>
                                     <input
                                         type="text"
-                                        value={variant.size}
+                                        value={
+                                            Array.isArray(variant?.size)
+                                                ? variant.size.join(', ')
+                                                : variant?.size || ''
+                                        }
                                         onChange={(e) =>
-                                            handleVariantChange(index, "size", e.target.value)
+                                            handleVariantChange(index, "size", e.target.value.split(',').map(s => s.trim()))
                                         }
                                         className="w-full border border-gray-300 p-2 rounded-md"
-                                        placeholder="e.g. 6, 7, 8..."
+                                        placeholder="6, 7, 8"
                                     />
                                 </div>
 
@@ -1214,6 +1231,36 @@ const AddProduct = () => {
                                         required
                                     />
                                 </div>
+
+                                {/* Inside the variant mapping in your AddProduct.jsx */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Discount Type */}
+                                    <div>
+                                        <label className="block mb-1 text-sm font-medium">Discount Type</label>
+                                        <select
+                                            value={variant.discount?.type || 'percentage'}
+                                            onChange={(e) => handleVariantChange(index, "discount", { ...variant.discount, type: e.target.value })}
+                                            className="w-full border border-gray-300 p-2 rounded-md"
+                                        >
+                                            <option value="percentage">Percentage (%)</option>
+                                            <option value="fixed">Fixed (₹)</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Discount Value */}
+                                    <div>
+                                        <label className="block mb-1 text-sm font-medium">Discount Value</label>
+                                        <input
+                                            type="number"
+                                            value={variant.discount?.value || 0}
+                                            onChange={(e) => handleVariantChange(index, "discount", { ...variant.discount, value: Number(e.target.value) })}
+                                            className="w-full border border-gray-300 p-2 rounded-md"
+                                            placeholder="e.g. 10 or 500"
+                                            min="0"
+                                        />
+                                    </div>
+                                </div>
+
 
                                 {/* Stock */}
                                 <div>

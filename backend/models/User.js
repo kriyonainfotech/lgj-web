@@ -14,7 +14,10 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true
     },
-
+    image: {
+        public_id: String,
+        url: String,
+    },
     mobile: {
         type: String,
         require: true,

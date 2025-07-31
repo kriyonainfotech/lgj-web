@@ -33,6 +33,8 @@ import EditProduct from './adminpanel/EditProduct';
 import EditSubCategory from './adminpanel/EditSubCategory';
 import { WishlistProvider } from './context/WishlistContext';
 import WishlistPage from './pages/Whislist/WishlistPage';
+import ViewProductDetail from './adminpanel/ViewProductDetail';
+import AdminViewProduct from './adminpanel/ViewProductDetail';
 
 function App() {
   return (
@@ -71,6 +73,7 @@ function App() {
                   <Route path="products" element={<ViewProduct />} />
                   <Route path="orders" element={<ViewOrders />} />
                   <Route path="users" element={<ViewUsers />} />
+                  <Route path="view-product/:productId" element={<AdminViewProduct />} />
                   <Route path="categories/add" element={<AddCategory />} />
                   <Route path="add-subcategory/:categoryId" element={<AddSubCategory />} />
                   <Route path="products/add" element={<AddProduct />} />

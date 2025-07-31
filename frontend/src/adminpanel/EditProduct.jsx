@@ -1,10 +1,10 @@
 // src/pages/admin/EditProduct.jsx (or wherever you store your admin pages)
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaPlus, FaTimes, FaTrash } from 'react-icons/fa'; // Icons for add/remove/delete
-
+import { FaArrowLeft, FaArrowRight, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const EditProduct = () => {
@@ -163,9 +163,19 @@ const EditProduct = () => {
     };
 
     const handleVariantChange = (index, field, value) => {
-        setVariants(prev => prev.map((v, i) =>
-            i === index ? { ...v, [field]: value } : v
-        ));
+        setVariants(prev => prev.map((v, i) => {
+            if (i === index) {
+                if (field === "size") {
+                    // Ensure value is a string before splitting.
+                    const sizeArray = typeof value === 'string'
+                        ? value.split(',').map(s => s.trim())
+                        : [];
+                    return { ...v, size: sizeArray };
+                }
+                return { ...v, [field]: value };
+            }
+            return v;
+        }));
     };
 
     // Handle new image files for a specific variant
@@ -214,7 +224,7 @@ const EditProduct = () => {
 
         console.log("Form data before submission:", variants);
         const invalidVariant = variants.some(v =>
-            !v.material || !v.purity || !v.sku || !v.price || !v.weight || (!v.images.length && !v.newFiles.length)
+            !v.material || !v.purity || !v.sku || !v.price || !v.weight || !v.discount || (!v.images.length && !v.newFiles.length)
         );
 
         if (invalidVariant) {
@@ -233,15 +243,16 @@ const EditProduct = () => {
                 mainImage: existingMainImageUrl, // Keep existing URL if no new file is uploaded
                 variants: variants.map(v => ({
                     _id: v._id.startsWith('new-') ? undefined : v._id, // Don't send temp IDs for new variants
-                    material: v.metalColor, // Map frontend field to schema
+                    material: v.material, // Map frontend field to schema
                     purity: v.purity,
-                    size: v.size,
+                    size: Array.isArray(v.size) ? v.size.filter(Boolean) : [],  // ✅ Fix here
                     price: Number(v.price), // Map frontend field to schema
                     sku: v.sku,
                     stock: Number(v.stock), // Send the numeric stock value
                     inStock: Number(v.stock) > 0, // Map frontend field to schema
                     weight: Number(v.weight), // Map frontend field to schema
                     images: v.images, // Send existing image URLs
+                    discount: v.discount
                 })),
             };
 
@@ -284,12 +295,16 @@ const EditProduct = () => {
                 <h2 className="text-2xl font-bold text-cyan-900">
                     Edit Product
                 </h2>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="text-blue-600 hover:underline"
-                >
-                    &larr; Back
-                </button>
+                <div className='flex gap-x-3'>
+                    <Link to="/admin/products" className="inline-flex items-center gap-2 bg-white px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <FaArrowLeft className="h-4 w-4" />
+                        Back
+                    </Link>
+                    <Link to={`/admin/view-product/`} className="inline-flex items-center gap-2 bg-white px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <FaArrowRight className="h-4 w-4" />
+                        Edit Product
+                    </Link>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -484,13 +499,17 @@ const EditProduct = () => {
 
                                 {/* Size */}
                                 <div>
-                                    <label className="block mb-1">Size</label>
+                                    <label className="block mb-1 text-sm font-medium text-gray-700">
+                                        Sizes (comma-separated)
+                                    </label>
                                     <input
                                         type="text"
+                                        // Show the array as a comma-separated string
                                         value={variant.size}
+                                        // Just pass the string from the input to the handler
                                         onChange={(e) => handleVariantChange(index, "size", e.target.value)}
                                         className="w-full border border-gray-300 p-2 rounded-md"
-                                        placeholder="e.g. 6, 7, 8..."
+                                        placeholder="6, 7, 8"
                                     />
                                 </div>
 
@@ -505,6 +524,35 @@ const EditProduct = () => {
                                         placeholder="Unique SKU"
                                         required
                                     />
+                                </div>
+
+                                {/* Inside the variant mapping in your AddProduct.jsx */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Discount Type */}
+                                    <div>
+                                        <label className="block mb-1 text-sm font-medium">Discount Type</label>
+                                        <select
+                                            value={variant.discount?.type || 'percentage'}
+                                            onChange={(e) => handleVariantChange(index, "discount", { ...variant.discount, type: e.target.value })}
+                                            className="w-full border border-gray-300 p-2 rounded-md"
+                                        >
+                                            <option value="percentage">Percentage (%)</option>
+                                            <option value="fixed">Fixed (₹)</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Discount Value */}
+                                    <div>
+                                        <label className="block mb-1 text-sm font-medium">Discount Value</label>
+                                        <input
+                                            type="number"
+                                            value={variant.discount?.value || 0}
+                                            onChange={(e) => handleVariantChange(index, "discount", { ...variant.discount, value: Number(e.target.value) })}
+                                            className="w-full border border-gray-300 p-2 rounded-md"
+                                            placeholder="e.g. 10 or 500"
+                                            min="0"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Stock */}
@@ -616,7 +664,7 @@ const EditProduct = () => {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className={`bg-blue-900 text-white px-6 py-3 rounded-md hover:bg-blue-800 transition ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""
+                            className={`bg-blue-900 text-white cursor-pointer px-6 py-3 rounded-md hover:bg-blue-800 transition ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""
                                 }`}
                         >
                             {isSubmitting ? (

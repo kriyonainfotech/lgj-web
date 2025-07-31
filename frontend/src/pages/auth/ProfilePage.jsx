@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from "react-router-dom";
+import UpdateProfile from "./UpdateProfile";
+import { useRef } from "react";
+import Modal from 'react-modal';
+import ProfilePhotoModal from "./ProfilePhotoModal";
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -18,6 +22,9 @@ const ProfilePage = () => {
     const query = useQuery();
     const [activeTab, setActiveTab] = useState("overview");
     const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal
+    const fileInputRef = useRef(null);
+    const menuRef = useRef(null);
 
     useEffect(() => {
         const tabFromQuery = query.get("tab");
@@ -32,6 +39,25 @@ const ProfilePage = () => {
             setActiveTab(tabFromQuery);
         }
     }, [query]);
+
+    // const handleFileChange = async (e) => {
+    //     const file = e.target.files[0];
+    //     if (!file) return;
+
+    //     const formData = new FormData();
+    //     formData.append('profilePhoto', file);
+
+    //     try {
+    //         const { data } = await axios.put('/api/users/profile/update-photo', formData);
+    //         setUser({ ...user, image: { url: data.imageUrl } }); // Update UI instantly
+    //         toast.success('Photo updated!');
+    //     } catch (error) {
+    //         toast.error('Upload failed.');
+    //     } finally {
+    //         setIsMenuOpen(false);
+    //     }
+    // };
+
 
 
     return (
@@ -40,9 +66,27 @@ const ProfilePage = () => {
                 {/* Sidebar */}
                 <aside className="w-full md:w-1/5 bg-gray-100 p-6 border-r">
                     <div className="flex items-center mb-8">
-                        <div className="w-12 h-12 rounded-full bg-maroon text-white flex items-center justify-center text-xl font-bold">
-                            {user?.name?.charAt(0).toUpperCase()}
+                        {/* Profile Pic Container */}
+                        <div className="relative">
+                            {user?.image?.url ? (
+                                <img src={user.image.url} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
+                            ) : (
+                                <div className="w-12 h-12 rounded-full bg-maroon text-white flex items-center justify-center text-xl font-bold">
+                                    {user?.name?.charAt(0).toUpperCase()}
+                                </div>
+                            )}
+
+                            {/* Pencil Icon Button now opens the modal */}
+                            <button
+                                onClick={() => setIsModalOpen(true)} // ✅ CHANGE THIS
+                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full border shadow-sm hover:bg-gray-200 transition"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" />
+                                </svg>
+                            </button>
                         </div>
+
                         <div className="ml-4">
                             <div className="text-base font-semibold text-gray-800">{user?.name}</div>
                             <div className="text-sm text-gray-500 truncate">{user?.email}</div>
@@ -75,6 +119,12 @@ const ProfilePage = () => {
                     </nav>
                 </aside>
 
+                <ProfilePhotoModal
+                    isOpen={isModalOpen}
+                    onRequestClose={() => setIsModalOpen(false)}
+                />
+
+
                 {/* Main Content */}
                 <main className="flex-1 p-6">
                     {activeTab === "overview" && (
@@ -93,10 +143,7 @@ const ProfilePage = () => {
                     )}
 
                     {activeTab === "settings" && (
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">Settings</h2>
-                            <p className="text-gray-500">Settings tab coming soon.</p>
-                        </div>
+                        <UpdateProfile /> // We'll create this new component
                     )}
                 </main>
             </div>

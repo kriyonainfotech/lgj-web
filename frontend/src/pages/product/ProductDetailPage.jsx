@@ -315,6 +315,24 @@ export default function ProductDetailPage() {
     const uniquePurities = getUniqueOptions(product.variants, 'purity');
     const uniqueSizes = getUniqueOptions(product.variants, 'size');
 
+    const calculateFinalPrice = (variant) => {
+        // Guard clause for safety
+        if (!variant || !variant.price) return 0;
+
+        const originalPrice = variant.price;
+        const discount = variant.discount;
+
+        // Return original price if there's no valid discount
+        if (!discount || !discount.type || !discount.value || discount.value <= 0) {
+            return originalPrice;
+        }
+
+        let finalPrice = (discount.type === 'percentage')
+            ? originalPrice - (originalPrice * discount.value / 100)
+            : originalPrice - discount.value;
+
+        return Math.max(0, finalPrice); // Ensure price isn't negative
+    };
 
     return (
         <div className="px-6 py-8 max-w-7xl mx-auto">
@@ -361,9 +379,32 @@ export default function ProductDetailPage() {
                 {/* Right - Product Info */}
                 <div className="w-full md:w-1/2 space-y-5">
                     <h1 className="text-3xl font-bold text-maroon nunito">{product.title}</h1>
-                    {selectedVariant && (
-                        <p className="text-5xl text-gray-800 fraunces font-semibold ">${selectedVariant.price}  </p>
-                    )}
+                    {selectedVariant && (() => {
+                        // --- Logic for the selected variant ---
+                        const finalPrice = calculateFinalPrice(selectedVariant);
+                        const hasDiscount = finalPrice < selectedVariant.price;
+
+                        return (
+                            <div className="mt-4">
+                                {hasDiscount ? (
+                                    // If there IS a discount, show both prices
+                                    <div className="flex items-baseline gap-4">
+                                        <p className="text-4xl text-maroon fraunces font-semibold">
+                                            ${finalPrice.toLocaleString()}
+                                        </p>
+                                        <p className="text-2xl text-gray-500 fraunces font-normal line-through">
+                                            ${selectedVariant.price.toLocaleString()}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    // If NO discount, show only the regular price
+                                    <p className="text-5xl text-gray-800 fraunces font-semibold">
+                                        ${selectedVariant.price.toLocaleString()}
+                                    </p>
+                                )}
+                            </div>
+                        );
+                    })()}
 
 
                     {/* Variant Selection Options */}

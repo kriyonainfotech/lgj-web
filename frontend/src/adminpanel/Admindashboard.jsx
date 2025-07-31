@@ -11,11 +11,12 @@ const Admindashboard = () => {
     useEffect(() => {
         const fetchCounts = async () => {
             try {
-                const res = await axios.get(`${backdendUrl}/auth/getcounts`, {
+                const res = await axios.get(`${backdendUrl}/api/auth/getcounts`, {
                     withCredentials: true,
                 });
-                console.log(res.data, "res");
-                setCounts(res.data.counts);
+                console.log(res.data.data, "res");
+                setCounts(res.data.data);
+
             } catch (error) {
                 console.error("Failed to fetch dashboard counts", error);
             } finally {
@@ -53,6 +54,8 @@ const Admindashboard = () => {
             icon: <FaBox className="text-orange-600" />,
         },
     ];
+
+    console.log(counts, 'cards')
 
     return (
         <div className="p-6">

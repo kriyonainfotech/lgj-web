@@ -1,4 +1,8 @@
 const User = require('../models/User'); // Adjust the path as needed
+const Category = require('../models/Category');
+const Subcategory = require('../models/Subcategory');
+const Product = require('../models/Product');
+const Order = require('../models/Order');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
@@ -105,7 +109,6 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
-
 
 exports.updateUserRole = async (req, res) => {
     console.log('🛠️ [UpdateUserRole] Received role update request:', req.body);
@@ -292,5 +295,94 @@ exports.getAllUsers = async (req, res) => {
     } catch (error) {
         console.error("❌ Error fetching users:", error.message);
         res.status(500).json({ success: false, message: "Server error while fetching users." });
+    }
+};
+
+exports.getCounts = async (req, res) => {
+
+    try {
+        const [userCount, categoryCount, subcategoryCount, productCount, orderCount] = await Promise.all([
+            User.countDocuments(),
+            Category.countDocuments(),
+            Subcategory.countDocuments(),
+            Product.countDocuments(),
+            Order.countDocuments()
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                users: userCount,
+                categories: categoryCount,
+                subcategories: subcategoryCount,
+                products: productCount,
+                orders: orderCount
+            }
+        });
+    } catch (error) {
+        console.error("❌ Error fetching counts:", error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+
+}
+
+exports.updateProfilePhoto = async (req, res) => {
+    try {
+        // 1. Check if a file was uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded.' });
+        }
+
+        // 2. Find the user from the protected route middleware
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // 3. If user already has a photo, delete the old one from Cloudinary
+        if (user.image && user.image.public_id) {
+            await deleteFromCloudinary(user.image.public_id);
+        }
+
+        // 4. Upload the new photo to Cloudinary
+        const result = await uploadToCloudinary(req.file.buffer, 'profile_photos');
+
+        // 5. Update the user's image field in the database
+        user.image = {
+            public_id: result.public_id,
+            url: result.secure_url
+        };
+        await user.save();
+
+        // 6. Send back the new image URL
+        res.status(200).json({
+            message: 'Profile photo updated successfully.',
+            imageUrl: user.image.url
+        });
+
+    } catch (error) {
+        console.error('Error updating profile photo:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+exports.deleteProfilePhoto = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user || !user.image || !user.image.public_id) {
+            return res.status(400).json({ message: 'No profile photo to delete.' });
+        }
+
+        // 1. Delete the image from Cloudinary
+        await deleteFromCloudinary(user.image.public_id);
+
+        // 2. Remove the image reference from the user document
+        user.image = undefined; // Or set to null
+        await user.save();
+
+        res.status(200).json({ message: 'Profile photo deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting profile photo:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 };

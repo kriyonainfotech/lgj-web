@@ -6,10 +6,24 @@ const variantSchema = new mongoose.Schema({
     weight: { type: Number },
     material: { type: String }, // 👈 Check this enum!
     purity: { type: String },
-    size: { type: String },
+    size: {
+        type: [String], // Changed from String to [String]
+        default: []     // Good practice to set a default empty array
+    },
     price: { type: Number, required: true },
     stock: { type: Number, required: true, default: 0, min: 0 }, inStock: { type: Boolean, default: true },
     images: [String],
+    discount: {
+        type: {
+            type: String,
+            enum: ['percentage', 'fixed'],
+            default: 'percentage'
+        },
+        value: {
+            type: Number,
+            default: 0
+        }
+    }
 }, { _id: true });
 
 variantSchema.pre('save', function (next) {

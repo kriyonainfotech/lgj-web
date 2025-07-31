@@ -192,6 +192,7 @@ exports.addProduct = async (req, res) => {
                 price: Number(currentVariantFromFrontend.totalPrice), // ✅ Ensure conversion and correct field name
                 stock: Number(currentVariantFromFrontend.stock), // ✅ Use the numeric stock value
                 images: variantImagesUrls, // Assign the collected image URLs
+                discount: currentVariantFromFrontend.discount
                 // inStock will be set automatically by the Mongoose pre-save hook
             });
         }
@@ -361,7 +362,8 @@ exports.updateProduct = async (req, res) => {
                 price: Number(variantData.price),
                 stock: Number(variantData.stock),
                 inStock: Boolean(variantData.inStock),
-                images: uploadedVariantImageUrls
+                images: uploadedVariantImageUrls,
+                discount: variantData.discount
             });
         }
 

@@ -319,7 +319,13 @@ const ViewProduct = () => {
                     </td> */}
                                         <td className="px-3 py-2 border-b text-center">
                                             <button
-                                                className="bg-blue-500 text-white px-3 py-2 rounded-md mx-2"
+                                                className="bg-gray-500 text-white px-3 py-2 rounded-md mx-2 cursor-pointer"
+                                                onClick={() => navigate(`/admin/view-product/${product._id}`, { state: { product } })}
+                                            >
+                                                View
+                                            </button>
+                                            <button
+                                                className="bg-blue-500 text-white px-3 py-2 rounded-md mx-2 cursor-pointer"
                                                 onClick={() => navigate(`/admin/edit-product/${product._id}`, { state: { product } })}
                                             >
                                                 Edit
