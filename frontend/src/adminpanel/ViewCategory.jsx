@@ -159,17 +159,17 @@ const ViewCategory = () => {
                                             <img
                                                 src={category.image.url}
                                                 alt={category.name}
-                                                className="w-20 h-20 object-cover rounded shadow-md border"
+                                                className="w-14 h-14 object-cover rounded"
                                             />
                                         ) : (
                                             <span className="text-gray-400 text-xs block mt-2">No image</span>
                                         )}
 
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-800">
-                                        {category.name}
+                                    <td className="text-gray-900">
+                                        {category.name} <br /> <span className="text-gray-500 text-sm">id :{category._id}</span>
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                    <td className="text-gray-900">
                                         {category.slug}
                                     </td>
                                     <td key={category._id} className="px-5 py-3 border-b ">
@@ -188,7 +188,7 @@ const ViewCategory = () => {
                                             {category.isFeatured ? 'ON' : 'OFF'}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-center space-x-3">
+                                    <td className=" text-center space-x-3">
                                         <button
                                             onClick={() => navigate(`/admin/edit-category/${category._id}`)}
                                             className="bg-blue-500 text-white py-3 px-4 rounded-md text-sm "

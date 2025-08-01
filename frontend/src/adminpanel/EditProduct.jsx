@@ -223,9 +223,32 @@ const EditProduct = () => {
         }
 
         console.log("Form data before submission:", variants);
-        const invalidVariant = variants.some(v =>
-            !v.material || !v.purity || !v.sku || !v.price || !v.weight || !v.discount || (!v.images.length && !v.newFiles.length)
-        );
+        const invalidVariant = variants.some(v => {
+            const isInvalid =
+                !v.material ||
+                !v.purity ||
+                !v.sku ||
+                v.price == null || isNaN(v.price) ||
+                v.weight == null || isNaN(v.weight) ||
+                !v.discount ||
+                ((!v.images || v.images.length === 0) && (!v.newFiles || v.newFiles.length === 0));
+
+            if (isInvalid) {
+                console.log("🚨 Missing fields in variant:", {
+                    material: v.material,
+                    purity: v.purity,
+                    sku: v.sku,
+                    price: v.price,
+                    weight: v.weight,
+                    discount: v.discount,
+                    images: v.images,
+                    newFiles: v.newFiles
+                });
+            }
+
+            return isInvalid;
+        });
+
 
         if (invalidVariant) {
             toast.error("Please ensure all variant required fields are filled and each variant has at least one image.");

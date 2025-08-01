@@ -27,4 +27,16 @@ const uploadToCloudinary = (buffer, folder) => {
     });
 };
 
-module.exports = { uploadToCloudinary, cloudinarySDK: cloudinary }; // Export this reusable function
+const deleteFromCloudinary = (publicId) => {
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.destroy(publicId, (error, result) => {
+            if (error) {
+                return reject(error);
+            }
+            // The result object contains confirmation, e.g., { result: 'ok' }
+            resolve(result);
+        });
+    });
+};
+
+module.exports = { uploadToCloudinary, deleteFromCloudinary, cloudinarySDK: cloudinary }; // Export this reusable function

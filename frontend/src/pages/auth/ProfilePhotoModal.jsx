@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext'; // Or your context path
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
     const { user, setUser } = useAuth();
@@ -23,6 +24,16 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
         }
     };
 
+    const token = localStorage.getItem("token"); // This gets the JWT stored during login
+
+    if (!token) {
+        // Handle case where token is missing (e.g., user not logged in or session expired)
+        setError("Authentication token not found. Please log in again.");
+        toast.error("Authentication token not found. Please log in again.");
+        navigate("/login"); // Redirect to login page
+        return;
+    }
+
     const handleUpload = async () => {
         if (!file) return;
         setIsUploading(true);
@@ -30,9 +41,18 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
         const formData = new FormData();
         formData.append('profilePhoto', file);
 
+        console.log('API TOUCHED!!!!!!!!!!!!!')
         try {
-            const { data } = await axios.put('/api/users/profile/update-photo', formData);
-            setUser({ ...user, image: { url: data.imageUrl } });
+            const response = await axios.put(`${backdendUrl}/api/auth/profile/update-photo`, formData, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log(response, 'data')
+
+            setUser({ ...user, image: { url: response.data.imageUrl } });
             toast.success('Photo updated!');
             onRequestClose(); // Close modal on success
         } catch (error) {
@@ -62,7 +82,7 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
             isOpen={isOpen}
             onRequestClose={onRequestClose}
             contentLabel="Update Profile Photo"
-            className="absolute top-110 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl p-8 w-full max-w-md z-50"
+            className="absolute top-100 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl p-8 w-full max-w-md z-50"
             overlayClassName="fixed inset-0 bg-black/60 bg-opacity-60"
         >
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Profile Photo</h2>

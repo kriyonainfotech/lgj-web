@@ -154,14 +154,14 @@
 //         <div className="sticky top-[108px] z-40 bg-white shadow-sm px-4 py-3">
 //           <div className="max-w-7xl flex items-center justify-between">
 //             <div className=''>
-//               <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 rounded-md px-3 py-1 cursor-pointer'>
+//               <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 px-3 py-1 cursor-pointer'>
 //                 <FiFilter className="text-xl text-gray-700" />
 //                 <h1 className="text-xl font-bold text-gray-800">Filter</h1>
 //               </button>
 
 //             </div>
 //             <div >
-//               <Link className='bg-maroon text-white px-3 py-2 rounded-md' to={'/'}>
+//               <Link className='bg-maroon text-white px-3 py-2' to={'/'}>
 //                 Back To Home
 //               </Link>
 //             </div>
@@ -223,7 +223,7 @@
 //                 type="number"
 //                 value={filters.priceRange[0]}
 //                 onChange={(e) => handleFilterChange('priceRange', [Number(e.target.value), filters.priceRange[1]])}
-//                 className="w-1/2 p-2 border rounded-md text-sm"
+//                 className="w-1/2 p-2 border text-sm"
 //                 placeholder="Min"
 //               />
 //               <span>-</span>
@@ -231,7 +231,7 @@
 //                 type="number"
 //                 value={filters.priceRange[1]}
 //                 onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])}
-//                 className="w-1/2 p-2 border rounded-md text-sm"
+//                 className="w-1/2 p-2 border text-sm"
 //                 placeholder="Max"
 //               />
 //             </div>
@@ -240,7 +240,7 @@
 //           {/* Reset Filters Button */}
 //           <button
 //             onClick={() => setFilters({ metals: [], categories: [], priceRange: [0, 20000] })}
-//             className="bg-maroon text-white px-6 py-2 rounded-md w-full"
+//             className="bg-maroon text-white px-6 py-2 w-full"
 //           >
 //             Reset Filters
 //           </button>
@@ -307,7 +307,7 @@
 //                       <button
 //                         onClick={() => handleAddToCartFromCard(product)}
 //                         disabled={loadingProductId === product._id || !product.variants?.length || product.variants[0].stock < 1}
-//                         className="mt-4 w-full bg-maroon cursor-pointer text-white py-2 rounded-md hover:bg-violet-700 transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+//                         className="mt-4 w-full bg-maroon cursor-pointer text-white py-2 hover:bg-violet-700 transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
 //                       >
 //                         {loadingProductId === product._id ? (
 //                           <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -514,20 +514,20 @@ const ShopPage = () => {
         <div className="sticky top-[108px] z-40 bg-white shadow-sm px-4 py-3">
           <div className="max-w-7xl flex items-center justify-between">
             <div className=''>
-              <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 rounded-md px-3 py-1 cursor-pointer'>
+              <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 px-3 py-1 cursor-pointer'>
                 <FiFilter className="text-xl text-gray-700" />
                 <h1 className="text-xl font-bold text-gray-800">Filter</h1>
               </button>
             </div>
-            <div >
-              <Link className='bg-maroon text-white px-3 py-2 rounded-md' to={'/'}>
+            <div>
+              <Link className='bg-maroon text-white px-3 py-2' to={'/'}>
                 Back To Home
               </Link>
             </div>
           </div>
         </div>
       </div >
-      <div className="flex flex-col lg:flex-row max-w-7xl mx-auto pt-5">
+      <div className="flex flex-col lg:flex-row max-w-full mx-12 pt-5">
         <aside
           ref={filterRef}
           className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform
@@ -581,7 +581,7 @@ const ShopPage = () => {
                 type="number"
                 value={filters.priceRange[0]}
                 onChange={(e) => handleFilterChange('priceRange', [Number(e.target.value), filters.priceRange[1]])}
-                className="w-1/2 p-2 border rounded-md text-sm"
+                className="w-1/2 p-2 border text-sm"
                 placeholder="Min"
               />
               <span>-</span>
@@ -589,7 +589,7 @@ const ShopPage = () => {
                 type="number"
                 value={filters.priceRange[1]}
                 onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])}
-                className="w-1/2 p-2 border rounded-md text-sm"
+                className="w-1/2 p-2 border text-sm"
                 placeholder="Max"
               />
             </div>
@@ -597,7 +597,7 @@ const ShopPage = () => {
 
           <button
             onClick={() => setFilters({ metals: [], categories: [], priceRange: [0, 20000] })}
-            className="bg-maroon text-white px-6 py-2 rounded-md w-full"
+            className="bg-maroon text-white px-6 py-2 w-full"
           >
             Reset Filters
           </button>
@@ -631,7 +631,7 @@ const ShopPage = () => {
                 {filteredProducts.map(product => (
                   <div
                     key={product._id}
-                    className="relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1"
+                    className="relative bg-white overflow-hidden"
                   >
                     {/* ✅ Wishlist Icon */}
                     <button
@@ -650,7 +650,7 @@ const ShopPage = () => {
                     </Link>
                     <div className="p-4">
                       <Link to={`/products/${product.slug}`} className="block">
-                        <h3 className="text-lg font-semibold text-gray-800 truncate nunito ">
+                        <h3 className="text-md font-semibold text-gray-800 nunito">
                           {product.title}
                         </h3>
                       </Link>
@@ -659,24 +659,24 @@ const ShopPage = () => {
                           ${product.variants[0].price}
                         </p>
                       )}
-                      <button
-                        onClick={() => handleAddToCartFromCard(product)}
-                        disabled={loadingProductId === product._id || !product.variants?.length || product.variants[0].stock < 1}
-                        className="mt-4 w-full bg-maroon cursor-pointer text-white py-2 rounded-md hover:bg-violet-700 transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {loadingProductId === product._id ? (
-                          <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : (
-                          <>
-                            <FiShoppingBag />
-                            <span>Add to Bag</span>
-                          </>
-                        )}
-                      </button>
                     </div>
+                    <button
+                      onClick={() => handleAddToCartFromCard(product)}
+                      disabled={loadingProductId === product._id || !product.variants?.length || product.variants[0].stock < 1}
+                      className="mt-4 w-full bg-maroon cursor-pointer text-white py-2 hover:bg-violet-700 transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loadingProductId === product._id ? (
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      ) : (
+                        <>
+                          <FiShoppingBag />
+                          <span>Add to Bag</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 ))}
               </div>

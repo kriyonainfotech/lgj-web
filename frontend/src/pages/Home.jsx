@@ -198,7 +198,7 @@ const Home = () => {
                 <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
                     {features.map((feature, index) => (
                         <div key={index} className="flex flex-col items-center space-y-3">
-                            <div className="bg-gray-100 p-4 rounded-full shadow-sm">
+                            <div className=" p-4 rounded-full shadow-sm">
                                 {feature.icon}
                             </div>
                             <h4 className="text-sm font-semibold text-gray-800">{feature.title}</h4>
@@ -252,12 +252,12 @@ const Home = () => {
                             <p className="text-2xl text-primary fraunces mt-2">{mirosasCollection.description}</p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 max-w-7xl mx-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-2 gap-8 md:gap-4 max-w-7xl mx-auto">
                             {mirosasCollection.subcategories?.slice(0, 4).map((sub, index) => (
                                 <div key={sub._id}>
                                     <Link to={`/mirosas-collection/${sub.slug}`} state={{ subcategoryId: sub._id }} className="block">
                                         {/* This div creates a consistent container shape */}
-                                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                        <div className="aspect-square  overflow-hidden">
                                             <img
                                                 src={sub.image?.url || "/images/placeholder.jpg"}
                                                 alt={sub.name}
@@ -288,7 +288,7 @@ const Home = () => {
                         <div key={index}>
                             <Link to={`/products/${product.slug}`} state={{ productId: product._id }} className="block group">
                                 {/* Aspect ratio container for consistent image shape */}
-                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">                                    <img
+                                <div className="aspect-[4/5]  overflow-hidden">                                    <img
                                     src={product.mainImage}
                                     alt={product.title}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
@@ -322,7 +322,7 @@ const Home = () => {
                     {trendingNow.map((product, index) => (
                         <div key={index} className="flex flex-col items-center text-center ">
                             <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">                                    <img
+                                <div className="aspect-[4/5]  overflow-hidden">                                    <img
                                     src={product.mainImage}
                                     alt={product.title}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
@@ -373,7 +373,7 @@ const Home = () => {
                     {bestSeller.map((product, index) => (
                         <div key={index} className="flex flex-col items-center text-center ">
                             <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden">                                    <img
+                                <div className="aspect-[4/5]  overflow-hidden">                                    <img
                                     src={product.mainImage}
                                     alt={product.title}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"

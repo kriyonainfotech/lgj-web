@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
+const { uploadToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
 
 // Register User API
 exports.registerUser = async (req, res) => {
@@ -327,41 +328,52 @@ exports.getCounts = async (req, res) => {
 }
 
 exports.updateProfilePhoto = async (req, res) => {
+    console.log('🔄 [updateProfilePhoto] API hit');
+
     try {
-        // 1. Check if a file was uploaded
+        // 1. Validate file
         if (!req.file) {
+            console.warn('⚠️ No file received in request');
             return res.status(400).json({ message: 'No file uploaded.' });
         }
 
-        // 2. Find the user from the protected route middleware
-        const user = await User.findById(req.user.id);
+        const userId = req.user.id;
+        console.log(`🔍 Looking up user: ${userId}`);
+
+        // 2. Fetch user from DB
+        const user = await User.findById(userId);
         if (!user) {
+            console.error(`❌ User not found with ID: ${userId}`);
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        // 3. If user already has a photo, delete the old one from Cloudinary
-        if (user.image && user.image.public_id) {
+        // 3. Delete existing Cloudinary image if present
+        if (user.image?.public_id) {
+            console.log(`🧹 Deleting old profile image: ${user.image.public_id}`);
             await deleteFromCloudinary(user.image.public_id);
         }
 
-        // 4. Upload the new photo to Cloudinary
-        const result = await uploadToCloudinary(req.file.buffer, 'profile_photos');
+        // 4. Upload new image
+        console.log('📤 Uploading new image to Cloudinary...');
+        const uploadResult = await uploadToCloudinary(req.file.buffer, 'profile_photos');
+        console.log('✅ Upload successful:', uploadResult.secure_url);
 
-        // 5. Update the user's image field in the database
+        // 5. Save new image data
         user.image = {
-            public_id: result.public_id,
-            url: result.secure_url
+            public_id: uploadResult.public_id,
+            url: uploadResult.secure_url
         };
         await user.save();
+        console.log('💾 User profile updated with new image.');
 
-        // 6. Send back the new image URL
+        // 6. Send response
         res.status(200).json({
             message: 'Profile photo updated successfully.',
             imageUrl: user.image.url
         });
 
     } catch (error) {
-        console.error('Error updating profile photo:', error);
+        console.error('🔥 Error in updateProfilePhoto:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -384,5 +396,75 @@ exports.deleteProfilePhoto = async (req, res) => {
     } catch (error) {
         console.error('Error deleting profile photo:', error);
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+exports.getUserById = async (req, res) => {
+    const userId = req.params.id;
+
+    console.log(`🔍 [getUserById] Fetching user by ID: ${userId}`);
+
+    try {
+        const user = await User.findById(userId).select('-password'); // exclude password field
+        if (!user) {
+            console.warn(`❌ User not found for ID: ${userId}`);
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        console.log("✅ User found:", user.name);
+        res.status(200).json({ success: true, user });
+
+    } catch (err) {
+        console.error("🔥 Error in getUserById:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.id; // ✅ Comes from your isUser middleware
+        const { name, mobile } = req.body;
+
+        console.log("🛠 Updating profile for:", userId);
+        console.log("➡️ New data:", { name, mobile });
+
+        // Basic validation
+        if (!name || typeof name !== 'string') {
+            return res.status(400).json({ message: "Name is required and must be a string." });
+        }
+
+        if (!mobile || typeof mobile !== 'string') {
+            return res.status(400).json({ message: "Mobile number is required and must be a string." });
+        }
+
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Update name and mobile
+        user.name = name;
+        user.mobile = mobile;
+
+        await user.save();
+
+        console.log("✅ Profile updated:", { name: user.name, mobile: user.mobile });
+
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                mobile: user.mobile,
+                image: user.image,
+            }
+        });
+
+    } catch (err) {
+        console.error("🔥 Error updating profile:", err);
+        res.status(500).json({ message: "Server error" });
     }
 };

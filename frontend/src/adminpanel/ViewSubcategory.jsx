@@ -178,9 +178,9 @@ const ViewSubcategory = () => {
                                             alt={subcategory.name}
                                         />
                                     </td>
-                                    <td className="px-5 py-3 border-b">{subcategory.name}</td>
+                                    <td className="px-5 py-3 border-b">{subcategory.name} <br /> <span className="text-sm text-gray-500 "> {subcategory._id}</span></td>
                                     <td className="px-5 py-3 border-b">
-                                        {subcategory.category.name}
+                                        {subcategory.category.name} <br /> <span className="text-sm text-gray-500">{subcategory.category._id}</span>
                                     </td>
                                     <td className="px-5 py-3 border-b">{subcategory.slug}</td>
                                     <td key={subcategory._id} className="px-5 py-3 border-b ">

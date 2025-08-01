@@ -103,12 +103,12 @@ export default function Login() {
                         >
                             Login
                         </button>
-
+                        {/* 
                         <div className="text-center text-sm text-gray-600">or</div>
 
                         <button className="w-full fraunces border border-red-900 text-maroon py-2 rounded-md hover:bg-wine hover:text-white transition">
                             Continue with Google
-                        </button>
+                        </button> */}
                     </form>
 
 

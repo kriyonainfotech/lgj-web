@@ -541,3 +541,12 @@ export default function ProductDetailPage() {
         </div>
     );
 }
+
+// okay lets noto it then, need to update produc detail page
+
+
+
+// see i does not hande variant gracefully, first of all all all image of allvarants in left side(st mainImage large) down all imes rom varaints.send, remove that input dropdown of selecting material, if is is yellow gld then show a golden small cirlce(filled) and silver(if there) anupdate the picturs of product according to that(filtring).irdi want to change the display of products, make the each product photo half of thcolmn, what i mean to say is that for images we have col - 6(50 % space)  so show two images i one row(25 % -25 % - square aspect)
+
+// also i want to add when image hover, a ultra zoomimg append which is mostly presnt injwellery websites, on product deails keep show all images(to remove the filter), if the imags gets more lenghty from product detail then ad scroll effect  scrollbar should not be visile but scroll effect presen, fourth if there is braclet or necklace as category then dont show sze(like only show szes of value is present otherwisenot), that too likei said in small cirlcle manner not input dropdown, fifth if two varaint have purity diferen then only two diff feild, otherwise(this part handlle it own your own - smothly) same goes or weight too.lets keep the feild which are different for product / present in varaint oerwise if they differ, actully i want
+

@@ -4,6 +4,8 @@ const Category = require("../models/Category");
 const Subcategory = require("../models/Subcategory");
 const { uploadToCloudinary, cloudinarySDK } = require("../config/cloudinary");
 const slugify = require("slugify");
+const csv = require('csv-parser');
+const { Readable } = require('stream');
 
 const getPublicIdFromCloudinaryUrl = (url) => {
     if (!url) return null;
@@ -16,103 +18,6 @@ const getPublicIdFromCloudinaryUrl = (url) => {
     const publicId = `${folder}/${filenameWithExtension.split('.')[0]}`;
     return publicId;
 };
-
-// exports.addProduct = async (req, res) => {
-
-//     try {
-//         console.log("📝 Parsing product data...");
-//         const productData = JSON.parse(req.body.product);
-
-//         const {
-//             title,
-//             description,
-//             categoryId,
-//             subCategoryId,
-//             tags,
-//             isFeatured,
-//             isCustomizable,
-//             status,
-//             variants
-//         } = productData;
-
-//         console.log("🔎 Checking category existence...");
-//         const categoryExists = await Category.findById(categoryId);
-//         if (!categoryExists) {
-//             console.log("❌ Invalid category ID");
-//             return res.status(400).json({ success: false, message: "Invalid category ID" });
-//         }
-
-//         let subcategoryExists = true;
-//         if (subCategoryId) {
-//             console.log("🔎 Checking subcategory existence...");
-//             subcategoryExists = await Subcategory.findById(subCategoryId);
-//             if (!subcategoryExists) {
-//                 console.log("❌ Invalid subcategory ID");
-//                 return res.status(400).json({ success: false, message: "Invalid subcategory ID" });
-//             }
-//         }
-
-//         let mainImageUrl = "";
-//         if (req.files && req.files["mainImage"] && req.files["mainImage"].length > 0) {
-//             console.log("☁️ Uploading main image to Cloudinary...");
-//             const file = req.files["mainImage"][0];
-//             const result = await uploadToCloudinary(file.buffer, "product");
-//             mainImageUrl = result.secure_url;
-//             console.log("✅ Main image uploaded:", mainImageUrl);
-//         }
-
-//         // 📸 Upload variant images
-//         for (let i = 0; i < variants.length; i++) {
-//             const uploadedImages = [];
-//             const variantImageFieldName = `variantImages_${i}`;
-
-//             if (req.files && req.files[variantImageFieldName]) {
-//                 console.log(`☁️ Uploading images for variant ${i}...`);
-//                 const variantFiles = req.files[variantImageFieldName];
-//                 for (const img of variantFiles) {
-//                     const result = await uploadToCloudinary(img.buffer, "product");
-//                     uploadedImages.push(result.secure_url);
-//                 }
-//                 console.log(`✅ Uploaded ${uploadedImages.length} images for variant ${i}`);
-//             }
-//             variants[i].images = uploadedImages;
-
-//             variants[i].material = variants[i].metalColor;
-//             variants[i].weight = variants[i].weightInGrams;
-//             variants[i].price = variants[i].totalPrice;
-//             variants[i].stock = variants[i].Number(stock), // 👈 Store the numeric stock
-//                 variants[i].inStock = variants[i].stock > 0;
-
-//             delete variants[i].metalColor;
-//             delete variants[i].weightInGrams;
-//             delete variants[i].totalPrice;
-//             delete variants[i].stock;
-//         }
-
-//         console.log("🛠️ Creating new product document...");
-//         const newProduct = new Product({
-//             title,
-//             slug: slugify(title, { lower: true, strict: true }),
-//             description,
-//             category: categoryId,
-//             subcategory: subCategoryId || null,
-//             tags: tags,
-//             mainImage: mainImageUrl,
-//             variants,
-//             isFeatured: isFeatured || false,
-//             isCustomizable: isCustomizable || false,
-//             status: status || 'active',
-//         });
-
-//         await newProduct.save();
-
-//         console.log("🎉 Product created successfully:", newProduct);
-//         res.status(201).json({ success: true, product: newProduct });
-//     } catch (err) {
-//         console.error("💥 Product creation error:", err);
-//         res.status(500).json({ success: false, message: "Server error" });
-//     }
-// };
 
 exports.addProduct = async (req, res) => {
     // Array to keep track of successfully uploaded public_ids for rollback
@@ -275,7 +180,6 @@ exports.getProductById = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-// updateProduct Controller with emoji logs
 
 exports.updateProduct = async (req, res) => {
     try {
@@ -397,7 +301,6 @@ exports.updateProduct = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-
 
 exports.deleteProduct = async (req, res) => {
     try {
@@ -625,4 +528,129 @@ exports.searchProducts = async (req, res) => {
         console.error("❌  Error during live product search:", error);
         res.status(500).json({ success: false, message: "Server error during search." });
     }
+};
+
+// 🔐 Safe number parsing helper with logging
+function safeNumber(val, fieldName = "unknown") {
+    const parsed = Number(typeof val === 'string' ? val.trim() : val);
+    if (isNaN(parsed)) {
+        console.warn(`⚠️ Warning: Invalid number for ${fieldName} →`, val);
+        return 0;
+    }
+    return parsed;
+}
+
+exports.bulkAddProducts = async (req, res) => {
+    console.log("📥 Bulk product upload request received.");
+
+    if (!req.file) {
+        console.error("❌ No file uploaded.");
+        return res.status(400).json({ message: 'No CSV file uploaded.' });
+    }
+
+    const productsMap = new Map();
+    const buffer = req.file.buffer;
+    const readableFile = new Readable();
+    readableFile.push(buffer);
+    readableFile.push(null);
+
+    let rowCount = 0;
+
+    readableFile
+        .pipe(csv())
+        .on('data', (row) => {
+            rowCount++;
+            console.log(`--- DEBUGGING ROW ${rowCount} ---`, row); // ✅ ADD THIS LINE
+            const {
+                'Product Title': productTitle,
+                'Description': description,
+                'Category ID': category,
+                'Subcategory ID': subcategory,
+                'Tags': tags,
+                'Is Featured': isFeatured,
+                'Is Customizable': isCustomizable,
+                'Status': status,
+                'Main Image URL': mainImage,
+                'SKU': sku,
+                'Weight': weight,
+                'Material': material,
+                'Purity': purity,
+                'Size': size,
+                'Price': price,
+                'Stock': stock,
+                'Discount Type': discountType,
+                'Discount Value': discountValue,
+                'Variant Image URLs': variantImages,
+            } = row;
+
+            if (!productTitle || !sku || !price) {
+                console.warn(`⚠️ Skipping row ${rowCount}: missing required fields`);
+                return;
+            }
+
+            if (!productsMap.has(productTitle)) {
+                productsMap.set(productTitle, {
+                    title: productTitle,
+                    description: description || '',
+                    category,
+                    subcategory: subcategory || null,
+                    tags: tags ? tags.split(',').map(t => t.trim()) : [],
+                    isFeatured: isFeatured?.toLowerCase() === 'true',
+                    isCustomizable: isCustomizable?.toLowerCase() === 'true',
+                    status: status || 'active',
+                    mainImage: mainImage || '',
+                    variants: [],
+                });
+            }
+
+            const product = productsMap.get(productTitle);
+
+            product.variants.push({
+                sku,
+                price: safeNumber(price, 'price'),
+                stock: safeNumber(stock, 'stock'),
+                weight: safeNumber(weight, 'weight'),
+                material: material || '',
+                purity: purity || '',
+                size: size ? size.split(',').map(s => s.trim()) : [],
+                images: variantImages ? variantImages.split(',').map(i => i.trim()) : [],
+                discount: {
+                    type: discountType || 'percentage',
+                    value: safeNumber(discountValue, 'discountValue'),
+                },
+            });
+        })
+        .on('end', async () => {
+            try {
+                const productsToCreate = Array.from(productsMap.values());
+
+                if (productsToCreate.length === 0) {
+                    console.warn("⚠️ No valid products found in CSV.");
+                    return res.status(400).json({ message: 'CSV file is empty or invalid.' });
+                }
+
+                // 🧠 Add slugs to each product
+                productsToCreate.forEach(p => {
+                    p.slug = slugify(p.title || '', { lower: true, strict: true });
+                });
+
+                // 🧾 Log product summary
+                console.log(`🧾 Parsed ${productsToCreate.length} products from ${rowCount} row(s):`);
+                productsToCreate.forEach((p, i) => {
+                    console.log(`  🔹 #${i + 1}: ${p.title} → ${p.slug} (${p.variants.length} variant(s))`);
+                });
+
+                const inserted = await Product.insertMany(productsToCreate, { ordered: false });
+                console.log(`✅ Successfully inserted ${inserted.length} product(s).`);
+                res.status(201).json({ message: `${inserted.length} products added successfully!` });
+
+            } catch (error) {
+                console.error("💥 Bulk Add Error:", error);
+                res.status(500).json({ message: "Failed to save products.", error: error.message });
+            }
+        })
+        .on('error', (err) => {
+            console.error("💀 CSV parsing failed:", err);
+            res.status(500).json({ message: "Error parsing CSV file." });
+        });
 };

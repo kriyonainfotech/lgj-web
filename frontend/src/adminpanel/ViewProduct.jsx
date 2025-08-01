@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Modal from 'react-modal';
+import { toast } from 'react-toastify'
+
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const VariantModal = ({ product, onClose }) => {
-
     return (
 
         <div className="fixed inset-0 z-50 bg-black/40 bg-opacity-40 flex items-center justify-center">
@@ -67,6 +69,94 @@ const VariantModal = ({ product, onClose }) => {
     );
 };
 
+const BulkAddModal = ({ isOpen, onRequestClose }) => {
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const token = localStorage.getItem('token');
+
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile) {
+            toast.error("Please select a CSV file.");
+            return;
+        }
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('productCsv', selectedFile);
+
+        try {
+            const { data } = await axios.post(`${backdendUrl}/api/product/bulk-add`, formData, {
+                withCredentials: true, // 🛂 This is what you need
+                headers: {
+                    "Content-Type": "multipart/form-data", // assuming you're sending a file
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            toast.success(data.message);
+            setSelectedFile(null);
+            onRequestClose(); // Close modal on success
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Upload failed.");
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    return (
+        <Modal
+            isOpen={isOpen}
+            onRequestClose={onRequestClose}
+            contentLabel="Bulk Add Products"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg"
+            overlayClassName="fixed inset-0 bg-black/50"
+        >
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 className="text-xl font-bold text-gray-800">Bulk Add Products</h2>
+                <button onClick={onRequestClose} className="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4">
+                Download the template, fill it with your product data, and upload the saved CSV file here.
+            </p>
+            <a
+                href="/product_template.csv" // Place this file in your /public folder
+                download
+                className="inline-block mb-3 text-indigo-600 hover:text-indigo-700 hover:underline font-semibold"
+            >
+                Download Template
+            </a>
+
+            <div className="mt-4">
+                <label htmlFor="csv-upload" className="block text-sm font-medium text-gray-700 mb-2">
+                    Select CSV File
+                </label>
+                <input
+                    id="csv-upload"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                />
+            </div>
+
+            <div className="flex justify-end mt-8 border-t pt-4">
+                <button onClick={onRequestClose} className="px-4 py-2 text-gray-700 rounded-md mr-2">Cancel</button>
+                <button
+                    onClick={handleUpload}
+                    disabled={!selectedFile || isUploading}
+                    className="px-6 py-2 bg-maroon text-white font-semibold rounded-md shadow-sm disabled:opacity-70"
+                >
+                    {isUploading ? 'Uploading...' : 'Upload File'}
+                </button>
+            </div>
+        </Modal>
+    );
+};
+
 const ViewProduct = () => {
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -74,6 +164,8 @@ const ViewProduct = () => {
     const [subCategoryId, setSubCategoryId] = useState("");
     const [allCategories, setAllCategories] = useState([]);
     const [allSubCategories, setAllSubCategories] = useState([]);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -173,12 +265,25 @@ const ViewProduct = () => {
         <div className="p-6 mt-10 md:mt-0">
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-3xl font-semibold fraunces">Manage Products</h1>
-                <Link
-                    to={"/admin/products/add"}
-                    className="bg-violet-800 no-underline text-white px-4 py-2 rounded-md shadow-md hover:bg-violet-700 transition duration-300"
-                >
-                    Add Product
-                </Link>
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => setIsBulkModalOpen(true)}
+                        className="bg-green-600 cursor-pointer text-white px-4 py-2 rounded-md shadow-md hover:bg-green-700 transition duration-300"
+                    >
+                        Add Bulk Products
+                    </button>
+                    <Link
+                        to={"/admin/products/add"}
+                        className="bg-violet-800 no-underline text-white px-4 py-2 rounded-md shadow-md hover:bg-violet-700 transition duration-300"
+                    >
+                        Add Single Product
+                    </Link>
+                </div>
+
+                <BulkAddModal
+                    isOpen={isBulkModalOpen}
+                    onRequestClose={() => setIsBulkModalOpen(false)}
+                />
             </div>
 
             <div className="overflow-x-auto bg-white shadow-md rounded-lg p-2">

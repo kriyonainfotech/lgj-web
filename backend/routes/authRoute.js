@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, updateUserRole, sendResetPasswordEmail, resetPassword, getAllUsers, getCounts, updateProfilePhoto, deleteProfilePhoto } = require('../controller/authController');
+const { registerUser, loginUser, updateUserRole, sendResetPasswordEmail, resetPassword, getAllUsers, getCounts, updateProfilePhoto, deleteProfilePhoto, getUserById, updateProfile } = require('../controller/authController');
 const { isUser } = require('../middlewares/authmiddleware');
 const upload = require("../middlewares/multer");
 const router = express.Router()
@@ -18,5 +18,7 @@ router.put(
     updateProfilePhoto
 );
 router.delete('/profile/delete-photo', isUser, deleteProfilePhoto);
+router.get('/get-user/:id', isUser, getUserById);
+router.put('/profile/update-detail', isUser, updateProfile);
 
 module.exports = router;
