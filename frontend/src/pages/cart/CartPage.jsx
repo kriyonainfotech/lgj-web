@@ -83,7 +83,7 @@ export default function CartPage() {
 
     // --- Main Cart Display ---
     return (
-        <div className="px-4 py-10 max-w-7xl mx-auto min-h-screen bg-gray-50">
+        <div className="px-4 py-10 max-w-7xl mx-auto min-h-screen ">
             <h1 className="text-4xl font-bold text-center text-gray-900 mb-12 fraunces">Your Shopping Bag</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -92,7 +92,7 @@ export default function CartPage() {
                     {cartItems.map(item => (
                         <div
                             key={item._id || item.variantId}
-                            className="bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col sm:flex-row p-4 gap-6"
+                            className="bg-white border border-gray-200 flex flex-col sm:flex-row p-4 gap-6"
                         >
                             {/* Image */}
                             <div className="flex-shrink-0">
@@ -100,23 +100,23 @@ export default function CartPage() {
                                     <img
                                         src={item.mainImage || 'https://placehold.co/100x100/E0E0E0/6C6C6C?text=No+Img'}
                                         alt={item.name}
-                                        className="w-30 h-30 object-cover rounded-md border"
+                                        className="w-30 h-30 object-cover"
                                     />
                                 </Link>
                             </div>
 
                             {/* Details */}
-                            <div className="flex-grow nunito">
+                            <div className="flex-grow nunito py-2">
                                 <Link to={`/products/${item.productId}`}>
-                                    <h2 className="text-lg font-semibold text-gray-800">
+                                    <h2 className="text-2xl font-semibold text-gray-800">
                                         {item.name}
                                     </h2>
                                 </Link>
                                 <p className="text-sm text-gray-600 mt-1">
                                     Material: {item.variantDetails?.material || 'N/A'} |
                                     Purity: {item.variantDetails?.purity || 'N/A'} |
-                                    {item.variantDetails?.size && ` Size: ${item.variantDetails.size}`} |
-                                    {item.variantDetails?.sku && ` SKU: ${item.variantDetails.sku}`}
+                                    {item.variantDetails?.selectedSize && ` Size: ${item.variantDetails.selectedSize}`}
+                                    {/* {item.variantDetails?.selectedSize && ` SKU: ${item.variantDetails.sku}`} */}
                                 </p>
                                 <p className="text-xl font-semibold text-gray-800 mt-2">
                                     ${item.variantDetails?.price || '0.00'}
@@ -156,7 +156,7 @@ export default function CartPage() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 h-fit sticky top-28 nunito">
+                <div className="bg-white border border-gray-200 p-6 h-fit sticky top-28 nunito">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-6">Order Summary</h2>
                     <div className="space-y-4 text-gray-700">
                         <div className="flex justify-between">

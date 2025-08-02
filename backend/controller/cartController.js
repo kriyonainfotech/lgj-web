@@ -13,74 +13,135 @@ const getVariantFromProduct = (product, variantId) => {
 // @desc    Add item to cart (for authenticated users)
 // @access  Private
 exports.addToCart = async (req, res) => {
-    const { productId, variantId, quantity } = req.body;
+    const { productId, variantId, quantity, selectedSize } = req.body;
     const userId = req.user.id; // From auth middleware
 
+    console.log("🛒 [addToCart] Received request:", {
+        userId,
+        productId,
+        variantId,
+        quantity, selectedSize
+    });
+
     if (!productId || !variantId || !quantity || quantity < 1) {
-        return res.status(400).json({ success: false, message: 'Product ID, variant ID, and quantity are required.' });
+        console.warn("⚠️ Missing or invalid inputs.");
+        return res.status(400).json({
+            success: false,
+            message: 'Product ID, variant ID, and quantity are required.'
+        });
     }
 
+
     try {
-        // 1. Find the product and the specific variant
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Product not found.' });
+
+        // ✅ 2. (Optional but Recommended) Validate the selected size
+        if (selectedSize && !variant.size.includes(selectedSize)) {
+            return res.status(400).json({ success: false, message: 'Selected size is not available for this variant.' });
         }
+
+
+        console.log("🔍 Fetching product...");
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            console.warn(`❌ Product not found [ID: ${productId}]`);
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found.'
+            });
+        }
+
+        console.log("✅ Product found:", product.title);
 
         const variant = getVariantFromProduct(product, variantId);
         if (!variant) {
-            return res.status(404).json({ success: false, message: 'Variant not found for this product.' });
+            console.warn(`❌ Variant not found [variantId: ${variantId}] for product ${product.title}`);
+            return res.status(404).json({
+                success: false,
+                message: 'Variant not found for this product.'
+            });
         }
 
-        // 2. Check stock
+        console.log(`🎯 Variant found: ${variant.material} - Stock: ${variant.stock}`);
+
+        // Stock check
         if (variant.stock < quantity) {
-            return res.status(400).json({ success: false, message: `Insufficient stock for ${product.title} - ${variant.material}. Only ${variant.stock} available.` });
+            console.warn(`🚫 Insufficient stock: requested ${quantity}, available ${variant.stock}`);
+            return res.status(400).json({
+                success: false,
+                message: `Insufficient stock for ${product.title} - ${variant.material}. Only ${variant.stock} available.`
+            });
         }
 
-        // 3. Find user's cart or create a new one
+        // Fetch or create cart
+        console.log("🧾 Fetching user cart...");
         let cart = await Cart.findOne({ userId });
+
         if (!cart) {
+            console.log("🆕 No existing cart found. Creating new cart.");
             cart = new Cart({ userId, items: [] });
+        } else {
+            console.log(`📦 Existing cart found with ${cart.items.length} items.`);
         }
 
-        // 4. Check if item already exists in cart (same product and variant)
+        // Check if item already exists
         const existingItemIndex = cart.items.findIndex(item =>
-            item.productId.toString() === productId && item.variantId.toString() === variantId
+            item.productId.toString() === productId &&
+            item.variantId.toString() === variantId
         );
 
         if (existingItemIndex > -1) {
-            // Update quantity of existing item
-            cart.items[existingItemIndex].quantity += quantity;
-            // Re-check stock for the updated total quantity
-            if (variant.stock < cart.items[existingItemIndex].quantity) {
-                return res.status(400).json({ success: false, message: `Adding ${quantity} exceeds available stock. Current in cart: ${cart.items[existingItemIndex].quantity - quantity}. Max available: ${variant.stock}.` });
+            console.log("🔁 Item already exists in cart. Updating quantity...");
+
+            const currentQty = cart.items[existingItemIndex].quantity;
+            const updatedQty = currentQty + quantity;
+
+            if (variant.stock < updatedQty) {
+                console.warn(`⚠️ Exceeds stock. Requested total: ${updatedQty}, Available: ${variant.stock}`);
+                return res.status(400).json({
+                    success: false,
+                    message: `Adding ${quantity} exceeds available stock. Current in cart: ${currentQty}. Max available: ${variant.stock}.`
+                });
             }
+
+            cart.items[existingItemIndex].quantity = updatedQty;
+            console.log(`🔼 Quantity updated to ${updatedQty}`);
         } else {
-            // Add new item to cart
+            console.log("🆕 Adding new item to cart.");
             cart.items.push({
                 productId,
                 variantId,
                 quantity,
-                name: `${product.title} - ${variant.material} ${variant.purity}`, // Example name, adjust as needed
-                mainImage: product.mainImage || variant.images?.[0], // Use product main image or variant's first image
+                name: `${product.title} - ${variant.material} ${variant.purity}`,
+                mainImage: product.mainImage || variant.images?.[0],
                 variantDetails: {
                     material: variant.material,
                     purity: variant.purity,
-                    size: variant.size,
-                    sku: variant.sku,
-                    price: variant.price // Snapshot the price at time of adding
+                    size: selectedSize || '',
+                    price: variant.price
                 }
             });
         }
 
+        console.log("💾 Saving cart...");
         await cart.save();
-        res.status(200).json({ success: true, message: 'Item added to cart successfully!', cart });
+
+        console.log("✅ Cart updated successfully!");
+        res.status(200).json({
+            success: true,
+            message: 'Item added to cart successfully!',
+            cart
+        });
 
     } catch (error) {
-        console.error('Error adding to cart:', error);
-        res.status(500).json({ success: false, message: 'Server error adding item to cart.' });
+        console.error('💥 Server error in addToCart:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error adding item to cart.'
+        });
     }
 };
+
 
 
 // @route   GET /api/cart

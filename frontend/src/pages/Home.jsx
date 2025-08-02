@@ -8,6 +8,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { FaLock, FaMoneyBillWave, FaShippingFast, FaUndoAlt } from "react-icons/fa";
 import TrustSection from '../components/Home/TrustSection';
+import JewelryCollectionSection from '../components/Home/JewelryCollectionSection';
+import ShopByCategory from '../components/Home/ShopByCategory';
+import FeaturesSection from '../components/Home/FeaturesSection';
+import NewArrivalsSection from '../components/Home/NewArrivalsSection';
+import TrendingNowSection from '../components/Home/TrendingNow';
+import LuxuryBanner from '../components/Home/LuxuryBanner';
+
 
 const Home = () => {
     const [categories, setCategories] = useState([]);
@@ -194,174 +201,19 @@ const Home = () => {
         <div>
             <BannerSlider />
 
-            <section className="py-10 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    {features.map((feature, index) => (
-                        <div key={index} className="flex flex-col items-center space-y-3">
-                            <div className=" p-4 rounded-full shadow-sm">
-                                {feature.icon}
-                            </div>
-                            <h4 className="text-sm font-semibold text-gray-800">{feature.title}</h4>
-                        </div>
-                    ))}
-                </div>
-            </section>
+            <FeaturesSection />
 
-            <section className="py-12 px-4 bg-light text-midnight">
-                <div className="text-center mb-10">
-                    <p className="text-2xl text-primary mt-1 fraunces">Shop by Category</p>
-                </div>
+            <ShopByCategory categories={categories} />
 
-                <div className="max-w-7xl mx-auto">
-                    {/* Horizontal scroll wrapper */}
-                    <div className="flex overflow-x-auto md:flex-wrap md:justify-center gap-x-6 gap-y-8 scrollbar-hide">
-                        {categories.map((cat, index) => (
-                            <div
-                                key={index}
-                                className="flex-shrink-0 flex flex-col items-center text-center w-28"
-                            >
-                                <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300">
-                                    <Link to={`/collections/${cat.slug}`} state={{ categoryId: cat._id }} >
-                                        <img
-                                            src={cat.image.url}
-                                            alt={cat.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </Link>
-                                </div>
-                                <h3 className="mt-2 text-sm font-medium text-gray-800">
-                                    {cat.name}
-                                </h3>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <JewelryCollectionSection mirosasCollection={mirosasCollection} />
 
-
-            <section className="py-16 px-4 bg-light text-midnight">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl md:text-[40px] fraunces text-black">MIROSA's Collection</h2>
-                    <p className="text-lg md:text-2xl text-primary fraunces mt-2">A companion for every occasion</p>
-                </div>
-
-                {mirosasCollection && (
-                    <section className="py-0 px-4 bg-light text-midnight">
-                        <div className="text-center mb-10">
-                            <h2 className="text-[40px] fraunces text-black">{mirosasCollection.title}</h2>
-                            <p className="text-2xl text-primary fraunces mt-2">{mirosasCollection.description}</p>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-2 gap-8 md:gap-4 max-w-7xl mx-auto">
-                            {mirosasCollection.subcategories?.slice(0, 4).map((sub, index) => (
-                                <div key={sub._id}>
-                                    <Link to={`/mirosas-collection/${sub.slug}`} state={{ subcategoryId: sub._id }} className="block">
-                                        {/* This div creates a consistent container shape */}
-                                        <div className="aspect-square  overflow-hidden">
-                                            <img
-                                                src={sub.image?.url || "/images/placeholder.jpg"}
-                                                alt={sub.name}
-                                                className="w-full h-full object-cover object-center"
-                                            />
-                                        </div>
-                                    </Link>
-                                    <h3 className="w-full text-gray-700 text-md md:text-xl lg:text-2xl fraunces font-medium text-center mt-2">
-                                        {sub.name}
-                                    </h3>
-                                </div>
-
-                            ))}
-                        </div>
-                    </section>
-                )}
-
-            </section>
-
-            <section class="py-16 px-4 bg-light text-midnight">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl md:text-[40px] fraunces text-black">New Arrivals</h2>
-                    <p class="text-lg md:text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-7xl mx-auto">
-                    {newArrivals.map((product, index) => (
-                        <div key={index}>
-                            <Link to={`/products/${product.slug}`} state={{ productId: product._id }} className="block group">
-                                {/* Aspect ratio container for consistent image shape */}
-                                <div className="aspect-[4/5]  overflow-hidden">                                    <img
-                                    src={product.mainImage}
-                                    alt={product.title}
-                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                                />
-                                </div>
-                            </Link>
-                            <div className="text-center">
-                                <h3 className="mt-4 text-sm md:text-lg font-medium text-black nunito">{product.title}</h3>
-                                <p className="text-black text-md mt-1 font-semibold fraunces">₹{product.variants[0].price}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div class="flex justify-center mt-10">
-                    <Link to={`/collections/new-arrivals`} className="px-20 fraunces py-3 rounded-md bg-maroon text-white text-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                        View All
-                    </Link>
-                </div>
-            </section>
-
+            <NewArrivalsSection localnewArrivals={newArrivals} />
 
             <TrustSection />
 
-            <section className="py-8 md:py-16 px-4 bg-light text-midnight">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl md:text-[40px] fraunces text-black">Trending Now</h2>
-                    <p className="text-lg md:text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
-                </div>
+            <TrendingNowSection localtrendingNow={trendingNow} />
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-7xl mx-auto">
-                    {trendingNow.map((product, index) => (
-                        <div key={index} className="flex flex-col items-center text-center ">
-                            <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <div className="aspect-[4/5]  overflow-hidden">                                    <img
-                                    src={product.mainImage}
-                                    alt={product.title}
-                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                                />
-                                </div>
-                            </Link>
-                            <h3 className="mt-4 text-lg font-medium text-black fraunces">{product.title}</h3>
-                            <p className="text-black text-md mt-1 font-semibold fraunces">₹{product.variants[0].price}</p>
-                        </div>
-                    ))}
-                </div>
-                <div className="flex justify-center mt-10">
-                    <Link to={`/collections/trending-now`} className="px-20 fraunces py-3 rounded-md bg-maroon text-white text-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                        View All
-                    </Link>
-                </div>
-            </section>
-
-            <section
-                className=" w-full h-[500px] md:h-[680px] bg-cover bg-center flex items-center justify-center text-white"
-                style={{ backgroundImage: `url('/banner/banner5.png')` }} // ⬅️ Replace with your image URL
-            >
-                {/* Overlay */}
-                {/* <div className="absolute inset-0 bg-black/40" /> */}
-
-                {/* Content */}
-                {/* <div className="relative z-10 text-center px-4">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-4 font-serif tracking-wide">
-                        ✨ Demi-Fine Delights
-                    </h1>
-                    <p className="text-lg md:text-2xl mb-6">
-                        Minimal Glam. Maximum Impact.
-                    </p>
-                    <div className="bg-white text-black inline-block px-6 py-3 rounded-full font-medium text-sm shadow-md">
-                        Flat 20% Off – This Week Only
-                    </div>
-                </div> */}
-            </section>
-
+            <LuxuryBanner />
 
             <section className="py-16 px-4 bg-light text-midnight">
                 <div className="text-center mb-10">

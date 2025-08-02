@@ -35,6 +35,7 @@ import { WishlistProvider } from './context/WishlistContext';
 import WishlistPage from './pages/Whislist/WishlistPage';
 import ViewProductDetail from './adminpanel/ViewProductDetail';
 import AdminViewProduct from './adminpanel/ViewProductDetail';
+import { GlobalStyles } from './components/Home/JewelryCollectionSection';
 
 function App() {
   return (
@@ -85,7 +86,7 @@ function App() {
               </Routes>
 
               <ToastContainer position='top-right' autoClose={3000} />
-
+              <GlobalStyles />
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

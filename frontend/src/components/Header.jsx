@@ -757,6 +757,7 @@ import { decryptData } from '../utils/secureStorage'; // Assuming you have this 
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
 import { useAuth } from '../context/AuthContext';
+import useOutsideClick from '../hooks/useOutsideClick';
 
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
@@ -910,6 +911,15 @@ export default function Header() {
         navigate("/login"); // 👋 redirect
     };
 
+    // Create a ref for your cart's container
+    const cartRef = useRef(null);
+
+    // This function will be called by the hook
+    const closeCart = () => {
+        setCartOpen(false);
+    };
+
+    useOutsideClick(cartRef, closeCart);
 
     return (
         <header className="text-ivory sticky top-0 z-50 shadow-md bg-white">
@@ -1157,7 +1167,7 @@ export default function Header() {
 
             {/* Cart Modal */}
             {cartOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-sm">
+                <div ref={cartRef} className="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-sm">
                     <div className="bg-white shadow-xl w-full md:w-[420px] h-full p-6 relative overflow-y-auto animate-slideInRight">
                         <button
                             className="absolute top-7 right-6 text-gray-600 hover:text-red-500 text-2xl"
@@ -1211,7 +1221,7 @@ export default function Header() {
                                                         <FiPlus />
                                                     </button>
                                                     <button
-                                                        onClick={() => removeFromCart(item._id)}
+                                                        onClick={() => removeFromCart(item._id || item.variantId)}
                                                         className="ml-auto text-red-500 text-sm hover:text-red-700 flex items-center gap-1"
                                                     >
                                                         <FaTrash /> Remove

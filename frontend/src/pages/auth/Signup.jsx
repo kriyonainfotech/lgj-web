@@ -54,13 +54,13 @@ export default function Signup() {
             localStorage.setItem("user", encryptData(res.data.user));
             localStorage.setItem("token", encryptData(res.data.token));
 
-            setSuccess("Account created successfully!");
+            // setSuccess("Account created successfully!");
             toast.success("Account created successfully!");
             navigate("/login"); // or show modal, etc.
         } catch (err) {
             // toast.error("Someth+ing went wrong!");
-            // setError(err.response?.data?.message || "Something went wrong");
-            console.error(err);
+            setError(err.response?.data?.message || "Something went wrong");
+            console.log(err);
         }
     };
 
@@ -155,8 +155,7 @@ export default function Signup() {
                                 name="termsAccepted"
                                 checked={formData.termsAccepted}
                                 onChange={handleChange}
-                                className="accent-maroon"
-                            />
+                                className="accent-rose-900" />
                             <label className="text-sm text-gray-700 fraunces">
                                 I agree to the <a href="#" className="text-maroon underline">Terms & Conditions</a>
                             </label>

@@ -33,12 +33,12 @@ export default function Login() {
                 const encrypted = encryptData(res.data.user); // ✅ assign result
                 localStorage.setItem("user", encrypted); // ✅ store encrypted user
                 console.log("User and token saved to localStorage");
-                toast.success("Login successful...");
+                // toast.success("Login successful...");
                 navigate("/");
             }
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
-            toast.error(err.response?.data?.message || "Login failed");
+            // toast.error(err.response?.data?.message || "Login failed");
             console.error("Login error:", err);
         }
 

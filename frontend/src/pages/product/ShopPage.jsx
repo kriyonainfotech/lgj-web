@@ -352,6 +352,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext'; // Import the wishlist context
+import ProductCard from '../cart/ProductCard';
 
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
@@ -470,20 +471,30 @@ const ShopPage = () => {
     };
   }, [isFilterPanelOpen]);
 
-  const handleAddToCartFromCard = async (product) => {
-    const variantToAdd = product.variants?.[0];
-    if (!variantToAdd) return toast.error("No variant found");
-    if (variantToAdd.stock < 1) return toast.error("Out of stock");
+  const handleAddToCartFromCard = async (product, variantToAdd, selectedSize) => {
+    if (!variantToAdd) return toast.error("Variant not available.");
+    if (variantToAdd.stock < 1) return toast.error("Out of stock.");
 
     setLoadingProductId(product._id);
-
     try {
-      await addToCart(product, variantToAdd, 1);
-      toast.success("Added to cart");
+      // Pass the specific variant and selected size to the cart context
+      await addToCart(product, variantToAdd, 1, selectedSize);
+      // toast.success("Added to cart");
     } catch (err) {
       toast.error("Failed to add to cart");
     } finally {
       setLoadingProductId(null);
+    }
+  };
+
+  const handleWishlistToggle = (productId) => {
+    const product = filteredProducts.find(p => p._id === productId);
+    if (!product) return toast.error("Product not found in list.");
+
+    if (isProductInWishlist(productId)) {
+      removeFromWishlist(productId);
+    } else {
+      addToWishlist(product); // Send full object now
     }
   };
 
@@ -496,16 +507,6 @@ const ShopPage = () => {
   //   }
   // };
 
-  const handleWishlistToggle = (productId) => {
-    const product = filteredProducts.find(p => p._id === productId);
-    if (!product) return toast.error("Product not found in list.");
-
-    if (isProductInWishlist(productId)) {
-      removeFromWishlist(productId);
-    } else {
-      addToWishlist(product); // Send full object now
-    }
-  };
 
 
   return (
@@ -626,61 +627,18 @@ const ShopPage = () => {
               </Link>
             </div>
           ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {filteredProducts.map(product => (
-                  <div
-                    key={product._id}
-                    className="relative bg-white overflow-hidden"
-                  >
-                    {/* ✅ Wishlist Icon */}
-                    <button
-                      onClick={() => handleWishlistToggle(product._id)}
-                      className="absolute top-2 right-2 bg-white rounded-full p-2 z-10 hover:bg-gray-200 transition"
-                    >
-                      <FiHeart className={`w-5 h-5 ${isProductInWishlist(product._id) ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
-                    </button>
-
-                    <Link to={`/products/${product.slug}`} state={{ productId: product._id }} className="block">
-                      <img
-                        src={product.mainImage || 'https://placehold.co/400x300/E0E0E0/6C6C6C?text=No+Image'}
-                        alt={product.title}
-                        className="w-full h-84 object-cover"
-                      />
-                    </Link>
-                    <div className="p-4">
-                      <Link to={`/products/${product.slug}`} className="block">
-                        <h3 className="text-md font-semibold text-gray-800 nunito">
-                          {product.title}
-                        </h3>
-                      </Link>
-                      {product.variants && product.variants.length > 0 && (
-                        <p className="text-xl font-bold text-gray-900 mt-0 nunito">
-                          ${product.variants[0].price}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => handleAddToCartFromCard(product)}
-                      disabled={loadingProductId === product._id || !product.variants?.length || product.variants[0].stock < 1}
-                      className="mt-4 w-full bg-maroon cursor-pointer text-white py-2 hover:bg-violet-700 transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {loadingProductId === product._id ? (
-                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      ) : (
-                        <>
-                          <FiShoppingBag />
-                          <span>Add to Bag</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {filteredProducts.map(product => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  onAddToCart={handleAddToCartFromCard}
+                  onToggleWishlist={handleWishlistToggle}
+                  isWishlisted={isProductInWishlist(product._id)}
+                  isLoading={loadingProductId === product._id}
+                />
+              ))}
+            </div>
           )}
         </main>
       </div>

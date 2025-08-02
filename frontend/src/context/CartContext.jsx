@@ -52,7 +52,7 @@ export const CartProvider = ({ children }) => {
     }, [backdendUrl]); // Memoize fetchUserCart
 
     // --- Add to Cart ---
-    const addToCart = async (productData, variantData, quantity) => {
+    const addToCart = async (productData, variantData, quantity, selectedSize) => {
         if (!productData || !variantData || !quantity || quantity < 1) {
             toast.error("Invalid product or variant data to add to cart.");
             return;
@@ -67,8 +67,7 @@ export const CartProvider = ({ children }) => {
             variantDetails: { // Snapshot of variant details
                 material: variantData.material,
                 purity: variantData.purity,
-                size: variantData.size,
-                sku: variantData.sku,
+                selectedSize: selectedSize || null,
                 price: variantData.price
             }
         };
