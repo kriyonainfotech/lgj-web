@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from '../../pages/cart/ProductCard';
 
-const NewArrivalsSection = ({ localnewArrivals }) => {
-    const [newArrivals, setNewArrivals] = useState([]);
-
+const BestSellerSection = ({ localbestSeller }) => {
+    const [bestseller, setBestSeller] = useState([]);
+    console.log(localbestSeller, 'bestseller')
     useEffect(() => {
         // Simulating data fetch or processing
         setTimeout(() => {
-            setNewArrivals(localnewArrivals);
+            setBestSeller(localbestSeller);
         }, 300);
-    }, [localnewArrivals]);
+    }, [localbestSeller]);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -59,7 +59,7 @@ const NewArrivalsSection = ({ localnewArrivals }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        New Arrivals
+                        Best Sellers
                     </motion.h2>
                     <motion.p
                         className="text-xl md:text-2xl text-primary font-serif italic"
@@ -86,7 +86,7 @@ const NewArrivalsSection = ({ localnewArrivals }) => {
                     initial="hidden"
                     animate="visible"
                 >
-                    {newArrivals.map((product) => (
+                    {localbestSeller.map((product) => (
                         <motion.div
                             key={product._id} // Use a stable key like _id
                             variants={itemVariants}
@@ -104,11 +104,11 @@ const NewArrivalsSection = ({ localnewArrivals }) => {
                     transition={{ delay: 0.8 }}
                 >
                     <Link
-                        to="/collections/new-arrivals"
-                        state={{ subcategoryId: '68834916eb446d953a5d835a' }}
+                        to="/collections/best-seller"
+                        state={{ subcategoryId: '6883495beb446d953a5d8363' }}
                         className="inline-flex items-center px-8 py-3  bg-primary/5 border border-primary/20 bg-primary text-gray-800 font-serif text-lg font-medium rounded-full  transition-all duration-300 group"
                     >
-                        Discover All New Arrivals
+                        Discover All Best Sellers
                         <svg className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
@@ -119,4 +119,4 @@ const NewArrivalsSection = ({ localnewArrivals }) => {
     );
 };
 
-export default NewArrivalsSection;
+export default BestSellerSection;

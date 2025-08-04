@@ -82,7 +82,7 @@ const ShopByCategory = ({ categories }) => {
                 </div>
 
                 <motion.div
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8"
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 md:gap-8"
                     variants={containerVariants}
                     initial="hidden"
                     animate={localCategories.length ? "visible" : "hidden"}
@@ -131,6 +131,7 @@ const ShopByCategory = ({ categories }) => {
                                 <div className="mt-1">
                                     <Link
                                         to={`/collections/${cat.slug}`}
+                                        state={{ categoryId: cat._id }}
                                         className="text-xs text-primary/80 hover:text-primary flex items-center justify-center gap-1 transition-colors"
                                     >
                                         Explore collection
@@ -146,7 +147,7 @@ const ShopByCategory = ({ categories }) => {
                 </motion.div>
 
                 {/* View All Button */}
-                <motion.div
+                {/* <motion.div
                     className="mt-16 text-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -161,7 +162,7 @@ const ShopByCategory = ({ categories }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </Link>
-                </motion.div>
+                </motion.div> */}
             </div>
         </section>
     );

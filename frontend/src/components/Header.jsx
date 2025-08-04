@@ -506,14 +506,14 @@
 //                 <div className="flex items-center space-x-4 md:space-x-6">
 //                     <div className="relative">
 //                         <FiUser
-//                             className="text-gray-700 w-6 h-6 cursor-pointer hover:text-maroon transition-colors"
+//                             className="text-gray-900 w-6 h-6 cursor-pointer hover:text-maroon transition-colors"
 //                             onClick={() => setUserPanelOpen(true)}
 //                         />
 //                     </div>
 
 //                     {/* Wishlist Icon with Badge */}
 //                     <Link to="/wishlist" className="relative">
-//                         <FiHeart className="text-gray-700 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
+//                         <FiHeart className="text-gray-900 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
 //                         {wishlist.length > 0 && (
 //                             <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs rounded-full">
 //                                 {wishlist.length}
@@ -523,7 +523,7 @@
 
 //                     {/* Shopping Cart Icon with Badge */}
 //                     <button onClick={() => setCartOpen(true)} className="relative">
-//                         <FiShoppingCart className="text-gray-700 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
+//                         <FiShoppingCart className="text-gray-900 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
 //                         {cartItemCount > 0 && (
 //                             <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs rounded-full">
 //                                 {cartItemCount}
@@ -533,7 +533,7 @@
 
 //                     {/* Hamburger Icon - visible on mobile */}
 //                     <button
-//                         className="md:hidden text-gray-700 focus:outline-none"
+//                         className="md:hidden text-gray-900 focus:outline-none"
 //                         onClick={() => setMenuOpen(!menuOpen)}
 //                     >
 //                         {menuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
@@ -795,6 +795,16 @@ export default function Header() {
     const { cartItems, cartTotal, cartItemCount, cartLoading, updateCartItemQuantity, removeFromCart } = useCart();
     const { wishlist } = useWishlist(); // Get wishlist from its context
     const { logout } = useAuth();
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const navigate = useNavigate();
 
@@ -862,7 +872,6 @@ export default function Header() {
         }
     };
 
-
     // --- useEffect for Live Search API Call ---
     useEffect(() => {
         if (debouncedSearchQuery.length > 1) {
@@ -922,14 +931,21 @@ export default function Header() {
     useOutsideClick(cartRef, closeCart);
 
     return (
-        <header className="text-ivory sticky top-0 z-50 shadow-md bg-white">
-            {/* Announcement Bar */}
-            <div className="bg-maroon text-white text-sm text-center py-2 px-4 fraunces">
-                Consult a Diamond Expert online or in-store for your Bespoke experience →
-            </div>
+        <header className={`fixed top-0 w-full z-50 text-black transition-all duration-300 ${isScrolled
+            ? 'bg-white/10 backdrop-blur-md bg-opacity-90 shadow-md'
+            : 'bg-white/10 '
+            }`}
+        >
+
+            {/* Announcement Bar - hidden when scrolled */}
+            {/* {!isScrolled && (
+                <div className="bg-maroon text-white text-sm text-center py-2 px-4 fraunces">
+                    Consult a Diamond Expert online or in-store for your Bespoke experience →
+                </div>
+            )} */}
 
             {/* --- DESKTOP HEADER --- */}
-            <div className="hidden md:flex items-center justify-between py-3 px-8 border-b border-gold">
+            <div className="hidden md:flex items-center justify-between pt-2 px-8">
                 <div className="text-2xl font-bold fraunces">
                     <Link to={'/'}><img src="/logo/marron_icon.png" alt="logo" className='w-full h-20' /></Link>
                 </div>
@@ -939,7 +955,7 @@ export default function Header() {
                     <input
                         type="text"
                         placeholder="Search jewelry..."
-                        className="w-full max-w-2xl px-4 py-2 rounded-3xl border border-gray-300 bg-gray-100 text-gray-800 placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-maroon"
+                        className="w-full max-w-2xl px-4 py-2 rounded-3xl border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-maroon"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => setIsSearchFocused(true)}
@@ -1001,16 +1017,16 @@ export default function Header() {
 
                 <div className="flex items-center space-x-6">
                     <div className="relative">
-                        <FiUser className="text-gray-700 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" onClick={() => setUserPanelOpen(true)} />
+                        <FiUser className="text-gray-900 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" onClick={() => setUserPanelOpen(true)} />
                     </div>
                     <Link to="/wishlist" className="relative">
-                        <FiHeart className="text-gray-700 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
+                        <FiHeart className="text-gray-900 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
                         {wishlist.length > 0 && (
                             <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs rounded-full">{wishlist.length}</span>
                         )}
                     </Link>
                     <button onClick={() => setCartOpen(true)} className="relative">
-                        <FiShoppingCart className="text-gray-700 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
+                        <FiShoppingCart className="text-gray-900 w-6 h-6 cursor-pointer hover:text-maroon transition-colors" />
                         {cartItemCount > 0 && (
                             <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs rounded-full">{cartItemCount}</span>
                         )}
@@ -1027,16 +1043,16 @@ export default function Header() {
                     </div>
                     <div className="flex items-center space-x-4">
                         <div className="relative">
-                            <FiUser className="text-gray-700 w-6 h-6 cursor-pointer" onClick={() => setUserPanelOpen(true)} />
+                            <FiUser className="text-gray-900 w-6 h-6 cursor-pointer" onClick={() => setUserPanelOpen(true)} />
                         </div>
                         <Link to="/wishlist" className="relative">
-                            <FiHeart className="text-gray-700 w-6 h-6 cursor-pointer" />
+                            <FiHeart className="text-gray-900 w-6 h-6 cursor-pointer" />
                             {wishlist.length > 0 && (
                                 <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs rounded-full">{wishlist.length}</span>
                             )}
                         </Link>
                         <button onClick={() => setCartOpen(true)} className="relative">
-                            <FiShoppingCart className="text-gray-700 w-6 h-6 cursor-pointer" />
+                            <FiShoppingCart className="text-gray-900 w-6 h-6 cursor-pointer" />
                             {cartItemCount > 0 && (
                                 <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs rounded-full">{cartItemCount}</span>
                             )}
@@ -1052,14 +1068,14 @@ export default function Header() {
                             className="w-full px-4 py-2 rounded-3xl border border-gray-300 bg-gray-100 text-gray-800 placeholder:text-gray-500 outline-none"
                         />
                     </div>
-                    <button className="text-gray-700 focus:outline-none" onClick={() => setMenuOpen(!menuOpen)}>
+                    <button className="text-gray-900 focus:outline-none" onClick={() => setMenuOpen(!menuOpen)}>
                         {menuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
                     </button>
                 </div>
             </div>
 
             {/* Bottom Nav - Desktop */}
-            <nav className="hidden md:flex justify-center space-x-8 py-3 text-sm font-medium border-b border-gold bg-white">
+            <nav className="hidden md:flex justify-center space-x-8 pb-3 text-sm font-medium">
                 {categories?.map((cat, index) => (
                     <div
                         key={index}
@@ -1071,7 +1087,7 @@ export default function Header() {
                             {cat.name}
                         </Link>
                         <div
-                            className={`fixed left-0 right-0 bg-white shadow-xl overflow-hidden transition-all duration-300 ease-in-out z-40 ${activeDropdown === index ? 'max-h-96 opacity-100 py-6 mt-3' : 'max-h-0 opacity-0 py-0'
+                            className={`fixed left-0 right-0 bg-white/80 shadow-xl overflow-hidden transition-all duration-300 ease-in-out z-40 ${activeDropdown === index ? 'max-h-96 opacity-100 py-6 mt-3' : 'max-h-0 opacity-0 py-0'
                                 }`}
                         >
                             <div className="max-w-6xl mx-auto flex justify-start space-x-4 px-8">
@@ -1083,7 +1099,7 @@ export default function Header() {
                                                 alt={item.name}
                                                 className="w-full h-40 object-cover rounded-md mb-2"
                                             />
-                                            <p className="text-md text-gray-700 fraunces px-5 py-2 bg-gray-100 rounded-full hover:bg-maroon hover:text-white transition-colors">{item.name}</p>
+                                            <p className="text-md text-gray-900 fraunces px-5 py-2 bg-gray-100 rounded-full transition-colors">{item.name}</p>
                                         </Link>
                                     </div>
                                 ))}
@@ -1135,7 +1151,7 @@ export default function Header() {
                                                             to={`/collections/${subItem.slug}`}
                                                             state={{ subcategoryId: subItem._id }}
                                                             onClick={() => setMenuOpen(false)}
-                                                            className="flex items-center h-14 pl-12 pr-4 text-md fraunces text-gray-700 hover:bg-gray-200 w-full"
+                                                            className="flex items-center h-14 pl-12 pr-4 text-md fraunces text-gray-900 hover:bg-gray-200 w-full"
                                                         >
                                                             {subItem.name}
                                                         </Link>
@@ -1275,7 +1291,7 @@ export default function Header() {
                             </button>
                         </div>
 
-                        <ul className="p-4 space-y-2 text-sm text-gray-700">
+                        <ul className="p-4 space-y-2 text-sm text-gray-900">
                             {user ? (
                                 <>
                                     {user.role === "admin" && (

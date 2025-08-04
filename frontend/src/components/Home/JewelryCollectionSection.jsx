@@ -138,9 +138,9 @@ const JewelryCollectionSection = ({ mirosasCollection }) => {
                                                 </div>
 
                                                 {/* Decorative corner */}
-                                                <div className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center">
+                                                {/* <div className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center">
                                                     <div className="w-8 h-8 border-t-2 border-r-2 border-golden"></div>
-                                                </div>
+                                                </div> */}
                                             </div>
 
                                             {/* Description card (appears on hover) */}

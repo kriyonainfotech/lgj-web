@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import axios from "axios";
 import { toast } from "react-toastify";
 import ProfilePhotoModal from "./ProfilePhotoModal";
+import OrderHistory from "../order/OrderHistory";
 
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
@@ -14,7 +15,7 @@ function useQuery() {
 const TABS = [
     { id: "overview", label: "Profile" },
     { id: "orders", label: "Orders" },
-    // { id: `Cart`, label: "Cart" }
+    // { id: 'Home', label: "Home" }
 ];
 
 const ProfilePage = () => {
@@ -22,7 +23,7 @@ const ProfilePage = () => {
     const { user, logout } = useAuth();
     console.log(user, 'user')
     // const query = useQuery();
-    const navigate = useNavigate();
+    const navigate = useNavigation();
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const token = localStorage.getItem("token"); // This gets the JWT stored during login
@@ -109,7 +110,7 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="max-w-full mx-10 px-4 mt-10 mb-20">
+        <div className="max-w-full mx-10 px-4 mt-32 mb-20 ">
             {/* The rest of your JSX remains the same, it will now use the decrypted 'user' object */}
             <div className="flex flex-col md:flex-row bg-white overflow-hidden">
                 {/* --- SIDEBAR --- */}
@@ -209,10 +210,10 @@ const ProfilePage = () => {
                     )}
                     {activeTab === "orders" && (
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">Order History</h2>
-                            <p className="text-gray-500">No orders yet.</p>
+                            <OrderHistory />
                         </div>
                     )}
+
                 </main>
             </div>
             <ProfilePhotoModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} />

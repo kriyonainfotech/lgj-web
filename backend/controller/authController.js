@@ -368,6 +368,7 @@ exports.updateProfilePhoto = async (req, res) => {
 
         // 6. Send response
         res.status(200).json({
+            success: true,
             message: 'Profile photo updated successfully.',
             imageUrl: user.image.url
         });
@@ -466,5 +467,25 @@ exports.updateProfile = async (req, res) => {
     } catch (err) {
         console.error("🔥 Error updating profile:", err);
         res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.checkAuth = async (req, res) => {
+    try {
+        const user = req.user; // Set by isUser middleware from token
+
+        res.status(200).json({
+            success: true,
+            message: "Authenticated",
+            user: {
+                id: user._id,
+                name: user.name,
+                role: user.role,
+                email: user.email,
+            },
+        });
+    } catch (error) {
+        console.error("❌ Auth check failed:", error);
+        res.status(401).json({ success: false, message: "Unauthorized" });
     }
 };

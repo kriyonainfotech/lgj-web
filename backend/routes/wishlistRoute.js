@@ -8,10 +8,10 @@ const {
 } = require('../controller/wishlistController');
 const { isUser } = require('../middlewares/authmiddleware');
 
-router.get('/', getWishlist);
+router.get('/', isUser, getWishlist);
 
 router.post(
-    '/add',
+    '/add', isUser,
     [
         body('productId', 'Product ID is required').not().isEmpty(),
         body('productId', 'Invalid Product ID').isMongoId()
@@ -19,7 +19,7 @@ router.post(
     addToWishlist
 );
 
-router.delete('/remove/:productId', removeFromWishlist);
+router.delete('/remove/:productId', isUser, removeFromWishlist);
 
 
 module.exports = router;

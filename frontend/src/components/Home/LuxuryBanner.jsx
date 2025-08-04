@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const LuxuryBanner = () => {
     return (
@@ -9,7 +10,7 @@ const LuxuryBanner = () => {
                 <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80')"
+                        backgroundImage: "url('https://i.pinimg.com/1200x/d3/9e/b7/d39eb774d560130e3eba45b0212f6a88.jpg')"
                     }}
                 />
 
@@ -61,12 +62,12 @@ const LuxuryBanner = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1, duration: 0.8 }}
                         >
-                            <button className="px-8 py-3 bg-golden text-black font-serif text-lg rounded-sm shadow-lg hover:bg-white transition-all duration-300 hover:shadow-xl">
+                            <Link to='/shop' className="px-8 py-3 bg-golden text-black font-serif text-lg rounded-sm shadow-lg hover:bg-white transition-all duration-300 hover:shadow-xl">
                                 Discover Collection
-                            </button>
-                            <button className="px-8 py-3 border border-white/30 text-white font-serif text-lg rounded-sm hover:bg-white/10 transition-all duration-300">
+                            </Link>
+                            <Link to='/contact-us' className="px-8 py-3 border border-white/30 text-white font-serif text-lg rounded-sm hover:bg-white/10 transition-all duration-300">
                                 Book Appointment
-                            </button>
+                            </Link>
                         </motion.div>
                     </motion.div>
                 </div>

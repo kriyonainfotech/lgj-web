@@ -14,6 +14,8 @@ import FeaturesSection from '../components/Home/FeaturesSection';
 import NewArrivalsSection from '../components/Home/NewArrivalsSection';
 import TrendingNowSection from '../components/Home/TrendingNow';
 import LuxuryBanner from '../components/Home/LuxuryBanner';
+import JewelryReelsSection from '../components/Home/JewelryReelsSection';
+import BestSellerSection from '../components/Home/BestSeller';
 
 
 const Home = () => {
@@ -215,39 +217,7 @@ const Home = () => {
 
             <LuxuryBanner />
 
-            <section className="py-16 px-4 bg-light text-midnight">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl md:text-[40px] fraunces text-black">Best Sellers</h2>
-                    <p className="text-lg md:text-2xl fraunces text-primary mt-1">Discover the latest pieces in our curated collection</p>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-7xl mx-auto">
-                    {bestSeller.map((product, index) => (
-                        <div key={index} className="flex flex-col items-center text-center ">
-                            <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
-                                <div className="aspect-[4/5]  overflow-hidden">                                    <img
-                                    src={product.mainImage}
-                                    alt={product.title}
-                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                                />
-                                </div>
-                            </Link>
-
-                            <h3 className="mt-4 text-lg font-medium text-black fraunces">{product.title}</h3>
-                            <p className="text-black text-md mt-1 font-semibold fraunces">₹{product.variants[0].price}</p>
-                        </div>
-                    ))}
-
-
-                </div>
-                <div className="flex justify-center mt-10">
-                    <Link to={`/collections/best-seller`} className="px-20 fraunces py-3 rounded-md bg-maroon text-white text-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                        View All
-                    </Link>
-                </div>
-            </section>
-
-
+            <BestSellerSection localbestSeller={bestSeller} />
 
         </div>
     )

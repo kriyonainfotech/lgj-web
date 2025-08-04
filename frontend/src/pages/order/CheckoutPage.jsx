@@ -201,7 +201,7 @@ export default function CheckoutPage() {
                 const mockOrderId = `ORD-${Date.now()}`;
                 toast.success("Order placed successfully! (Simulated)");
                 clearCart(); // Clear cart after simulated success
-                navigate(`/order-confirmation/${mockOrderId}`);
+                navigate(`/profile?tab=orders`);
             }, 2000);
 
         } catch (error) {
@@ -215,7 +215,7 @@ export default function CheckoutPage() {
     // --- Conditional Rendering for Initial States ---
     if (cartLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50">
+            <div className="flex justify-center items-center h-screen mt-30">
                 <p className="text-xl text-gray-700">Loading cart for checkout...</p>
             </div>
         );
@@ -223,7 +223,7 @@ export default function CheckoutPage() {
 
     if (cartError) {
         return (
-            <div className="px-6 py-10 max-w-7xl mx-auto text-center bg-white shadow-md rounded-lg mt-10 text-red-600">
+            <div className="px-6 py-10 mt-30 max-w-7xl mx-auto text-center bg-white shadow-md rounded-lg text-red-600">
                 <p className="text-2xl font-semibold mb-4">Error: {cartError}</p>
                 <Link to="/cart" className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition">
                     Back to Cart
@@ -239,7 +239,7 @@ export default function CheckoutPage() {
 
     // --- Checkout Page Layout ---
     return (
-        <div className="px-4 py-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
+        <div className="px-4 py-8 max-w-7xl mx-auto min-h-screen mt-30">
             <h1 className="text-4xl font-bold text-center text-gray-800 mb-10 fraunces">Checkout</h1>
 
             {/* Progress Timeline */}
@@ -247,18 +247,18 @@ export default function CheckoutPage() {
                 {[1, 2, 3].map(step => (
                     <React.Fragment key={step}>
                         {step > 1 && (
-                            <div className={`flex-1 h-1 ${stepStatus[step - 1] === 'completed' || stepStatus[step - 1] === 'active' ? 'bg-violet-600' : 'bg-gray-300'}`}></div>
+                            <div className={`flex-1 h-1 ${stepStatus[step - 1] === 'completed' || stepStatus[step - 1] === 'active' ? 'bg-rose-900' : 'bg-gray-300'}`}></div>
                         )}
                         <div
                             className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white text-lg font-bold transition-all duration-300
-                                ${stepStatus[step] === 'completed' ? 'bg-violet-600' :
-                                    stepStatus[step] === 'active' ? 'bg-violet-500' : 'bg-gray-400'
+                                ${stepStatus[step] === 'completed' ? 'bg-rose-900' :
+                                    stepStatus[step] === 'active' ? 'bg-rose-700' : 'bg-gray-400'
                                 }`}
                             onClick={() => setOpenStep(step)} // Allow clicking to open step (if currentStep allows)
                         >
                             {stepStatus[step] === 'completed' ? <FiCheckCircle className="text-white" /> : step}
                             <span className={`absolute -bottom-6 text-xs whitespace-nowrap transition-colors duration-300
-                                ${stepStatus[step] === 'active' ? 'text-violet-600 font-semibold' : 'text-gray-600'}`}>
+                                ${stepStatus[step] === 'active' ? 'text-rose-900 font-semibold' : 'text-gray-600'}`}>
                                 {step === 1 && "Authentication"}
                                 {step === 2 && "Shipping"}
                                 {step === 3 && "Order Summary"}
@@ -277,14 +277,14 @@ export default function CheckoutPage() {
                     {/* Step 1: Authentication */}
                     <div className="bg-white shadow-md rounded-lg p-6">
                         <div className="flex justify-between items-center cursor-pointer" onClick={() => setOpenStep(openStep === 1 ? null : 1)}>
-                            <h2 className="text-2xl font-semibold text-gray-700">
+                            <h2 className="text-xl font-semibold text-gray-700">
                                 {stepStatus[1] === 'completed' ? <FiCheckCircle className="inline mr-2 text-green-500" /> : null}
                                 1. Authentication
                             </h2>
                             {isAuthenticated && <span className="text-green-600">Logged in as {user?.email}</span>}
                             {openStep === 1 ? <FiChevronUp /> : <FiChevronDown />}
                         </div>
-                        <div className={`mt-4 overflow-hidden transition-all duration-500 ease-in-out ${openStep === 1 ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className={`mt-2 overflow-hidden transition-all duration-500 ease-in-out ${openStep === 1 ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
                             {isAuthenticated ? (
                                 <div className="text-gray-700 py-4">
                                     <p>You are logged in as **{user?.name}** ({user?.email}).</p>
@@ -327,7 +327,7 @@ export default function CheckoutPage() {
                                                 <label htmlFor="regConfirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
                                                 <input type="password" id="regConfirmPassword" name="confirmPassword" value={authFormData.confirmPassword} onChange={handleAuthFormChange} className="mt-1 block w-full p-2 border rounded-md" required />
                                             </div>
-                                            <button type="submit" disabled={authSubmitting || loadingAuth} className="w-full bg-violet-800 text-white py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <button type="submit" disabled={authSubmitting || loadingAuth} className="w-full bg-rose-800 text-white py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
                                                 {authSubmitting || loadingAuth ? 'Processing...' : 'Register'}
                                             </button>
                                         </form>
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                                                 <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700">Password</label>
                                                 <input type="password" id="loginPassword" name="password" value={loginFormData.password} onChange={handleAuthFormChange} className="mt-1 block w-full p-2 border rounded-md" required />
                                             </div>
-                                            <button type="submit" disabled={authSubmitting || loadingAuth} className="w-full bg-violet-800 text-white py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <button type="submit" disabled={authSubmitting || loadingAuth} className="w-full bg-rose-800 text-white py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
                                                 {authSubmitting || loadingAuth ? 'Processing...' : 'Login'}
                                             </button>
                                         </form>
@@ -354,13 +354,13 @@ export default function CheckoutPage() {
                     {/* Step 2: Shipping Details */}
                     <div className={`bg-white shadow-md rounded-lg p-6 ${currentStep < 2 ? 'opacity-50 pointer-events-none' : ''}`}> {/* Visually disable if not active step */}
                         <div className="flex justify-between items-center cursor-pointer" onClick={() => setOpenStep(openStep === 2 ? null : 2)}>
-                            <h2 className="text-2xl font-semibold text-gray-700">
+                            <h2 className="text-xl font-semibold text-gray-700">
                                 {stepStatus[2] === 'completed' ? <FiCheckCircle className="inline mr-2 text-green-500" /> : null}
                                 2. Shipping Details
                             </h2>
                             {openStep === 2 ? <FiChevronUp /> : <FiChevronDown />}
                         </div>
-                        <div className={`mt-4 overflow-hidden transition-all duration-500 ease-in-out ${openStep === 2 ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className={`mt-2 overflow-hidden transition-all duration-500 ease-in-out ${openStep === 2 ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
                             <form onSubmit={handleShippingSubmit} className="space-y-6 pt-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
@@ -397,7 +397,7 @@ export default function CheckoutPage() {
                                 <button
                                     type="submit"
                                     disabled={shippingSubmitting || currentStep < 2}
-                                    className="w-full bg-violet-800 text-white py-2 rounded-md text-lg font-semibold hover:bg-violet-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-rose-800 text-white py-2 rounded-md text-lg font-semibold hover:bg-rose-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {shippingSubmitting ? 'Saving Address...' : 'Continue to Order Summary'}
                                 </button>
@@ -408,13 +408,13 @@ export default function CheckoutPage() {
                     {/* Step 3: Order Summary & Placement */}
                     <div className={`bg-white shadow-md rounded-lg p-6 ${currentStep < 3 ? 'opacity-50 pointer-events-none' : ''}`}> {/* Visually disable if not active step */}
                         <div className="flex justify-between items-center cursor-pointer" onClick={() => setOpenStep(openStep === 3 ? null : 3)}>
-                            <h2 className="text-2xl font-semibold text-gray-700">
+                            <h2 className="text-xl font-semibold text-gray-700">
                                 {stepStatus[3] === 'completed' ? <FiCheckCircle className="inline mr-2 text-green-500" /> : null}
                                 3. Order Summary & Payment
                             </h2>
                             {openStep === 3 ? <FiChevronUp /> : <FiChevronDown />}
                         </div>
-                        <div className={`mt-4 overflow-hidden transition-all duration-500 ease-in-out ${openStep === 3 ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className={`mt-2 overflow-hidden transition-all duration-500 ease-in-out ${openStep === 3 ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
                             <div className="py-4">
                                 {/* Order Review */}
                                 <h3 className="text-xl font-semibold text-gray-700 mb-4">Items in Cart:</h3>
@@ -425,7 +425,7 @@ export default function CheckoutPage() {
                                                 <img src={item.mainImage} alt={item.name} className="w-10 h-10 object-cover rounded" />
                                                 <span>{item.name} (x{item.quantity})</span>
                                             </div>
-                                            <span>₹{(item.variantDetails?.price * item.quantity).toFixed(2)}</span>
+                                            <span>${(item.variantDetails?.price * item.quantity).toFixed(2)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -451,21 +451,21 @@ export default function CheckoutPage() {
                                 {/* Payment Method (Simple placeholder for now) */}
                                 <h3 className="text-xl font-semibold text-gray-700 mb-4">Payment Method:</h3>
                                 <div className="text-sm text-gray-700 mb-4 border-b pb-4">
-                                    <p>Selected: **Cash on Delivery (COD)** - (Mock Payment)</p>
+                                    <p>Selected: Online Payment - (Mock Payment)</p>
                                     {/* In a real app, this would be a selection of payment methods */}
                                 </div>
 
                                 {/* Final Total */}
                                 <div className="flex justify-between border-t border-gray-200 pt-3 font-bold text-xl text-gray-800">
                                     <span>Order Total</span>
-                                    <span>₹{cartTotal.toFixed(2)}</span>
+                                    <span>${cartTotal.toFixed(2)}</span>
                                 </div>
 
                                 {/* Place Order Button */}
                                 <button
                                     onClick={handlePlaceOrder}
                                     disabled={isPlacingOrder || currentStep < 3 || !shippingAddress.fullName || !cartItems.length}
-                                    className="w-full bg-violet-800 text-white py-3 rounded-md text-lg font-semibold hover:bg-violet-700 transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                                    className="w-full bg-violet-800 text-white py-3 rounded-md text-lg font-semibold hover:bg-rose-700 transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                                 >
                                     {isPlacingOrder ? 'Placing Order...' : 'Place Order'}
                                 </button>
@@ -481,12 +481,12 @@ export default function CheckoutPage() {
                         {cartItems.map(item => (
                             <div key={item._id} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
                                 <span className="font-medium">{item.name} (x{item.quantity})</span>
-                                <span>₹{(item.variantDetails?.price * item.quantity).toFixed(2)}</span>
+                                <span>${(item.variantDetails?.price * item.quantity).toFixed(2)}</span>
                             </div>
                         ))}
                         <div className="flex justify-between border-t border-gray-200 pt-3 font-bold text-xl">
                             {/* <span>Total ({cartItemCount} items)</span> */}
-                            <span>₹{cartTotal.toFixed(2)}</span>
+                            <span>${cartTotal.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>

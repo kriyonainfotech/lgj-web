@@ -498,22 +498,11 @@ const ShopPage = () => {
     }
   };
 
-  // ✅ New: handleWishlistToggle function
-  // const handleWishlistToggle = (productId) => {
-  //   if (isProductInWishlist(productId)) {
-  //     removeFromWishlist(productId);
-  //   } else {
-  //     addToWishlist(productId);
-  //   }
-  // };
-
-
-
   return (
     <>
-      <div className='relative'>
-        <div className="sticky top-[108px] z-40 bg-white shadow-sm px-4 py-3">
-          <div className="max-w-7xl flex items-center justify-between">
+      <div className='relative mt-32'>
+        <div className="sticky top-[108px] z-40 px-4 py-3 mx-12">
+          <div className="max-w-full flex items-center justify-between">
             <div className=''>
               <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 px-3 py-1 cursor-pointer'>
                 <FiFilter className="text-xl text-gray-700" />
@@ -527,7 +516,7 @@ const ShopPage = () => {
             </div>
           </div>
         </div>
-      </div >
+      </div>
       <div className="flex flex-col lg:flex-row max-w-full mx-12 pt-5">
         <aside
           ref={filterRef}

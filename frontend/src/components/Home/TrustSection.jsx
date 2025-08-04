@@ -137,25 +137,25 @@ const TrustSection = () => {
                                 </p>
 
                                 {/* Decorative corner elements */}
-                                <div className="absolute top-4 right-4 w-3 h-3 border-t border-r border-primary/20" />
-                                <div className="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-primary/20" />
+                                {/* <div className="absolute top-4 right-4 w-3 h-3 border-t border-r border-primary/20" /> */}
+                                {/* <div className="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-primary/20" /> */}
 
                                 {/* Floating link */}
-                                <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                {/* <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                     <button className="text-xs text-primary/80 hover:text-primary flex items-center justify-center gap-1 transition-colors">
                                         Learn more
                                         <svg className="w-3 h-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
                         </motion.div>
                     ))}
                 </motion.div>
 
                 {/* Decorative footer */}
-                <motion.div
+                {/* <motion.div
                     className="mt-16 pt-8 border-t border-primary/10 text-center"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -165,7 +165,7 @@ const TrustSection = () => {
                         Every MIROSA piece comes with a certificate of authenticity, lifetime maintenance promise,
                         and our commitment to ethical sourcing and craftsmanship.
                     </p>
-                </motion.div>
+                </motion.div> */}
             </div>
         </section>
     );

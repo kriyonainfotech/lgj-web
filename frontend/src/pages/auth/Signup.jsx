@@ -66,31 +66,33 @@ export default function Signup() {
 
 
     return (
-        <div className="min-h-screen bg-cream flex items-center justify-center px-4 py-6">
+        <div className="min-h-screen flex items-center justify-center px-4 py-6">
             <div className="w-full max-w-6xl rounded-xl flex flex-col md:flex-row overflow-hidden">
 
                 {/* Left Side Banner / Image */}
                 <div className="md:w-1/2 hidden md:flex items-center justify-center text-white p-8">
-                    <div className="text-center space-y-4">
-                        <Link to={'/'}><img src={logo} alt="Mirosa Logo" className="w-84 mx-auto" /></Link>
-                        <h2 className="text-2xl fraunces">Join the Elegance</h2>
-                        <p className="text-md nunito">Create your Mirosa account and start exploring</p>
-                    </div>
+                    <Link to={'/'}>
+                        <div className="text-center space-y-4">
+                            <img src={logo} alt="Mirosa Logo" className="w-84 mx-auto" />
+                            <h2 className="text-2xl nunito mb-0 text-gray-900">Join the Elegance</h2>
+                            <p className="text-md nunito text-gray-900">Create your Mirosa account and start exploring</p>
+                        </div>
+                    </Link>
                 </div>
 
                 {/* Right Side Signup Form */}
-                <div className="md:w-1/2 w-full p-8 border border-gray-100 rounded-xl bg-gray-200">
+                <div className="md:w-1/2 w-full p-8 border border-gray-100 rounded-xl bg-white">
                     <div className="md:hidden flex justify-center mb-6">
                         <img src={logo} alt="Mirosa Logo" className="w-30" />
                     </div>
-                    <h2 className="text-2xl font-semibold text-maroon mb-2 fraunces">Create Account</h2>
+                    <h2 className="text-2xl font-semibold text-maroon mb-0 nunito">Create Account</h2>
                     <p className="text-sm text-gray-600 mb-6 nunito">Start your journey with Mirosa.</p>
 
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         {/* Full Name + Phone in one row */}
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="md:w-1/2">
-                                <label className="block mb-1 text-sm text-maroon fraunces">Full Name</label>
+                                <label className="block mb-1 text-sm text-maroon nunito">Full Name</label>
                                 <input
                                     type="text"
                                     placeholder="Jane Doe"
@@ -101,7 +103,7 @@ export default function Signup() {
                                 />
                             </div>
                             <div className="md:w-1/2">
-                                <label className="block mb-1 text-sm text-maroon fraunces">Phone Number</label>
+                                <label className="block mb-1 text-sm text-maroon nunito">Phone Number</label>
                                 <input
                                     type="tel"
                                     name="phone"
@@ -115,7 +117,7 @@ export default function Signup() {
 
                         {/* Email (full width) */}
                         <div>
-                            <label className="block mb-1 text-sm text-maroon fraunces">Email</label>
+                            <label className="block mb-1 text-sm text-maroon nunito">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -127,7 +129,7 @@ export default function Signup() {
                         </div>
 
                         <div>
-                            <label className="block mb-1 text-sm text-maroon fraunces">Password</label>
+                            <label className="block mb-1 text-sm text-maroon nunito">Password</label>
                             <input
                                 type="password"
                                 name="password"
@@ -138,7 +140,7 @@ export default function Signup() {
                             />
                         </div>
                         <div>
-                            <label className="block mb-1 text-sm text-maroon fraunces">Confirm Password</label>
+                            <label className="block mb-1 text-sm text-maroon nunito">Confirm Password</label>
                             <input
                                 type="password"
                                 name="confirmPassword"
@@ -156,7 +158,7 @@ export default function Signup() {
                                 checked={formData.termsAccepted}
                                 onChange={handleChange}
                                 className="accent-rose-900" />
-                            <label className="text-sm text-gray-700 fraunces">
+                            <label className="text-sm text-gray-700 nunito">
                                 I agree to the <a href="#" className="text-maroon underline">Terms & Conditions</a>
                             </label>
                         </div>
@@ -165,20 +167,20 @@ export default function Signup() {
 
                         <button
                             type="submit"
-                            className="w-full text-white py-2 rounded-lg bg-maroon transition fraunces"
+                            className="w-full text-white py-2 rounded-lg bg-maroon transition nunito"
                         >
                             Create Account
                         </button>
 
                         {/* <div className="text-center text-sm text-gray-600">or</div>
 
-                        <button className="w-full fraunces border border-red-900 text-maroon py-2 rounded-md hover:bg-wine hover:text-white transition">
+                        <button className="w-full nunito border border-red-900 text-maroon py-2 rounded-md hover:bg-wine hover:text-white transition">
                             Continue with Google
                         </button> */}
                     </form>
 
 
-                    <p className="mt-6 text-sm text-center fraunces text-maroon">
+                    <p className="mt-6 text-sm text-center nunito text-maroon">
                         Already have an account? &nbsp;
                         <a href="login" className="font-medium hover:underline">
                             Login

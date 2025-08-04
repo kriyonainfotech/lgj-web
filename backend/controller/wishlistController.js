@@ -8,9 +8,9 @@ const { validationResult } = require('express-validator');
  * @access  Private
  */
 exports.getWishlist = async (req, res) => {
-    console.log("🛍️  Fetching wishlist for user:", req.user.id);
+    console.log("🛍️  Fetching wishlist for user:", req.user._id);
     try {
-        const wishlist = await Wishlist.findOne({ user: req.user.id }).populate('products', 'title slug mainImage variants');
+        const wishlist = await Wishlist.findOne({ user: req.user._id }).populate('products', 'title slug mainImage variants');
 
         if (!wishlist) {
             console.log("✅  No wishlist found for user, returning empty array.");
@@ -46,8 +46,8 @@ exports.addToWishlist = async (req, res) => {
     }
 
     const { productId } = req.body;
-    const userId = req.user.id;
-    console.log(productId, req.user, 'productId')
+    console.log(productId, req.user, 'whislist add')
+    const userId = req.user._id;
 
     console.log(`➕  Attempting to add product ${productId} to wishlist for user ${userId}`);
 
@@ -95,7 +95,7 @@ exports.addToWishlist = async (req, res) => {
  */
 exports.removeFromWishlist = async (req, res) => {
     const { productId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
     console.log(`➖  Attempting to remove product ${productId} from wishlist for user ${userId}`);
 
     try {
@@ -136,7 +136,7 @@ exports.removeFromWishlist = async (req, res) => {
  */
 exports.mergeGuestWishlist = async (req, res) => {
     const { guestWishlistItems } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
     console.log(`🔄  Merging guest wishlist for user ${userId}`);
 
     if (!Array.isArray(guestWishlistItems)) {

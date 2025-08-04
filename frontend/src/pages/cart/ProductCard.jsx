@@ -111,7 +111,7 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isWishlisted, isL
     };
 
     return (
-        <div className="relative bg-white overflow-hidden group transition-shadow duration-300">
+        <div className="relative overflow-hidden group transition-shadow duration-300">
             {/* --- Image Container --- */}
             <div className="relative group">
                 <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>

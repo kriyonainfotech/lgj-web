@@ -34,6 +34,37 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
         return;
     }
 
+    // const handleUpload = async () => {
+    //     if (!file) return;
+    //     setIsUploading(true);
+
+    //     const formData = new FormData();
+    //     formData.append('profilePhoto', file);
+
+    //     console.log('API TOUCHED!!!!!!!!!!!!!')
+    //     try {
+    //         const response = await axios.put(`${backdendUrl}/api/auth/profile/update-photo`, formData, {
+    //             withCredentials: true,
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+
+    //         console.log(response, 'data')
+    //         if (response.data.success) {
+    //             // setUser({ ...user, image: { url: response.data.imageUrl } });
+
+    //             toast.success('Photo updated!');
+    //         }
+    //         onRequestClose(); // Close modal on success
+    //     } catch (error) {
+    //         console.log(error, 'error')
+    //         toast.error('Upload failed. Please try again.');
+    //     } finally {
+    //         setIsUploading(false);
+    //     }
+    // };
+
     const handleUpload = async () => {
         if (!file) return;
         setIsUploading(true);
@@ -41,7 +72,6 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
         const formData = new FormData();
         formData.append('profilePhoto', file);
 
-        console.log('API TOUCHED!!!!!!!!!!!!!')
         try {
             const response = await axios.put(`${backdendUrl}/api/auth/profile/update-photo`, formData, {
                 withCredentials: true,
@@ -50,17 +80,29 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
                 }
             });
 
-            console.log(response, 'data')
+            if (response.data.success) {
+                // ✅ Fetch updated user data
+                const { data } = await axios.get(`${backdendUrl}/api/auth/check-auth`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true
+                });
 
-            setUser({ ...user, image: { url: response.data.imageUrl } });
-            toast.success('Photo updated!');
-            onRequestClose(); // Close modal on success
+                // 🔁 Update context with fresh user
+                setUser(prev => ({ ...prev, image: { ...data.user.image } }));
+                toast.success('Photo updated!');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+                onRequestClose(); // Close modal on success
+            }
         } catch (error) {
+            console.error(error);
             toast.error('Upload failed. Please try again.');
         } finally {
             setIsUploading(false);
         }
     };
+
 
     const handleDelete = async () => {
         if (!window.confirm('Are you sure you want to delete your photo?')) return;
@@ -92,7 +134,7 @@ const ProfilePhotoModal = ({ isOpen, onRequestClose }) => {
                     {preview ? (
                         <img src={preview} alt="Profile Preview" className="w-full h-full object-cover" />
                     ) : (
-                        <span className="text-gray-400">No Image</span>
+                        <span className="text-gray-400">Image Preview</span>
                     )}
                 </div>
 

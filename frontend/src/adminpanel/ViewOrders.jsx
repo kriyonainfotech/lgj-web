@@ -2,44 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import OrderDetail from "./OrderDetail";
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
-
-const dummyOrder = {
-    _id: "ORD123456",
-    status: "processing",
-    createdAt: "2025-07-29T10:07:35.663Z",
-    totalAmount: 3948,
-    paymentMethod: "Card",
-    paymentStatus: "Paid",
-    user: {
-        name: "Aarav Sharma",
-        email: "aarav.sharma@example.com"
-    },
-    shippingAddress: {
-        fullName: "Aarav Sharma",
-        city: "Surat",
-        state: "Gujarat",
-        country: "India"
-    },
-    cartItems: [
-        {
-            _id: "item1",
-            mainImageAtPurchase: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
-            nameAtPurchase: "Hexa Halo Diamond 925 Sterling Silver Studs - 14KT",
-            priceAtPurchase: 3149,
-            quantity: 1,
-            variantId: "VAR123"
-        },
-        {
-            _id: "item2",
-            mainImageAtPurchase: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
-            nameAtPurchase: "Classic Gold Solitaire Ring - 18KT",
-            priceAtPurchase: 799,
-            quantity: 1,
-            variantId: "VAR456"
-        }
-    ]
-};
-
+import { toast } from 'react-toastify'
 
 const ViewOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -71,11 +34,28 @@ const ViewOrders = () => {
     };
 
     const handleStatusChange = async (orderId, newStatus) => {
-        // Optional: Send status update to backend
+        // Optimistically update the UI first for a faster user experience
+        const originalOrders = [...orders]; // Backup original state
         const updated = orders.map((order) =>
             order._id === orderId ? { ...order, status: newStatus } : order
         );
         setOrders(updated);
+
+        try {
+            const { data } = await axios.put(`${backdendUrl}/api/order/${orderId}/status`, { status: newStatus }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+
+            toast.success(`Status updated to "${data?.status || newStatus}"`);
+        } catch (err) {
+            console.error("❌ Status update failed:", err);
+            setOrders(originalOrders);
+            toast.error("Failed to update order status. Please try again.");
+        }
+
     };
 
     useEffect(() => {
@@ -126,10 +106,10 @@ const ViewOrders = () => {
                                         className="bg-gray-100 text-sm p-2 rounded-md border border-gray-300"
                                     >
                                         <option value="Placed">Placed</option>
-                                        <option value="processing">Processing</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
+                                        <option value="Processing">Processing</option>
+                                        <option value="Shipped">Shipped</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Cancelled">Cancelled</option>
                                     </select>
                                 </td>
                             </tr>

@@ -1082,6 +1082,25 @@ export default function ProductDetailPage() {
         setMaterialFilter(null); // This will show all images
     };
 
+    const handleQuantityChange = (change) => {
+        setQuantity(prevQty => {
+            const newQty = prevQty + change;
+
+            // Ensure the quantity doesn't go below 1
+            if (newQty < 1) {
+                return 1;
+            }
+
+            // Ensure the quantity doesn't exceed available stock
+            if (selectedVariant && newQty > selectedVariant.stock) {
+                toast.info(`Only ${selectedVariant.stock} items available.`);
+                return selectedVariant.stock;
+            }
+
+            return newQty;
+        });
+    };
+
     const handleAddToCart = () => {
         if (!selectedVariant) {
             toast.error("Please select a variant.");
@@ -1131,7 +1150,7 @@ export default function ProductDetailPage() {
     const hasDiscount = finalPrice < selectedVariant.price;
 
     return (
-        <div className="px-6 py-8 max-w-ful mx-10">
+        <div className="px-6 py-8 max-w-ful mt-30 mx-10">
             {/* Breadcrumb */}
             <nav className="text-sm text-gray-500 mb-6">
                 <Link to="/" className="hover:underline">Home</Link> /
@@ -1157,11 +1176,11 @@ export default function ProductDetailPage() {
                     {/* Price Display */}
                     <div className="flex items-baseline gap-4 mb-6">
                         <p className="text-3xl text-gray-900 nunito font-semibold">
-                            ₹{finalPrice.toLocaleString('en-IN')}
+                            ${finalPrice.toLocaleString('en-IN')}
                         </p>
                         {hasDiscount && (
                             <p className="text-2xl text-gray-400 fraunces font-normal line-through">
-                                ₹{selectedVariant.price.toLocaleString('en-IN')}
+                                ${selectedVariant.price.toLocaleString('en-IN')}
                             </p>
                         )}
                     </div>

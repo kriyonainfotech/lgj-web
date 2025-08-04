@@ -36,6 +36,10 @@ import WishlistPage from './pages/Whislist/WishlistPage';
 import ViewProductDetail from './adminpanel/ViewProductDetail';
 import AdminViewProduct from './adminpanel/ViewProductDetail';
 import { GlobalStyles } from './components/Home/JewelryCollectionSection';
+import { PrivacyPolicy } from './components/about/PrivacyPolicy';
+import { ReturnPolicy } from './components/about/ReturnPolicy';
+import { ShippingPolicy } from './components/about/ShippingPolicy';
+import FAQPage from './components/about/FAQItem';
 
 function App() {
   return (
@@ -59,6 +63,10 @@ function App() {
                 <Route path='/products/:slug' element={<Layout> <ProductDetailPage /></Layout>} />
                 <Route path='/cart' element={<Layout><CartPage /></Layout>} />
                 <Route path='/wishlist' element={<Layout><WishlistPage /></Layout>} />
+                <Route path='/privacy-policy' element={<Layout><PrivacyPolicy /></Layout>} />
+                <Route path='/return-policy' element={<Layout><ReturnPolicy /></Layout>} />
+                <Route path='/shipping-policy' element={<Layout><ShippingPolicy /></Layout>} />
+                <Route path='/faq' element={<Layout><FAQPage /></Layout>} />
 
                 {/* Routes WITH Header/Footer */}
                 <Route element={<PrivateRoute />} >
@@ -82,6 +90,7 @@ function App() {
                   <Route path="edit-subcategory/:id" element={<EditSubCategory />} />
                   <Route path="edit-product/:productId" element={<EditProduct />} />
                 </Route>
+
 
               </Routes>
 

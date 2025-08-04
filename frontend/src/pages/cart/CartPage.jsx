@@ -42,7 +42,7 @@ export default function CartPage() {
     // --- Conditional Rendering for Loading, Error, Empty Cart ---
     if (cartLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50">
+            <div className="flex justify-center items-center h-screen">
                 <div className="text-center">
                     <svg className="animate-spin h-10 w-10 text-rose-900 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -56,7 +56,7 @@ export default function CartPage() {
 
     if (cartError) {
         return (
-            <div className="px-6 py-10 max-w-7xl mx-auto text-center bg-white shadow-md rounded-lg mt-10 text-red-600">
+            <div className="px-6 py-10 max-w-7xl mx-auto text-center shadow-md rounded-lg mt-10 text-red-600">
                 <p className="text-2xl font-semibold mb-4">Error Loading Cart</p>
                 <p className="text-gray-700 mb-6">{cartError}</p>
                 <Link to="/shop" className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition">
@@ -68,7 +68,7 @@ export default function CartPage() {
 
     if (cartItems.length === 0) {
         return (
-            <div className="px-6 py-10 max-w-7xl mx-auto text-center h-96 bg-white mt-10 nunito">
+            <div className="px-6 py-10 max-w-7xl mx-auto text-center h-96 mt-40 nunito">
                 <svg className="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.769.707 1.769H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -83,8 +83,8 @@ export default function CartPage() {
 
     // --- Main Cart Display ---
     return (
-        <div className="px-4 py-10 max-w-7xl mx-auto min-h-screen ">
-            <h1 className="text-4xl font-bold text-center text-gray-900 mb-12 fraunces">Your Shopping Bag</h1>
+        <div className="px-4 py-10 max-w-7xl mx-auto min-h-screen mt-30">
+            <h1 className="text-4xl font-semibold text-center text-maroon mb-12 fraunces">Your Shopping Bag</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Cart Items */}
@@ -92,7 +92,7 @@ export default function CartPage() {
                     {cartItems.map(item => (
                         <div
                             key={item._id || item.variantId}
-                            className="bg-white border border-gray-200 flex flex-col sm:flex-row p-4 gap-6"
+                            className=" border border-rose-900/30 flex flex-col sm:flex-row p-4 gap-6"
                         >
                             {/* Image */}
                             <div className="flex-shrink-0">
@@ -128,7 +128,7 @@ export default function CartPage() {
                                 <div className="flex items-center space-x-2">
                                     <button
                                         onClick={() => handleQuantityChange(item._id || item.variantId, item.quantity, -1, item.stock)}
-                                        className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={item.quantity <= 1}
                                     >
                                         <FiMinus />
@@ -138,7 +138,7 @@ export default function CartPage() {
                                     </span>
                                     <button
                                         onClick={() => handleQuantityChange(item._id || item.variantId, item.quantity, 1, item.stock)}
-                                        className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={item.quantity >= (item.stock || Infinity)}
                                     >
                                         <FiPlus />
@@ -156,8 +156,7 @@ export default function CartPage() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-white border border-gray-200 p-6 h-fit sticky top-28 nunito">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-6">Order Summary</h2>
+                <div className="lg:col-span-1 border border-rose-900/30 p-6 h-fit sticky top-28 nunito">                    <h2 className="text-2xl font-semibold text-gray-800 mb-6">Order Summary</h2>
                     <div className="space-y-4 text-gray-700">
                         <div className="flex justify-between">
                             <span>Items ({cartItemCount})</span>

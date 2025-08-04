@@ -83,7 +83,7 @@ export const CartProvider = ({ children }) => {
                 console.log(response, "response data")
                 if (response.data.success) {
                     setCartItems(response.data.cart.items);
-                    // toast.success('Item added to cart!');
+                    toast.success('Item added to cart!');
                 } else {
                     toast.error(response.data.message || 'Failed to add item to cart.');
                 }

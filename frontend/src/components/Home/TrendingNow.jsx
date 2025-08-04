@@ -4,7 +4,9 @@ import { motion } from 'framer-motion';
 import ProductCard from '../../pages/cart/ProductCard';
 
 const TrendingNowSection = ({ localtrendingNow }) => {
+
     const [trendingNow, setTrendingNow] = useState([]);
+    console.log(trendingNow, 'tn')
 
     useEffect(() => {
         // Simulating data fetch or processing
@@ -104,7 +106,8 @@ const TrendingNowSection = ({ localtrendingNow }) => {
                     transition={{ delay: 0.8 }}
                 >
                     <Link
-                        to="/collections/new-arrivals"
+                        to="/collections/trending-now"
+                        state={{ subcategoryId: '68834a4deb446d953a5d8378' }}
                         className="inline-flex items-center px-8 py-3  bg-primary/5 border border-primary/20 bg-primary text-gray-800 font-serif text-lg font-medium rounded-full  transition-all duration-300 group"
                     >
                         Discover Trending Peices

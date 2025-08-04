@@ -3,7 +3,8 @@
 html,
 body {
     overflow-x: hidden;
-    /* background-color: #d1c8bf; */
+    background-color: #f8efe7;
+    /* bg-[#f8efe7] */
 }
 
 .fraunces {

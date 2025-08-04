@@ -1,57 +1,147 @@
-// AuthContext.jsx
-import { createContext, useContext, useEffect, useState } from "react";
+// src/context/AuthContext.jsx
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const AuthContext = createContext();
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); //
+    const [user, setUser] = useState(null);
+    const [token, setToken] = useState(null);
     const [loadingAuth, setLoadingAuth] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    useEffect(() => {
-        // console.log("🔍 AuthContext: Running useEffect on mount..."); //
-        const token = localStorage.getItem("token"); //
-        // console.log("📦 Retrieved token from localStorage:", token); //
-
-        if (token) { //
-            try { //
-                const decoded = jwtDecode(token);
-                console.log(decoded, 'decoded user')
-                if (decoded) {
-                    setIsAuthenticated(true)
-                    setUser(decoded);
-                }
-            } catch (err) {
-                console.error("❌ Invalid token. Error:", err);
-                localStorage.removeItem("token");
-            }
-        } else {
-            console.log("⚠️ No token found in localStorage.");
-        }
-
-        setLoadingAuth(false);
+    // 🔄 Clear auth state completely
+    const clearAuth = useCallback(() => {
+        localStorage.removeItem("token");
+        setUser(null);
+        setToken(null);
+        setIsAuthenticated(false);
     }, []);
 
+    // ✅ Verify token + fetch fresh user from backend
+    const loadUser = useCallback(async () => {
+        setLoadingAuth(true);
+        try {
+            const storedToken = localStorage.getItem("token");
+            if (!storedToken) throw new Error("No token found");
+
+            const decoded = jwtDecode(storedToken);
+            const isExpired = decoded.exp * 1000 < Date.now();
+            if (isExpired) {
+                throw new Error("Token expired");
+            }
+
+            // 🛡️ Verify with backend
+            const { data } = await axios.get(`${backendUrl}/api/auth/check-auth`, {
+                headers: { Authorization: `Bearer ${storedToken}` },
+                withCredentials: true,
+            });
+
+            // 👤 Set verified user
+            setToken(storedToken);
+            setUser(data.user);
+            setIsAuthenticated(true);
+        } catch (err) {
+            console.warn("🔒 Auth validation failed:", err.message || err.response?.data?.message);
+            clearAuth();
+        } finally {
+            setLoadingAuth(false);
+        }
+    }, [clearAuth]);
+
+    // Call on mount
+    useEffect(() => {
+        loadUser();
+    }, [loadUser]);
+
+    // 👋 Logout function
     const logout = () => {
-        console.log("🚪 Logging out user...");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user")
-        setUser(null);
+        clearAuth();
+        toast.info("Logged out successfully");
+    };
+
+    // 📦 Optional login function (e.g. after successful login API)
+    const login = (userObj, token) => {
+        localStorage.setItem("token", token);
+        setUser(userObj);
+        setToken(token);
+        setIsAuthenticated(true);
     };
 
     return (
-        <AuthContext.Provider value={{ user, logout, loadingAuth, isAuthenticated }}>
+        <AuthContext.Provider value={{
+            user,
+            token,
+            loadingAuth,
+            isAuthenticated, setUser,
+            login,
+            logout,
+            revalidate: loadUser,
+        }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) console.warn("⚠️ useAuth called outside of AuthProvider!");
-    return context;
-};
+export const useAuth = () => useContext(AuthContext);
+
+// // AuthContext.jsx
+// import { createContext, useContext, useEffect, useState } from "react";
+// import { jwtDecode } from 'jwt-decode';
+
+// const AuthContext = createContext();
+
+// export const AuthProvider = ({ children }) => {
+//     const [user, setUser] = useState(null); //
+//     const [loadingAuth, setLoadingAuth] = useState(true);
+//     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+//     useEffect(() => {
+//         // console.log("🔍 AuthContext: Running useEffect on mount..."); //
+//         const token = localStorage.getItem("token"); //
+//         // console.log("📦 Retrieved token from localStorage:", token); //
+
+//         if (token) { //
+//             try { //
+//                 const decoded = jwtDecode(token);
+//                 console.log(decoded, 'decoded user')
+//                 if (decoded) {
+//                     setIsAuthenticated(true)
+//                     setUser(decoded);
+//                 }
+//             } catch (err) {
+//                 console.error("❌ Invalid token. Error:", err);
+//                 localStorage.removeItem("token");
+//             }
+//         } else {
+//             console.log("⚠️ No token found in localStorage.");
+//         }
+
+//         setLoadingAuth(false);
+//     }, []);
+
+//     const logout = () => {
+//         console.log("🚪 Logging out user...");
+//         localStorage.removeItem("token");
+//         localStorage.removeItem("user")
+//         setUser(null);
+//     };
+
+//     return (
+//         <AuthContext.Provider value={{ user, logout, loadingAuth, isAuthenticated }}>
+//             {children}
+//         </AuthContext.Provider>
+//     );
+// };
+
+// export const useAuth = () => {
+//     const context = useContext(AuthContext);
+//     if (!context) console.warn("⚠️ useAuth called outside of AuthProvider!");
+//     return context;
+// };
 
 /*
 // src/context/AuthContext.jsx

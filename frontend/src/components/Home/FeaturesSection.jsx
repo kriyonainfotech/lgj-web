@@ -155,8 +155,8 @@ const FeaturesSection = () => {
                             <p className="text-sm text-gray-600 mt-1">{feature.description}</p>
 
                             {/* Decorative corner elements */}
-                            <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-primary/30" />
-                            <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-primary/30" />
+                            {/* <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-primary/30" /> */}
+                            {/* <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-primary/30" /> */}
                         </motion.div>
                     ))}
                 </motion.div>
