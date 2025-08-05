@@ -53,7 +53,7 @@ const JewelryCollectionSection = ({ mirosasCollection }) => {
             <div className="absolute bottom-30 left-0 w-90 h-90 bg-[#f8efe7] rounded-full -translate-x-1/2 opacity-60"></div>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="text-center mb-16">
+                <div className="text-center mb-0">
                     <motion.h2
                         className="text-4xl md:text-5xl font-serif text-black mb-4"
                         initial={{ opacity: 0, y: 20 }}
@@ -83,7 +83,7 @@ const JewelryCollectionSection = ({ mirosasCollection }) => {
                 {mirosasCollection && (
                     <div className="mt-20">
                         <motion.div
-                            className="text-center mb-16"
+                            className="text-center mb-10"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.8, delay: 0.6 }}
@@ -93,7 +93,7 @@ const JewelryCollectionSection = ({ mirosasCollection }) => {
                         </motion.div>
 
                         <motion.div
-                            className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-10"
+                            className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6"
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
@@ -107,7 +107,7 @@ const JewelryCollectionSection = ({ mirosasCollection }) => {
                                     <Link
                                         to={`/mirosas-collection/${sub.slug}`}
                                         state={{ subcategoryId: sub._id }}
-                                        className="block h-full"
+                                        className="block h-[500px]"
                                     >
                                         <motion.div
                                             className="h-full flex flex-col"

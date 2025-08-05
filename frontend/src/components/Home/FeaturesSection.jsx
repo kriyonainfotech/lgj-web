@@ -18,38 +18,19 @@ const FeaturesSection = () => {
         {
             icon: <FiTruck className="w-8 h-8 text-primary" />,
             title: "Free Shipping",
-            description: "On orders over $500"
+            description: "On orders over $1000"
         },
         {
-            icon: <IoChatbubblesOutline className="w-8 h-8 text-primary" />,
-            title: "Authenticity Guaranteed",
-            description: "Certified jewelry with lifetime warranty"
+            icon: <IoSparklesOutline className="w-8 h-8 text-primary" />,
+            title: "Expert Certified Quality",
+            description: "Top quality, guaranteed by our team of GIA-certified diamond experts."
         },
-        // {
-        //     icon: <FiGift className="w-8 h-8 text-primary" />,
-        //     title: "Luxury Packaging",
-        //     description: "Elegant gift wrapping included"
-        // },
-        // {
-        //     icon: <FiHeart className="w-8 h-8 text-primary" />,
-        //     title: "Personalization",
-        //     description: "Custom engraving available"
-        // },
-        // {
-        //     icon: <BsCurrencyDollar className="w-8 h-8 text-primary" />,
-        //     title: "Price Match",
-        //     description: "Best price guarantee"
-        // },
         {
             icon: <BsShieldCheck className="w-8 h-8 text-primary" />,
             title: "24/7 Support",
             description: "Dedicated jewelry specialists"
         },
-        // {
-        //     icon: <IoSparklesOutline className="w-8 h-8 text-primary" />,
-        //     title: "Complimentary Cleaning",
-        //     description: "Lifetime jewelry maintenance"
-        // },
+
         {
             icon: <FiTruck className="w-8 h-8 text-primary" />,
             title: "Easy Returns",

@@ -198,8 +198,8 @@ export default function CheckoutPage() {
 
             // Simulation of order placement
             setTimeout(() => {
-                const mockOrderId = `ORD-${Date.now()}`;
-                toast.success("Order placed successfully! (Simulated)");
+                // const mockOrderId = `ORD-${Date.now()}`;
+                // toast.success("Order placed successfully! (Simulated)");
                 clearCart(); // Clear cart after simulated success
                 navigate(`/profile?tab=orders`);
             }, 2000);

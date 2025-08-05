@@ -23,7 +23,7 @@ const ProfilePage = () => {
     const { user, logout } = useAuth();
     console.log(user, 'user')
     // const query = useQuery();
-    const navigate = useNavigation();
+    const navigate = useNavigate();
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const token = localStorage.getItem("token"); // This gets the JWT stored during login

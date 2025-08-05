@@ -51,22 +51,29 @@ const JewelryReelsSection = () => {
         }
     ];
 
-    // --- 2. Updated navigation logic for looping ---
+    const scrollToIndex = (index) => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const item = container.children[index];
+        if (item) {
+            const scrollAmount = item.offsetLeft - container.offsetLeft;
+            container.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
+
     const handlePrev = () => {
         const newIndex = (activeIndex - 1 + reels.length) % reels.length;
         setActiveIndex(newIndex);
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.children[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
+        scrollToIndex(newIndex);
     };
 
     const handleNext = () => {
         const newIndex = (activeIndex + 1) % reels.length;
         setActiveIndex(newIndex);
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.children[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
+        scrollToIndex(newIndex);
     };
+
 
     return (
         <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#faf6f2] to-light relative overflow-hidden">
@@ -110,7 +117,7 @@ const JewelryReelsSection = () => {
                     {/* Navigation controls (now enabled for looping) */}
                     <div className="flex justify-center items-center mt-6 space-x-4">
                         <motion.button
-                            className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-primary hover:text-white"
+                            className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-rose-900 hover:text-white"
                             onClick={handlePrev}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}
@@ -121,7 +128,7 @@ const JewelryReelsSection = () => {
                         {/* ... indicator dots ... */}
 
                         <motion.button
-                            className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-primary hover:text-white"
+                            className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-rose-900 hover:text-white"
                             onClick={handleNext}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}

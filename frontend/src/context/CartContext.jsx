@@ -199,7 +199,7 @@ export const CartProvider = ({ children }) => {
         }
         localStorage.removeItem('guestCart');
         setCartItems([]);
-        toast.info("Cart cleared!");
+        // toast.info("Cart cleared!");
     };
 
 

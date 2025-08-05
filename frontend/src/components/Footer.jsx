@@ -54,7 +54,7 @@ export default function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-center gap-3">
                                 <FaEnvelope className="text-gold-300" />
-                                <a href="mailto:info@mirosa.com" className="hover:text-gold-300">info@mirosa.com</a>
+                                <a href="mailto:mirosajewelry3@gmail.com" className="hover:text-gold-300">mirosajewelry3@gmail.com</a>
                             </li>
                             <li className="flex items-center gap-3">
                                 <FaPhone className="text-gold-300" />

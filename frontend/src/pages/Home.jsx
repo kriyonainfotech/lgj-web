@@ -203,17 +203,19 @@ const Home = () => {
         <div>
             <BannerSlider />
 
-            <FeaturesSection />
+            <JewelryCollectionSection mirosasCollection={mirosasCollection} />
+
+            <TrendingNowSection localtrendingNow={trendingNow} />
+
+            <JewelryReelsSection />
 
             <ShopByCategory categories={categories} />
 
-            <JewelryCollectionSection mirosasCollection={mirosasCollection} />
+            <FeaturesSection />
 
             <NewArrivalsSection localnewArrivals={newArrivals} />
 
             <TrustSection />
-
-            <TrendingNowSection localtrendingNow={trendingNow} />
 
             <LuxuryBanner />
 

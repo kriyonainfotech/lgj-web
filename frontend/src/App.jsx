@@ -40,14 +40,16 @@ import { PrivacyPolicy } from './components/about/PrivacyPolicy';
 import { ReturnPolicy } from './components/about/ReturnPolicy';
 import { ShippingPolicy } from './components/about/ShippingPolicy';
 import FAQPage from './components/about/FAQItem';
+import ContactUsPage from './pages/ContactUsPage';
 
 function App() {
+
   return (
     <>
       <BrowserRouter>
         <AuthProvider>
           <CartProvider >
-            <WishlistProvider >
+            <WishlistProvider>
               <ScrollToTop />
               <Routes>
 
@@ -67,6 +69,7 @@ function App() {
                 <Route path='/return-policy' element={<Layout><ReturnPolicy /></Layout>} />
                 <Route path='/shipping-policy' element={<Layout><ShippingPolicy /></Layout>} />
                 <Route path='/faq' element={<Layout><FAQPage /></Layout>} />
+                <Route path='/contact' element={<Layout><ContactUsPage /></Layout>} />
 
                 {/* Routes WITH Header/Footer */}
                 <Route element={<PrivateRoute />} >
@@ -90,8 +93,6 @@ function App() {
                   <Route path="edit-subcategory/:id" element={<EditSubCategory />} />
                   <Route path="edit-product/:productId" element={<EditProduct />} />
                 </Route>
-
-
               </Routes>
 
               <ToastContainer position='top-right' autoClose={3000} />

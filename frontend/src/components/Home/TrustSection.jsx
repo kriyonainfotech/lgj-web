@@ -11,9 +11,9 @@ const TrustSection = () => {
         },
         {
             iconPath: '/trust/diamond.png',
-            title: 'The Purity Guarantee',
+            title: "Transparent & Fair Pricing",
+            description: "By selling directly to you, we eliminate traditional markups to offer exceptional value.",
             alt: 'Purity Guarantee Icon',
-            description: 'Certified precious metals and gemstones'
         },
         {
             iconPath: '/trust/protection.png',
@@ -23,9 +23,9 @@ const TrustSection = () => {
         },
         {
             iconPath: '/trust/trust.png',
-            title: 'Lifetime Maintenance',
+            title: "Artisanal Craftsmanship",
+            description: "Every piece is meticulously crafted to order by our skilled artisans just for you.",
             alt: 'Lifetime Maintenance Icon',
-            description: 'Complimentary cleaning and maintenance forever'
         },
     ];
 
