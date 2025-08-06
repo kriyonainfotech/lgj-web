@@ -13,16 +13,16 @@ const faqData = [
         answer: "Yes, absolutely. Every MIROSA lab-grown diamond above 0.50 carats is independently certified by leading gemological labs like IGI or GIA. Your purchase will be accompanied by a certificate detailing its specifications, including cut, color, clarity, and carat weight."
     },
     {
-        question: "How do I care for my MIROSA jewellery?",
-        answer: "Caring for your lab-grown diamond jewellery is the same as caring for natural diamond pieces. Clean it gently with a soft-bristled brush, warm water, and mild soap. We also recommend professional cleaning and inspection once a year. Avoid harsh chemicals and store your pieces separately to prevent scratching."
+        question: "How do I care for my MIROSA jewelery?",
+        answer: "Caring for your lab-grown diamond jewelery is the same as caring for natural diamond pieces. Clean it gently with a soft-bristled brush, warm water, and mild soap. We also recommend professional cleaning and inspection once a year. Avoid harsh chemicals and store your pieces separately to prevent scratching."
     },
     {
         question: "What is your return and exchange policy?",
-        answer: "We offer a 15-day, no-questions-asked return and exchange policy on all our jewellery. The item must be in its original, unworn condition with all accompanying documentation. Please visit our Return Policy page for detailed instructions on how to initiate a return."
+        answer: "We offer a 15-day, no-questions-asked return and exchange policy on all our jewelery. The item must be in its original, unworn condition with all accompanying documentation. Please visit our Return Policy page for detailed instructions on how to initiate a return."
     },
     {
         question: "How long will it take to receive my order?",
-        answer: "As our jewellery is crafted to order, please allow 10-15 business days for production. Once shipped, delivery typically takes 3-5 business days within metropolitan areas in India. You will receive a tracking number as soon as your order is dispatched."
+        answer: "As our jewelery is crafted to order, please allow 10-15 business days for production. Once shipped, delivery typically takes 3-5 business days within metropolitan areas in India. You will receive a tracking number as soon as your order is dispatched."
     },
     {
         question: "Do you offer customization?",

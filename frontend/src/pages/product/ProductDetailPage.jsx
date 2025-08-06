@@ -1242,8 +1242,8 @@ export default function ProductDetailPage() {
                                 </ul>
                             ) : <p>Select a variant to see details.</p>}
                         </AccordionItem>
-                        <AccordionItem title="Jewellery Care">
-                            <p>To keep your jewellery shining, avoid contact with perfumes, lotions, and water. Store it in a soft pouch or box when not in use. Clean gently with a soft, lint-free cloth.</p>
+                        <AccordionItem title="Jewelery Care">
+                            <p>To keep your jewelery shining, avoid contact with perfumes, lotions, and water. Store it in a soft pouch or box when not in use. Clean gently with a soft, lint-free cloth.</p>
                         </AccordionItem>
                         <AccordionItem title="Shipping & Returns">
                             <p>We offer free insured shipping on all orders within India. Enjoy our 15-day hassle-free return and exchange policy. Please refer to our policy page for more details.</p>

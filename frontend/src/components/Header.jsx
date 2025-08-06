@@ -962,10 +962,9 @@ export default function Header() {
         <>
             <header className={`fixed top-0 w-full z-50 text-black transition-all duration-300 ${isScrolled
                 ? 'bg-white/10 backdrop-blur-md bg-opacity-90 shadow-md'
-                : 'bg-white/10 '
+                : 'bg-white/30'
                 }`}
             >
-
                 {/* Announcement Bar - hidden when scrolled */}
                 {/* {!isScrolled && (
                 <div className="bg-maroon text-white text-sm text-center py-2 px-4 fraunces">
@@ -1214,6 +1213,7 @@ export default function Header() {
 
                 {/* Mobile Menu */}
                 <div className={`fixed inset-0 z-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+
                     {/* Overlay */}
                     <div className="fixed inset-0 bg-black/40" onClick={() => setMenuOpen(false)}></div>
 
@@ -1326,6 +1326,9 @@ export default function Header() {
                                             <Link to="/profile?tab=orders" className="hover:text-maroon block">My Orders</Link>
                                         </li>
                                         <li>
+                                            <Link to="/contact" className="hover:text-maroon block">Contact Us</Link>
+                                        </li>
+                                        <li>
                                             <button onClick={handleLogout} className="hover:text-red-600 cursor-pointer block w-full text-left">
                                                 Logout
                                             </button>
@@ -1342,8 +1345,12 @@ export default function Header() {
                                         <li>
                                             <Link to="/wishlist" className="hover:text-maroon block">My Wishlist</Link>
                                         </li>
+
                                         <li>
                                             <p>Track Your Order</p>
+                                        </li>
+                                        <li>
+                                            <Link to="/contact" className="hover:text-maroon block">Contact Us</Link>
                                         </li>
                                     </>
                                 )}

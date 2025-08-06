@@ -87,7 +87,7 @@ exports.loginUser = async (req, res) => {
 
         console.log("🔐 JWT Payload:", { id: user._id, role: user.role });
         console.log("🔐 JWT Secret:", process.env.JWT_SECRET, typeof process.env.JWT_SECRET);
-        console.log("🔐 Expires In:", "7d");
+        console.log("🔐 Expires In:", "1d");
 
         // Generate JWT Token
         const token = jwt.sign(

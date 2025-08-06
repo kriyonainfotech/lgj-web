@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import axios from 'axios'; // 1. Import axios
+import { toast } from 'react-toastify'; // 2. Import toast
+
+const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
 
 const ContactUsPage = () => {
     const [formData, setFormData] = useState({
@@ -9,20 +13,30 @@ const ContactUsPage = () => {
         subject: '',
         message: ''
     });
+    // 3. Add loading state
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    // 4. Update handleSubmit to call the API
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here you would typically handle form submission, e.g., send to an API
-        console.log("Form submitted:", formData);
-        alert("Thank you for your message! We will get back to you shortly.");
-        // Reset form
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setIsSubmitting(true);
+        try {
+            const response = await axios.post(`${backdendUrl}/api/appointments/send-message`, formData);
+            toast.success(response.data.message);
+            // Reset form on success
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (error) {
+            toast.error(error.response?.data?.message || "An error occurred.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
 
     return (
         <div className="py-16 sm:py-24 mt-20">
@@ -121,8 +135,12 @@ const ContactUsPage = () => {
                                 <textarea name="message" id="message" rows="5" required value={formData.message} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-maroon focus:border-maroon transition"></textarea>
                             </div>
                             <div>
-                                <button type="submit" className="w-full bg-maroon text-white font-semibold px-8 py-3 rounded-md hover:bg-opacity-90 transition-colors">
-                                    Send Message
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full bg-maroon text-white font-semibold px-8 py-3 rounded-md hover:bg-opacity-90 transition-colors disabled:bg-maroon/60"
+                                >
+                                    {isSubmitting ? 'Sending...' : 'Send Message'}
                                 </button>
                             </div>
                         </form>

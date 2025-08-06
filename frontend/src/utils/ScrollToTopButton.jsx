@@ -41,7 +41,7 @@ const ScrollToTopButton = () => {
             // Fixed positioning at bottom-right, with responsive padding
             // Transition for opacity to make it smoothly appear/disappear
             // opacity-0 and pointer-events-none when not visible to fully hide and disable clicks
-            className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-maroon cursor-pointer border border-gray-100 text-white p-3 md:p-4 rounded-full shadow-lg transition-opacity duration-300 z-50
+            className={`fixed bottom-6 right-6 md:bottom-20 md:right-8 bg-maroon cursor-pointer border border-gray-100 text-white p-3 md:p-4 rounded-full shadow-lg transition-opacity duration-300 z-50
             ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
             aria-label="Scroll to top" // Accessibility for screen readers
         >

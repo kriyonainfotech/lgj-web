@@ -9,7 +9,7 @@ export const ShippingPolicy = () => (
             <p>At MIROSA, we are committed to ensuring your purchases reach you safely and promptly. We offer complimentary, insured shipping on all orders across India.</p>
 
             <h2 className="text-2xl font-serif text-maroon mt-8">Order Processing</h2>
-            <p>All our jewellery is made-to-order. Please allow 10-15 business days for your piece to be crafted and prepared for shipment. You will receive a confirmation email once your order is dispatched, containing your tracking details.</p>
+            <p>All our jewelery is made-to-order. Please allow 10-15 business days for your piece to be crafted and prepared for shipment. You will receive a confirmation email once your order is dispatched, containing your tracking details.</p>
 
             <h2 className="text-2xl font-serif text-maroon mt-8">Shipping & Delivery</h2>
             <ul>

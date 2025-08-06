@@ -88,7 +88,7 @@ const TrustSection = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        Trust us to be part of your precious moments and to deliver jewellery that you'll cherish forever.
+                        Trust us to be part of your precious moments and to deliver jewelery that you'll cherish forever.
                     </motion.p>
                 </div>
 
