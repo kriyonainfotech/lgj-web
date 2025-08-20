@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/multer");
-const { addProduct, getAllProducts, updateProduct, getProductById, deleteProduct, getProductsByCategorySlugs, getProductsFiltered, searchProducts, bulkAddProducts } = require('../controller/productController.js');
+const { addProduct, getAllProducts, updateProduct, getProductById, deleteProduct, getProductsByCategorySlugs, getProductsFiltered, searchProducts, bulkAddProducts, getRelatedProducts } = require('../controller/productController.js');
 const { isAdmin } = require("../middlewares/authmiddleware.js");
 
 
@@ -32,5 +32,6 @@ router.post(
     upload.single('productCsv'), // Field name for the CSV file
     bulkAddProducts
 );
+router.get('/:productId/related', getRelatedProducts);
 
 module.exports = router;

@@ -43,6 +43,9 @@ const Sidebar = () => {
                             <Link className="text-white" to="/admin/users">View Users</Link>
                         </li>
                         <li className="py-2  hover:bg-rose-900/30 my-1 px-3 rounded">
+                            <Link className="text-white" to="/admin/appointments">View Appointments</Link>
+                        </li>
+                        <li className="py-2  hover:bg-rose-900/30 my-1 px-3 rounded">
                             <Link className="text-white" to="/">Home</Link>
                         </li>
                     </ul>

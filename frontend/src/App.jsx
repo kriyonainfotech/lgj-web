@@ -41,6 +41,7 @@ import { ReturnPolicy } from './components/about/ReturnPolicy';
 import { ShippingPolicy } from './components/about/ShippingPolicy';
 import FAQPage from './components/about/FAQItem';
 import ContactUsPage from './pages/ContactUsPage';
+import AppointmentsPage from './adminpanel/VIewAppointments';
 
 function App() {
 
@@ -92,6 +93,7 @@ function App() {
                   <Route path="edit-category/:categoryId" element={<EditCategory />} />
                   <Route path="edit-subcategory/:id" element={<EditSubCategory />} />
                   <Route path="edit-product/:productId" element={<EditProduct />} />
+                  <Route path="appointments" element={<AppointmentsPage />} />
                 </Route>
               </Routes>
 

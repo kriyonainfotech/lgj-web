@@ -62,7 +62,15 @@ const VariantSelector = ({ product, selectedOptions, onOptionChange }) => {
         product.variants.forEach(v => {
             if (v.material) attributes.material.add(v.material);
             if (v.purity) attributes.purity.add(v.purity);
-            if (v.size && v.size.length > 0) v.size.forEach(s => attributes.size.add(s));
+            if (v.size) {
+                if (Array.isArray(v.size)) {
+                    // If it's an array, loop through it
+                    v.size.forEach(s => attributes.size.add(s));
+                } else {
+                    // If it's a single string, just add that value
+                    attributes.size.add(v.size);
+                }
+            }
             if (v.weight) attributes.weight.add(v.weight);
         });
 

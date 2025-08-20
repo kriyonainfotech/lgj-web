@@ -207,7 +207,7 @@ const Home = () => {
 
             <TrendingNowSection localtrendingNow={trendingNow} />
 
-            <JewelryReelsSection />
+            {/* <JewelryReelsSection /> */}
 
             <ShopByCategory categories={categories} />
 

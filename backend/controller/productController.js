@@ -654,3 +654,26 @@ exports.bulkAddProducts = async (req, res) => {
             res.status(500).json({ message: "Error parsing CSV file." });
         });
 };
+
+exports.getRelatedProducts = async (req, res) => {
+    try {
+        const currentProduct = await Product.findById(req.params.productId);
+        if (!currentProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        const relatedProducts = await Product.find({
+            category: currentProduct.category,
+            _id: { $ne: currentProduct._id } // Exclude the current product itself
+        }).limit(4); // Limit to 4 related products
+
+        res.status(200).json({
+            success: true,
+            products: relatedProducts,
+        });
+
+    } catch (error) {
+        console.error("Error fetching related products:", error);
+        res.status(500).json({ message: "Server error." });
+    }
+};

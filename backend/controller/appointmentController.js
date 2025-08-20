@@ -129,3 +129,15 @@ exports.handleContactForm = async (req, res) => {
         res.status(500).json({ message: "Failed to send message. Please try again later." });
     }
 };
+
+exports.getAllAppointments = async (req, res) => {
+    console.log("📅 [getAllAppointments] Fetching all appointments...");
+    try {
+        const appointments = await VirtualAppointment.find().sort({ date: -1, time: -1 });
+        console.log(`✅ [getAllAppointments] Fetched ${appointments.length} appointments.`);
+        res.status(200).json({ success: true, data: appointments });
+    } catch (error) {
+        console.error("❌ [getAllAppointments] Error fetching appointments:", error);
+        res.status(500).json({ message: "Failed to fetch appointments.", error: error.message });
+    }
+};
