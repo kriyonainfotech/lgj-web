@@ -217,12 +217,6 @@ export default function Header() {
                 : 'bg-white/30'
                 }`}
             >
-                {/* Announcement Bar - hidden when scrolled */}
-                {/* {!isScrolled && (
-                <div className="bg-maroon text-white text-sm text-center py-2 px-4 fraunces">
-                    Consult a Diamond Expert online or in-store for your Bespoke experience →
-                </div>
-            )} */}
 
                 {/* --- DESKTOP HEADER --- */}
                 <div className="hidden md:flex items-center justify-between pt-2 px-8">
@@ -235,7 +229,7 @@ export default function Header() {
                         <input
                             type="text"
                             placeholder="Search jewelry..."
-                            className="w-full max-w-2xl px-4 py-2 rounded-3xl border border-gray-800 bg-gray-200/70 text-gray-900 placeholder:text-gray-900 outline-none focus:ring-1 focus:ring-gray-600"
+                            className="w-full max-w-2xl px-4 py-2 rounded-3xl border border-gray-800 text-gray-900 placeholder:text-gray-900 outline-none focus:ring-1 focus:ring-gray-600"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => setIsSearchFocused(true)}
@@ -461,79 +455,8 @@ export default function Header() {
                                 </div>
                             </div>
                         </div>
-                    </div>                </nav>
-
-                {/* Mobile Menu */}
-                <div className={`fixed inset-0 z-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-
-                    {/* Overlay */}
-                    <div className="fixed inset-0 bg-black/40" onClick={() => setMenuOpen(false)}></div>
-
-                    {/* Menu Panel */}
-                    <div className={`fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                        <div className="flex flex-col h-full">
-                            {/* Menu Header */}
-                            <div className="flex justify-between items-center p-4 border-b">
-                                <h2 className="text-xl font-semibold text-gray-800 fraunces">Menu</h2>
-                                <button onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-maroon">
-                                    <FiX className="w-6 h-6" />
-                                </button>
-                            </div>
-
-                            {/* Scrollable Content */}
-                            <div className="flex-grow overflow-y-auto">
-                                <ul className="py-2">
-                                    {categories.map((cat, idx) => (
-                                        <li key={idx} className="border-b border-gray-400">
-                                            <div className="flex items-center justify-between h-16 px-4">
-                                                <Link to={`/collections/${cat.slug}`} state={{ categoryId: cat._id }} className="flex items-center flex-grow" onClick={() => setMenuOpen(false)}>
-                                                    {cat.image && <img src={cat.image.url} alt={cat.name} className="w-10 h-10 object-cover rounded-md mr-4" />}
-                                                    <span className='fraunces text-gray-800'>{cat.name}</span>
-                                                </Link>
-                                                {cat.subcategories && cat.subcategories.length > 0 && (
-                                                    <button onClick={() => toggleCategory(idx)} className="p-2 text-gray-500">
-                                                        <FiPlus className={`transform transition-transform duration-300 ${expandedCategories[idx] ? 'rotate-45' : ''}`} />
-                                                    </button>
-                                                )}
-                                            </div>
-                                            {/* Animated Submenu */}
-                                            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedCategories[idx] ? 'max-h-96' : 'max-h-0'}`}>
-                                                <ul className="bg-gray-50">
-                                                    {cat.subcategories.map((subItem, subIdx) => (
-                                                        <li key={subIdx} className="border-t border-gray-400">
-                                                            <Link
-                                                                to={`/collections/${subItem.slug}`}
-                                                                state={{ subcategoryId: subItem._id }}
-                                                                onClick={() => setMenuOpen(false)}
-                                                                className="flex items-center h-14 pl-12 pr-4 text-md fraunces text-gray-900 hover:bg-gray-200 w-full"
-                                                            >
-                                                                {subItem.name}
-                                                            </Link>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <ul className="">
-                                    <li><Link to="/about" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100">About</Link></li>
-                                    <li><Link to="/contact" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Contact Us</Link></li>
-                                    <li><Link to="/track-order" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Track Order</Link></li>
-                                    <li><Link to="/return-policy" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Return & Exchange</Link></li>
-                                    <li><Link to="/privacy-policy" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Privacy Policy</Link></li>
-                                </ul>
-                            </div>
-
-                            {/* Menu Footer with Contact Info */}
-                            <div className="p-4 border-t bg-gray-50 border-gray-400 text-center">
-                                <p className="text-sm text-gray-600">Need help? Contact us:</p>
-                                <a href="mailto:support@yourjewelry.com" className="text-sm font-semibold text-maroon hover:underline">support@yourjewelry.com</a>
-                                <p className="text-xs text-gray-500 mt-1">or call +91 12345 67890</p>
-                            </div>
-                        </div>
                     </div>
-                </div>
+                </nav>
 
 
                 {/* User Side Panel */}
@@ -734,6 +657,78 @@ export default function Header() {
                     </div>
                 </div>
             )}
+
+            {/* Mobile Menu */}
+            <div className={`fixed inset-0 z-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+
+                {/* Overlay */}
+                <div className="fixed inset-0 bg-black/40" onClick={() => setMenuOpen(false)}></div>
+
+                {/* Menu Panel */}
+                <div className={`fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                    <div className="flex flex-col h-full">
+                        {/* Menu Header */}
+                        <div className="flex justify-between items-center p-4 border-b">
+                            <h2 className="text-xl font-semibold text-gray-800 fraunces">Menu</h2>
+                            <button onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-maroon">
+                                <FiX className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Scrollable Content */}
+                        <div className="flex-grow overflow-y-auto">
+                            <ul className="py-2">
+                                {categories.map((cat, idx) => (
+                                    <li key={idx} className="border-b border-gray-400">
+                                        <div className="flex items-center justify-between h-16 px-4">
+                                            <Link to={`/collections/${cat.slug}`} state={{ categoryId: cat._id }} className="flex items-center flex-grow" onClick={() => setMenuOpen(false)}>
+                                                {cat.image && <img src={cat.image.url} alt={cat.name} className="w-10 h-10 object-cover rounded-md mr-4" />}
+                                                <span className='fraunces text-gray-800'>{cat.name}</span>
+                                            </Link>
+                                            {cat.subcategories && cat.subcategories.length > 0 && (
+                                                <button onClick={() => toggleCategory(idx)} className="p-2 text-gray-500">
+                                                    <FiPlus className={`transform transition-transform duration-300 ${expandedCategories[idx] ? 'rotate-45' : ''}`} />
+                                                </button>
+                                            )}
+                                        </div>
+                                        {/* Animated Submenu */}
+                                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedCategories[idx] ? 'max-h-96' : 'max-h-0'}`}>
+                                            <ul className="bg-gray-50">
+                                                {cat.subcategories.map((subItem, subIdx) => (
+                                                    <li key={subIdx} className="border-t border-gray-400">
+                                                        <Link
+                                                            to={`/collections/${subItem.slug}`}
+                                                            state={{ subcategoryId: subItem._id }}
+                                                            onClick={() => setMenuOpen(false)}
+                                                            className="flex items-center h-14 pl-12 pr-4 text-md fraunces text-gray-900 hover:bg-gray-200 w-full"
+                                                        >
+                                                            {subItem.name}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                            <ul className="">
+                                <li><Link to="/about" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100">About</Link></li>
+                                <li><Link to="/contact" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Contact Us</Link></li>
+                                <li><Link to="/track-order" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Track Order</Link></li>
+                                <li><Link to="/return-policy" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Return & Exchange</Link></li>
+                                <li><Link to="/privacy-policy" onClick={() => setMenuOpen(false)} className="block py-3 px-4 fraunces text-gray-800 hover:bg-gray-100 border-t border-gray-400">Privacy Policy</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* Menu Footer with Contact Info */}
+                        <div className="p-4 border-t bg-gray-50 border-gray-400 text-center">
+                            <p className="text-sm text-gray-600">Need help? Contact us:</p>
+                            <a href="mailto:support@yourjewelry.com" className="text-sm font-semibold text-maroon hover:underline">support@yourjewelry.com</a>
+                            <p className="text-xs text-gray-500 mt-1">or call +91 12345 67890</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </>
     );

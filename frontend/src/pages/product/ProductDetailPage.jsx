@@ -7,10 +7,10 @@ import VariantSelector from '../../components/product/VariantSelector'; // Impor
 import { useCart } from '../../context/CartContext';
 import RelatedProductsSection from './RelatedProductsSection';
 const backdendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+import { TiArrowBack } from "react-icons/ti";
 
-// --- Shimmer Loading Component ---
 const Shimmer = () => (
-    <div className="px-6 py-8 max-w-7xl mx-auto animate-pulse">
+    <div className="px-6 py-8 max-w-7xl mx-auto animate-pulse mt-32">
         {/* Breadcrumb Shimmer */}
         <div className="h-4 bg-gray-200 w-1/4 mb-6 rounded"></div>
 
@@ -73,8 +73,6 @@ const Shimmer = () => (
         </div>
     </div>
 );
-// --- End Shimmer Component ---
-
 
 // ✅ NEW: Reusable Accordion Item Component
 const AccordionItem = ({ title, children, defaultOpen = false }) => {
@@ -100,8 +98,6 @@ const AccordionItem = ({ title, children, defaultOpen = false }) => {
     );
 };
 
-
-
 export default function ProductDetailPage() {
     // const { productId } = useParams();
     const location = useLocation();
@@ -112,7 +108,6 @@ export default function ProductDetailPage() {
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [materialFilter, setMaterialFilter] = useState(null);
-    // Use a single state object for selected variant options
     const [selectedOptions, setSelectedOptions] = useState({});
     const { addToCart, cartLoading } = useCart();
     const [isSelectionComplete, setIsSelectionComplete] = useState(false);
@@ -132,10 +127,8 @@ export default function ProductDetailPage() {
                 console.log(fetchedProduct, 'product')
                 setProduct(fetchedProduct);
 
-                // Initialize default selections from the first variant
                 if (fetchedProduct.variants && fetchedProduct.variants.length > 0) {
                     const firstVariant = fetchedProduct.variants[0];
-                    // This correctly sets the default selected swatches
                     setSelectedOptions({
                         material: firstVariant.material || null,
                         purity: firstVariant.purity || null,
@@ -241,7 +234,6 @@ export default function ProductDetailPage() {
         ) || product.variants[0]; // Fallback to the first variant
     }, [product, selectedOptions]);
 
-
     const calculateFinalPrice = (variant) => {   // Guard clause for safety
         if (!variant || !variant.price) return 0;
         const originalPrice = variant.price;
@@ -259,6 +251,10 @@ export default function ProductDetailPage() {
         return Math.max(0, finalPrice);
     };
 
+    const handleback = () => {
+        window.history.back();
+    };
+
     if (loading) return <Shimmer />;
     if (error || !product) { /* ... your error/not found handling ... */ }
 
@@ -267,15 +263,40 @@ export default function ProductDetailPage() {
 
     return (
         <>
-            <div className="px-6 py-8 max-w-ful mt-30 mx-10">
+            <div className="px-6 py-8 max-w-ful mt-36 md:mt-30 lg:mx-10">
 
                 {/* Breadcrumb */}
-                <nav className="text-sm text-gray-500 mb-6">
-                    <Link to="/" className="hover:underline">Home</Link> /
-                    {product.category && <Link to={`/collections/${product.category.slug}`} className="hover:underline"> {product.category.name}</Link>} /
-                    {product.subcategory && <Link to={`/collections/${product.subcategory.slug}`} className="hover:underline"> {product.subcategory.name}</Link>} /
-                    <span className="text-maroon font-semibold"> {product.title}</span>
-                </nav>
+                <div className="flex items-center mb-6 gap-3">
+                    {/* Back Icon */}
+                    <button
+                        onClick={() => handleback()}
+                        className="cursor-pointer text-gray-800/40 hover:text-maroon text-3xl"
+                    >
+                        <TiArrowBack />
+                    </button>
+
+                    {/* Breadcrumb Nav */}
+                    <nav className="text-sm text-gray-500">
+                        <Link to="/" className="hover:underline">Home</Link> /
+                        {product.category && (
+                            <Link
+                                to={`/collections/${product.category.slug}`}
+                                className="hover:underline"
+                            >
+                                {" "}{product.category.name}
+                            </Link>
+                        )} /
+                        {product.subcategory && (
+                            <Link
+                                to={`/collections/${product.subcategory.slug}`}
+                                className="hover:underline"
+                            >
+                                {" "}{product.subcategory.name}
+                            </Link>
+                        )} /
+                        <span className="text-maroon font-semibold"> {product.title}</span>
+                    </nav>
+                </div>
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
@@ -289,11 +310,11 @@ export default function ProductDetailPage() {
 
                     {/* Right - Product Info */}
                     <div className="w-full">
-                        <h1 className="text-4xl font-semibold text-maroon fraunces mb-4">{product.title}</h1>
+                        <h1 className="text-2xl md:text-4xl font-semibold text-maroon fraunces mb-2 md:mb-4">{product.title}</h1>
 
                         {/* Price Display */}
-                        <div className="flex items-baseline gap-4 mb-6">
-                            <p className="text-3xl text-gray-900 nunito font-semibold">
+                        <div className="flex items-baseline gap-4 mb-2 md:mb-6">
+                            <p className="text-2xl md:text-3xl text-gray-900 nunito font-semibold">
                                 ${finalPrice.toLocaleString('en-IN')}
                             </p>
                             {hasDiscount && (
@@ -303,8 +324,6 @@ export default function ProductDetailPage() {
                             )}
                         </div>
 
-                        <p className="text-gray-600 nunito leading-relaxed mb-8">{product.description}</p>
-
                         {/* Variant Selectors */}
                         <VariantSelector
                             product={product}
@@ -313,7 +332,8 @@ export default function ProductDetailPage() {
                         />
 
                         {/* Quantity & Add to Cart */}
-                        <div className="flex items-center gap-4 mt-8">
+                        <div className="flex items-center gap-4 mt-
+                        8">
                             <div className="flex items-center gap-4 mt-4">
 
                                 <label className="text-md font-medium text-gray-700">Qty:</label>
@@ -337,6 +357,9 @@ export default function ProductDetailPage() {
                                 </div>
                             </div>
                         </div>
+
+                        <p className="text-gray-600 nunito leading-relaxed mt-4 mb-8">{product.description}</p>
+
                         <div className="mt-6">
                             <button
                                 onClick={handleAddToCart}

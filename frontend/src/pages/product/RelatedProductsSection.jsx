@@ -12,7 +12,7 @@ const ProductCard = ({ product }) => {
     return (
         <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
             <div className="group">
-                <div className="aspect-square w-full bg-gray-100 rounded-lg overflow-hidden">
+                <div className="aspect-square w-full bg-gray-100 overflow-hidden">
                     <img
                         src={product.mainImage || 'https://placehold.co/400x400'}
                         alt={product.title}
@@ -20,8 +20,8 @@ const ProductCard = ({ product }) => {
                     />
                 </div>
                 <h3 className="mt-4 text-md font-semibold text-gray-800 nunito">{product.title}</h3>
-                <p className="mt-1 text-lg font-bold text-maroon fraunces">
-                    ₹{firstVariant.price.toLocaleString('en-IN')}
+                <p className="mt-1 text-lg font-bold text-maroon nunito">
+                    ${firstVariant.price.toLocaleString('en-IN')}
                 </p>
             </div>
         </Link>
@@ -58,9 +58,9 @@ const RelatedProductsSection = ({ currentProductId }) => {
     }
 
     return (
-        <div className="py-16">
+        <div className="py-16 px-6">
             <h2 className="text-3xl font-serif text-center text-maroon mb-12">You May Also Like</h2>
-            <div className="px-10">
+            <div className="px-4 lg:px-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {relatedProducts.map(product => (
                         <ProductCard key={product._id} product={product} />

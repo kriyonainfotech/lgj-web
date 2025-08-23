@@ -49,8 +49,8 @@ const WishlistPage = () => {
                         <FiLoader className="animate-spin text-4xl text-maroon" />
                     </div>
                 ) : wishlist.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-lg shadow-sm">
-                        <div className="mb-4 text-5xl text-gray-300">
+                    <div className="text-center py-20">
+                        <div className="mb-4 text-5xl text-black/40">
                             <FiHeart className="inline-block" />
                         </div>
                         <h2 className="text-2xl font-semibold text-gray-700 mb-2">Your Wishlist is Empty</h2>

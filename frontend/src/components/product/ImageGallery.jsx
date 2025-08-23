@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-// This is the individual image tile with the zoom effect
+// --- Individual Image Tile with Zoom (No changes needed) ---
 const ImageTile = ({ imageUrl, alt }) => {
-    // Inside the ImageTile component
-    const [zoomStyle, setZoomStyle] = useState({ opacity: 0 }); // ✅ Solution: Starts fully transparent
+    const [zoomStyle, setZoomStyle] = useState({ opacity: 0 });
 
     const handleMouseMove = (e) => {
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -35,58 +35,110 @@ const ImageTile = ({ imageUrl, alt }) => {
     );
 };
 
-// This is the main gallery component
-const ImageGallery = ({ product, selectedMaterial, onClearFilter }) => { // ✅ Add onClearFilter prop
-    const [displayImages, setDisplayImages] = useState([]);
 
+// --- Redesigned Main Gallery Component ---
+const ImageGallery = ({ product, selectedMaterial, onClearFilter }) => {
+    const [displayImages, setDisplayImages] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const scrollRef = useRef(null);
+
+    // Filter images based on selected material
     useEffect(() => {
-        // Get all unique images from the product
         const allUniqueImages = [...new Set([
             product.mainImage,
             ...product.variants.flatMap(v => v.images)
         ].filter(Boolean))];
 
         if (selectedMaterial) {
-            // Get images for the selected material
             const materialImages = product.variants
                 .filter(v => v.material === selectedMaterial)
                 .flatMap(v => v.images);
-
-            // Display main image + unique images for the selected material
             setDisplayImages([...new Set([product.mainImage, ...materialImages].filter(Boolean))]);
         } else {
-            // If no material is selected, show all unique images
             setDisplayImages(allUniqueImages);
         }
+        setCurrentIndex(0); // Reset to first image on filter change
     }, [product, selectedMaterial]);
 
-    return (
-        <div
-            className="max-h-[100vh] overflow-y-auto pr-4"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-            <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+    // --- Navigation Handlers for Mobile Slider ---
+    const handlePrev = () => {
+        const newIndex = currentIndex === 0 ? displayImages.length - 1 : currentIndex - 1;
+        setCurrentIndex(newIndex);
+        scrollToIndex(newIndex);
+    };
 
-            {/* ✅ "Show All" Button */}
+    const handleNext = () => {
+        const newIndex = currentIndex === displayImages.length - 1 ? 0 : currentIndex + 1;
+        setCurrentIndex(newIndex);
+        scrollToIndex(newIndex);
+    };
+
+    const scrollToIndex = (index) => {
+        if (scrollRef.current) {
+            const scrollWidth = scrollRef.current.scrollWidth / displayImages.length;
+            scrollRef.current.scrollTo({ left: index * scrollWidth, behavior: 'smooth' });
+        }
+    };
+
+    return (
+        <div className="w-full">
+            {/* "Show All" Button (Desktop only) */}
             {selectedMaterial && (
-                <div className="mb-4 text-right">
-                    <button
-                        onClick={onClearFilter}
-                        className="text-sm text-gray-600 underline hover:text-maroon transition"
-                    >
+                <div className="mb-4 text-right hidden md:block">
+                    <button onClick={onClearFilter} className="text-sm text-gray-600 underline hover:text-maroon transition">
                         Show All Images
                     </button>
                 </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4 no-scrollbar">
-                {displayImages.map((img, index) => (
-                    <ImageTile key={index} imageUrl={img} alt={`${product.title} view ${index + 1}`} />
+            {/* --- Main Image Container --- */}
+            <div className="relative">
+                {/* Mobile Slider */}
+                <div
+                    ref={scrollRef}
+                    className="md:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                    style={{ scrollBehavior: 'smooth' }}
+                >
+                    {displayImages.map((img, index) => (
+                        <div key={index} className="w-full flex-shrink-0 snap-center">
+                            <ImageTile imageUrl={img} alt={`${product.title} view ${index + 1}`} />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Desktop Grid */}
+                <div className="hidden md:grid md:grid-cols-2 md:gap-4">
+                    {displayImages.map((img, index) => (
+                        <ImageTile key={index} imageUrl={img} alt={`${product.title} view ${index + 1}`} />
+                    ))}
+                </div>
+
+                {/* --- Navigation Arrows (Mobile Only) --- */}
+                <div className="md:hidden absolute inset-0 flex items-center justify-between px-2">
+                    <button onClick={handlePrev} className="">
+                        <FiChevronLeft className="h-6 w-6 text-gray-800" />
+                    </button>
+                    <button onClick={handleNext} className="">
+                        <FiChevronRight className="h-6 w-6 text-gray-800" />
+                    </button>
+                </div>
+            </div>
+
+            {/* --- Slide Indicators (Mobile Only) --- */}
+            <div className="md:hidden flex justify-center items-center gap-2 mt-4">
+                {displayImages.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => {
+                            setCurrentIndex(index);
+                            scrollToIndex(index);
+                        }}
+                        className={`w-2 h-2 rounded-full transition ${currentIndex === index ? 'bg-maroon' : 'bg-gray-300'}`}
+                    />
                 ))}
             </div>
         </div>
     );
 };
-
 
 export default ImageGallery;

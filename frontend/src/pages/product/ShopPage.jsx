@@ -453,11 +453,8 @@ const ShopPage = () => {
 
   useEffect(() => {
     const handleClick = (e) => {
-      if (filterRef.current && filterRef.current.contains(e.target)) {
-        // clicked inside the filter
-        setIsFilterPanelOpen(false); // close anyway
-      } else {
-        // clicked outside the filter
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        // clicked OUTSIDE the filter → close
         setIsFilterPanelOpen(false);
       }
     };
@@ -470,6 +467,7 @@ const ShopPage = () => {
       document.removeEventListener("mousedown", handleClick);
     };
   }, [isFilterPanelOpen]);
+
 
   const handleAddToCartFromCard = async (product, variantToAdd, selectedSize) => {
     if (!variantToAdd) return toast.error("Variant not available.");
@@ -500,27 +498,27 @@ const ShopPage = () => {
 
   return (
     <>
-      <div className='relative mt-32'>
-        <div className="sticky top-[108px] z-40 px-4 py-3 mx-12">
+      <div className='relative mt-40 md:mt-32'>
+        <div className="sticky top-[108px] z-40 px-4 md:px-4 md:py-3 md:mx-12">
           <div className="max-w-full flex items-center justify-between">
             <div className=''>
-              <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 px-3 py-1 cursor-pointer'>
-                <FiFilter className="text-xl text-gray-700" />
-                <h1 className="text-xl font-bold text-gray-800">Filter</h1>
+              <button onClick={() => setIsFilterPanelOpen(true)} className='flex items-center space-x-3 border border-gray-400 rounded-full px-3 py-2 md:px-6 md:py-3 cursor-pointer'>
+                <FiFilter className="text-lg text-gray-700" />
+                <h1 className="text-sm md:text-lg font-serif text-gray-800">Filter</h1>
               </button>
             </div>
             <div>
-              <Link className='bg-maroon text-white px-3 py-2' to={'/'}>
+              <Link className='text-sm md:text-lg font-serif rounded-full border border-gray-400 text-gray-800 px-3 py-2 md:px-6 md:py-3' to={'/'}>
                 Back To Home
               </Link>
             </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row max-w-full mx-12 pt-5">
+      <div className="flex flex-col lg:flex-row max-w-full lg:mx-12 lg:pt-5">
         <aside
           ref={filterRef}
-          className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform
+          className={`fixed top-0 left-0 h-full w-84 bg-gray-100 shadow-lg z-50 transform
                       ${isFilterPanelOpen ? 'translate-x-0' : '-translate-x-full'}
                       transition-transform duration-300 ease-in-out p-6 overflow-y-auto border-r`}
         >
@@ -534,7 +532,7 @@ const ShopPage = () => {
           {/* Filter Section: Metals */}
           <div className="mb-8">
             <h3 className="font-semibold text-gray-800 mb-3 text-lg">Metal Type</h3>
-            {['Gold', 'Silver', 'Platinum', 'Rose Gold', 'White Gold'].map(metal => (
+            {['Yellow Gold', 'Silver', 'Rose Gold', 'White Gold'].map(metal => (
               <label key={metal} className="flex items-center mb-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -587,33 +585,28 @@ const ShopPage = () => {
 
           <button
             onClick={() => setFilters({ metals: [], categories: [], priceRange: [0, 20000] })}
-            className="bg-maroon text-white px-6 py-2 w-full"
+            className="bg-maroon rounded-full nunito text-white px-6 py-2 w-full"
           >
             Reset Filters
           </button>
         </aside>
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-3 sm:p-6">
           {loading ? (
             <div className="text-center py-10 text-gray-600">Loading products...</div>
           ) : error ? (
             <div className="text-center py-10 text-red-600">Error: {error}</div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-10">
+            <div className="text-center py-10 h-96">
               <p className="text-2xl font-semibold text-gray-700 mb-4">No products found.</p>
               <p className="text-gray-600 mb-6">Try adjusting your filters to find what you're looking for</p>
               <button
                 onClick={() => setFilters({ metals: [], categories: [], priceRange: [0, 20000] })}
-                className="bg-maroon text-white px-6 py-2 rounded-lg me-3 cursor-pointer"
+                className="inline-flex items-center px-6 py-2 md:px-8 md:py-3 border border-gray-400 cursor-pointer text-gray-800 font-serif text-lg font-medium rounded-full  transition-all duration-300 group"
               >
                 Reset Filters
               </button>
-              <Link
-                to={'/'}
-                className="text-maroon border border-rose-900 px-6 py-2 rounded-lg cursor-pointer"
-              >
-                Back to Home
-              </Link>
+
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -634,7 +627,7 @@ const ShopPage = () => {
 
       {isFilterPanelOpen && (
         <div
-          className="fixed top-0 bottom-0 letf-0 h-full bg-opacity-50 z-40"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => setIsFilterPanelOpen(false)}
         ></div>
       )}

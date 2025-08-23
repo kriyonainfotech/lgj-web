@@ -29,7 +29,7 @@ const MaterialSwatch = ({ material, onMouseEnter, onMouseLeave, onClick, isSelec
             onClick={onClick}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
-            className={`w-6 h-6 rounded-full border-2 shadow cursor-pointer transition ${isSelected ? 'border-maroon scale-110' : 'border-white hover:border-gray-400'}`}
+            className={`w-6 h-6 rounded-full border-2 shadow cursor-pointer transition  ${isSelected ? 'border-maroon scale-110' : 'border-white hover:border-gray-400'}`}
             style={{ backgroundColor: materialColors[material] || '#E5E7EB' }}
             title={material}
         />
@@ -113,20 +113,20 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isWishlisted, isL
     return (
         <div className="relative overflow-hidden group transition-shadow duration-300">
             {/* --- Image Container --- */}
-            <div className="relative group">
+            <div className="relative group z-10">
                 <Link to={`/products/${product.slug}`} state={{ productId: product._id }}>
                     {/* ✅ 1. Base Image (Always visible) */}
                     <div className='bg-gray-100'>
                         <img
                             src={product.mainImage || 'https://placehold.co/400x400/E0E0E0/6C6C6C?text=No+Image'}
                             // alt={product.title}
-                            className="w-full h-96 rounded object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-44 sm:h-96 rounded object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                         {/* ✅ 2. Variant Image (Fades in on top) */}
                         <img
                             src={variantImage}
                             // alt={product.title}
-                            className={`absolute inset-0 w-full h-96 rounded object-cover transition-opacity duration-300 group-hover:scale-105 ${variantImage && activeMaterial ? 'opacity-100' : 'opacity-0'}`}
+                            className={`absolute z-10 inset-0 w-full h-96 rounded object-cover transition-opacity duration-300 group-hover:scale-105 ${variantImage && activeMaterial ? 'opacity-100' : 'opacity-0'}`}
                         />
                     </div>
                 </Link>
@@ -156,15 +156,17 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isWishlisted, isL
             </div>
 
             {/* --- Details Section --- */}
-            <div className="py-5">
+            {/* --- Details Section --- */}
+            <div className="py-5 z-50">
                 <Link to={`/products/${product.slug}`} state={{ productId: product._id }} className="block">
-                    <h3 className="text-sm font-semibold text-gray-800 nunito " title={product.title}>
+                    {/* Title: Centered by default, left-aligned on medium screens and up */}
+                    <h3 className="text-sm font-semibold text-gray-800 nunito text-center md:text-left" title={product.title}>
                         {product.title}
                     </h3>
                 </Link>
 
-                {/* Price Display */}
-                <div className="flex items-baseline gap-2">
+                {/* Price Display: Centered by default, left-aligned on medium screens and up */}
+                <div className="flex items-baseline justify-center md:justify-start gap-2">
                     <p className="text-sm font-bold text-maroon nunito">
                         ${finalPrice.toLocaleString('en-IN')}
                     </p>
@@ -175,9 +177,9 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isWishlisted, isL
                     )}
                 </div>
 
-                {/* --- Combined Variant Swatches --- */}
-                <div className="flex items-center gap-4 mt-1">
 
+                {/* ✅ Combined Variant Swatches are now centered */}
+                <div className="flex items-center justify-center md:justify-start gap-4 mt-1">
                     {/* Material Swatches */}
                     {uniqueMaterials.length > 0 && (
                         <div
@@ -196,7 +198,7 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isWishlisted, isL
                         </div>
                     )}
 
-                    {/* Divider (only shows if both materials and sizes are present) */}
+                    {/* Divider */}
                     {uniqueMaterials.length > 0 && uniqueSizes.length > 0 && (
                         <div className="h-5 w-px bg-gray-200"></div>
                     )}
